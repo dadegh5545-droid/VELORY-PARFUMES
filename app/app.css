@@ -1,65 +1,796 @@
+/* ==========================================================================
+   VALORY PARFUMES — نظام التصميم (عربي / RTL)
+
+   قاعدتان تحكمان كل ما تحته:
+   ١) لا letter-spacing على النص العربي — الحروف العربية متّصلة، والتباعد يفكّها.
+      يبقى التباعد على اسم الدار اللاتيني وحده.
+   ٢) لا font-style: italic على العربية — لا يوجد مائل حقيقي في الخطوط العربية،
+      فيصطنعه المتصفح بإمالة قسرية تُفسد الرسم.
+   ========================================================================== */
+
+:root {
+  --noir: #0a0908;
+  --noir-soft: #100e0d;
+  --noir-card: #14120f;
+  --ivory: #f2ede4;
+  --ivory-dim: #a49c8f;
+  --gold: #c6a664;
+  --gold-dim: #8c7440;
+  --line: rgba(198, 166, 100, 0.18);
+
+  --shell: min(1240px, 100% - 3rem);
+  --ease: cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
 body {
-    margin: 0;
-    background: linear-gradient(180deg, rgb(117, 81, 194), rgb(255, 255, 255));
-    display: flex;
-    font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
-    height: 100vh;
-    width: 100vw;
-    justify-content: center;
-    align-items: center;
+  margin: 0;
+  background: var(--noir);
+  color: var(--ivory);
+  font-family: var(--font-sans), system-ui, sans-serif;
+  font-weight: 300;
+  /* العربية تحتاج سطرًا أوسع من اللاتينية بسبب النقاط والمدّات */
+  line-height: 1.9;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-display), Georgia, serif;
+  font-weight: 400;
+  line-height: 1.35;
+  margin: 0;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.eyebrow {
+  font-size: 0.82rem;
+  color: var(--gold);
+  margin: 0 0 1.4rem;
+}
+
+/* ── الترويسة ──────────────────────────────────────────────────────────── */
+
+.header {
+  position: fixed;
+  inset: 0 0 auto;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2rem;
+  width: var(--shell);
+  margin-inline: auto;
+  padding: 2rem 0;
+  animation: fade-down 1.2s var(--ease) both;
+}
+
+/* اسم الدار لاتيني — هنا وحده يُسمح بالتباعد بين الحروف */
+.wordmark {
+  font-family: var(--font-display), Georgia, serif;
+  font-size: 1.35rem;
+  letter-spacing: 0.34em;
+  text-indent: 0.34em;
+  white-space: nowrap;
+  direction: ltr;
+}
+
+.wordmark span {
+  color: var(--gold);
+}
+
+.nav {
+  display: flex;
+  gap: 2.5rem;
+  font-size: 0.92rem;
+  color: var(--ivory-dim);
+}
+
+.nav a {
+  position: relative;
+  padding-bottom: 0.35rem;
+  transition: color 0.4s var(--ease);
+}
+
+.nav a::after {
+  content: "";
+  position: absolute;
+  inset: auto 0 0 0;
+  height: 1px;
+  background: var(--gold);
+  transform: scaleX(0);
+  /* في RTL يبدأ الخطّ من اليمين */
+  transform-origin: right;
+  transition: transform 0.5s var(--ease);
+}
+
+.nav a:hover {
+  color: var(--ivory);
+}
+
+.nav a:hover::after {
+  transform: scaleX(1);
+}
+
+.cart span {
+  color: var(--gold);
+}
+
+/* ── الواجهة الرئيسية ──────────────────────────────────────────────────── */
+
+.hero {
+  position: relative;
+  display: grid;
+  place-items: center;
+  min-height: 100svh;
+  text-align: center;
+  padding: 8rem 0 6rem;
+  overflow: hidden;
+}
+
+.hero::before {
+  content: "";
+  position: absolute;
+  top: 42%;
+  left: 50%;
+  width: min(70rem, 130vw);
+  aspect-ratio: 1;
+  translate: -50% -50%;
+  background: radial-gradient(
+    circle,
+    rgba(198, 166, 100, 0.13) 0%,
+    rgba(198, 166, 100, 0.04) 38%,
+    transparent 68%
+  );
+  pointer-events: none;
+}
+
+.hero-inner {
+  position: relative;
+  width: var(--shell);
+  animation: fade-up 1.4s var(--ease) 0.15s both;
+}
+
+.hero h1 {
+  font-size: clamp(3rem, 9vw, 7.5rem);
+  line-height: 1.25;
+  margin-bottom: 1.5rem;
+}
+
+.hero h1 em {
+  display: block;
+  font-style: normal; /* لا مائل على العربية */
+  color: var(--gold);
+}
+
+.hero p {
+  max-width: 36rem;
+  margin: 0 auto 3rem;
+  color: var(--ivory-dim);
+  font-size: 1.05rem;
+}
+
+/* ── الأزرار ───────────────────────────────────────────────────────────── */
+
+.btn {
+  position: relative;
+  display: inline-block;
+  padding: 0.95rem 3rem;
+  border: 1px solid var(--gold-dim);
+  background: none;
+  color: var(--ivory);
+  font-family: inherit;
+  font-size: 0.95rem;
+  font-weight: 400;
+  cursor: pointer;
+  overflow: hidden;
+  transition: color 0.5s var(--ease), border-color 0.5s var(--ease);
+}
+
+.btn::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--gold);
+  transform: translateY(101%);
+  transition: transform 0.55s var(--ease);
+  z-index: -1;
+}
+
+.btn:hover {
+  color: var(--noir);
+  border-color: var(--gold);
+}
+
+.btn:hover::before {
+  transform: translateY(0);
+}
+
+.btn:focus-visible {
+  outline: 1px solid var(--gold);
+  outline-offset: 4px;
+}
+
+/* ── الأقسام ──────────────────────────────────────────────────────────── */
+
+.section {
+  width: var(--shell);
+  margin-inline: auto;
+  padding: 7rem 0;
+}
+
+.section-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 2rem;
+  flex-wrap: wrap;
+  padding-bottom: 2.5rem;
+  border-bottom: 1px solid var(--line);
+  margin-bottom: 4rem;
+}
+
+.section-head h2 {
+  font-size: clamp(2rem, 4.5vw, 3rem);
+}
+
+.section-head p {
+  max-width: 28rem;
+  margin: 0;
+  color: var(--ivory-dim);
+  font-size: 0.98rem;
+}
+
+/* ── الفلترة بالعائلة العطرية ─────────────────────────────────────────── */
+
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.7rem;
+  margin-bottom: 3rem;
+}
+
+.filter {
+  padding: 0.5rem 1.7rem;
+  border: 1px solid var(--line);
+  background: none;
+  color: var(--ivory-dim);
+  font-family: inherit;
+  font-size: 0.92rem;
+  font-weight: 300;
+  cursor: pointer;
+  transition: color 0.4s var(--ease), border-color 0.4s var(--ease),
+    background 0.4s var(--ease);
+}
+
+.filter:hover {
+  color: var(--ivory);
+  border-color: var(--gold-dim);
+}
+
+.filter[aria-pressed="true"] {
+  background: var(--gold);
+  border-color: var(--gold);
+  color: var(--noir);
+}
+
+.filter:focus-visible {
+  outline: 1px solid var(--gold);
+  outline-offset: 3px;
+}
+
+/* ── الشبكة والبطاقات ─────────────────────────────────────────────────── */
+
+/* الخطوط الفاصلة بـ box-shadow لا بـ gap + background، وإلا ظهرت الخلايا
+   الفارغة بلون الخط الذهبي. 20rem ⇒ ٣ أعمدة تملأ العطور الستة صفّين تامّين. */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(20rem, 1fr));
+  border: 1px solid var(--line);
+}
+
+/* ── الشريط الأفقي المنزلق ────────────────────────────────────────────── */
+
+.rail {
+  display: flex;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory;
+  border: 1px solid var(--line);
+  /* إخفاء شريط التمرير — البديل المرئي هو مؤشّر التقدّم الذهبي أسفله */
+  scrollbar-width: none;
+}
+
+.rail::-webkit-scrollbar {
+  display: none;
+}
+
+.rail:focus-visible {
+  outline: 1px solid var(--gold);
+  outline-offset: 3px;
+}
+
+.rail > .card {
+  flex: 0 0 clamp(16rem, 26vw, 21rem);
+  scroll-snap-align: start;
+}
+
+.rail-controls {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  margin-top: 1.75rem;
+}
+
+.rail-bar {
+  position: relative;
+  flex: 1;
+  height: 1px;
+  background: var(--line);
+}
+
+.rail-bar span {
+  position: absolute;
+  inset-block: 0;
+  inset-inline-start: 0; /* يمتلئ من اليمين في RTL */
+  background: var(--gold);
+  transition: width 0.35s var(--ease);
+}
+
+.rail-btns {
+  display: flex;
+  gap: 0.6rem;
+}
+
+.rail-btn {
+  width: 3rem;
+  height: 3rem;
+  border: 1px solid var(--line);
+  background: none;
+  color: var(--ivory);
+  font-size: 1.1rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: color 0.4s var(--ease), border-color 0.4s var(--ease);
+}
+
+.rail-btn:hover:not(:disabled) {
+  color: var(--gold);
+  border-color: var(--gold-dim);
+}
+
+.rail-btn:disabled {
+  opacity: 0.25;
+  cursor: default;
+}
+
+.rail-btn:focus-visible {
+  outline: 1px solid var(--gold);
+  outline-offset: 3px;
+}
+
+/* عرض المجموعة: بطاقتان في الصف، والتمرير عمودي */
+.grid-2 {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+/* البطاقة تتضاعف عرضًا في عمودين، فنُقصّر القارورة كي لا يطول الصف */
+.grid-2 .bottle {
+  aspect-ratio: 4 / 3;
+}
+
+.grid-2 .bottle-glass {
+  width: 26%;
+  height: 72%;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  background: var(--noir);
+  padding: 2.5rem 2rem 2.25rem;
+  box-shadow: 1px 0 0 var(--line), 0 1px 0 var(--line);
+  transition: background 0.6s var(--ease);
+}
+
+.card:hover {
+  background: var(--noir-card);
+}
+
+.card-link {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+}
+
+.card-link:focus-visible {
+  outline: 1px solid var(--gold);
+  outline-offset: 6px;
+}
+
+/* القارورة مرسومة بالـ CSS — لا صور خارجية، لا طلبات شبكة */
+.bottle {
+  position: relative;
+  display: grid;
+  place-items: center;
+  aspect-ratio: 3 / 4;
+  margin-bottom: 2rem;
+  background: radial-gradient(
+    ellipse at 50% 38%,
+    var(--tint, rgba(198, 166, 100, 0.16)),
+    transparent 62%
+  );
+}
+
+.bottle-glass {
+  width: 42%;
+  height: 62%;
+  border: 1px solid var(--line);
+  border-radius: 3px 3px 6px 6px;
+  background: linear-gradient(
+    160deg,
+    rgba(242, 237, 228, 0.09),
+    var(--tint, rgba(198, 166, 100, 0.16)) 45%,
+    rgba(10, 9, 8, 0.5)
+  );
+  transition: transform 0.7s var(--ease);
+}
+
+.card:hover .bottle-glass {
+  transform: translateY(-8px);
+}
+
+/* السدادة */
+.bottle-glass::before {
+  content: "";
+  position: absolute;
+  top: 12%;
+  left: 50%;
+  translate: -50%;
+  width: 15%;
+  height: 9%;
+  background: linear-gradient(var(--gold), var(--gold-dim));
+  border-radius: 2px;
+}
+
+.card h3 {
+  font-size: 1.65rem;
+  margin-bottom: 0.35rem;
+}
+
+.card-family {
+  margin-bottom: 0.6rem;
+  font-size: 0.8rem;
+}
+
+/* أسماء العطور لاتينية — هنا يليق تباعدٌ طفيف، بخلاف النص العربي */
+.card h3,
+.detail-info h1 {
+  letter-spacing: 0.015em;
+}
+
+/* اسم الدار المصنّعة تحت اسم العطر */
+.brand {
+  margin: 0 0 0.5rem;
+  color: var(--gold-dim);
+  font-size: 0.85rem;
+}
+
+.notes {
+  margin: 0 0 1.4rem;
+  color: var(--ivory-dim);
+  font-size: 0.88rem;
+}
+
+/* هرم الروائح — الطريقة المعتمدة في دور العطور: يُقرأ من الأعلى للأسفل */
+.pyramid {
+  flex: 1;
+  display: grid;
+  align-content: start;
+  gap: 0.6rem;
+  margin: 0 0 1.75rem;
+}
+
+.pyramid > div {
+  display: grid;
+  grid-template-columns: 4.5rem 1fr;
+  gap: 0.9rem;
+  align-items: baseline;
+}
+
+.pyramid dt {
+  font-family: var(--font-display), Georgia, serif;
+  font-size: 0.95rem;
+  color: var(--gold-dim);
+}
+
+.pyramid dd {
+  margin: 0;
+  color: var(--ivory-dim);
+  font-size: 0.9rem;
+  line-height: 1.7;
+}
+
+/* سطر الثبات في البطاقة */
+.spec {
+  display: flex;
+  gap: 0.6rem;
+  margin: 0 0 1.5rem;
+  font-size: 0.88rem;
+  color: var(--ivory);
+}
+
+.spec span {
+  color: var(--gold-dim);
+}
+
+/* جدول المواصفات في صفحة التفاصيل */
+.specs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0;
+  margin: 0 0 2.5rem;
+  border: 1px solid var(--line);
+}
+
+.specs > div {
+  flex: 1 1 8rem;
+  padding: 1.1rem 1.4rem;
+  box-shadow: 1px 0 0 var(--line);
+}
+
+.specs dt {
+  margin-bottom: 0.15rem;
+  color: var(--gold-dim);
+  font-size: 0.85rem;
+}
+
+.specs dd {
+  margin: 0;
+  font-size: 1.02rem;
+}
+
+.card-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 1.4rem;
+  border-top: 1px solid var(--line);
+}
+
+.price {
+  font-family: var(--font-display), Georgia, serif;
+  font-size: 1.35rem;
+  color: var(--gold);
+}
+
+.add {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--ivory-dim);
+  font-family: inherit;
+  font-size: 0.92rem;
+  font-weight: 300;
+  cursor: pointer;
+  transition: color 0.4s var(--ease);
+}
+
+/* السهم يشير يسارًا لأن اتجاه القراءة من اليمين */
+.add::after {
+  content: " ←";
+  color: var(--gold-dim);
+}
+
+.add:hover {
+  color: var(--gold);
+}
+
+.add:focus-visible {
+  outline: 1px solid var(--gold);
+  outline-offset: 4px;
+}
+
+/* ── صفحة تفاصيل العطر ────────────────────────────────────────────────── */
+
+.detail {
+  padding-top: 9.5rem;
+}
+
+/* سهم العودة يشير يمينًا في RTL — نحو حيث بدأت القراءة */
+.back {
+  display: inline-block;
+  margin-bottom: 3rem;
+  color: var(--ivory-dim);
+  font-size: 0.95rem;
+  transition: color 0.4s var(--ease);
+}
+
+.back::before {
+  content: "→ ";
+  color: var(--gold-dim);
+}
+
+.back:hover {
+  color: var(--gold);
+}
+
+.detail-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+  gap: 5rem;
+  align-items: center;
+  padding-bottom: 6rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.detail-bottle {
+  margin: 0;
+  border: 1px solid var(--line);
+}
+
+.detail-bottle .bottle-glass {
+  width: 38%;
+  height: 58%;
+}
+
+.detail-info h1 {
+  font-size: clamp(2.4rem, 5vw, 3.6rem);
+  margin-bottom: 0.4rem;
+}
+
+.detail-desc {
+  max-width: 34rem;
+  margin: 2rem 0;
+  padding-top: 2rem;
+  border-top: 1px solid var(--line);
+  color: var(--ivory);
+  font-size: 1.05rem;
+}
+
+.detail-pyramid {
+  gap: 1rem;
+  margin-bottom: 2.5rem;
+}
+
+.detail-pyramid dd {
+  font-size: 1rem;
+  color: var(--ivory);
+}
+
+.detail-buy {
+  display: flex;
+  align-items: center;
+  gap: 2.5rem;
+  flex-wrap: wrap;
+  padding-top: 2rem;
+  border-top: 1px solid var(--line);
+}
+
+.detail-price {
+  font-size: 2rem;
+}
+
+.also {
+  padding-top: 6rem;
+}
+
+/* ── شريط الاقتباس ────────────────────────────────────────────────────── */
+
+.quote {
+  padding: 7rem 0;
+  border-block: 1px solid var(--line);
+  background: var(--noir-soft);
+  text-align: center;
+}
+
+.quote blockquote {
+  width: var(--shell);
+  margin: 0 auto;
+  font-family: var(--font-display), Georgia, serif;
+  font-size: clamp(1.6rem, 4vw, 2.6rem);
+  font-style: normal; /* لا مائل على العربية */
+  line-height: 1.6;
+}
+
+.quote cite {
+  display: block;
+  margin-top: 2rem;
+  font-family: var(--font-sans), sans-serif;
+  font-size: 0.9rem;
+  font-style: normal;
+  color: var(--gold);
+}
+
+/* ── التذييل ──────────────────────────────────────────────────────────── */
+
+.footer {
+  width: var(--shell);
+  margin-inline: auto;
+  padding: 5rem 0 3rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2rem;
+  flex-wrap: wrap;
+  font-size: 0.88rem;
+  color: var(--ivory-dim);
+}
+
+/* ── الحركة ───────────────────────────────────────────────────────────── */
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(28px);
   }
-  
-  main {
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
+}
+
+@keyframes fade-down {
+  from {
+    opacity: 0;
+    transform: translateY(-18px);
   }
-  
-  button {
-    border-radius: 8px;
-    border: 1px solid transparent;
-    padding: 0.6em 1.2em;
-    font-size: 1em;
-    font-weight: 500;
-    font-family: inherit;
-    background-color: #1a1a1a;
-    cursor: pointer;
-    transition: border-color 0.25s;
-    color: white;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto;
   }
-  button:hover {
-    border-color: #646cff;
+}
+
+/* ── الشاشات الصغيرة ──────────────────────────────────────────────────── */
+
+@media (max-width: 860px) {
+  .detail-grid {
+    grid-template-columns: 1fr;
+    gap: 3rem;
   }
-  button:focus,
-  button:focus-visible {
-    outline: 4px auto -webkit-focus-ring-color;
+}
+
+@media (max-width: 720px) {
+  :root {
+    --shell: min(1240px, 100% - 2rem);
   }
-  
-  ul {
-    padding-inline-start: 0;
-    margin-block-start: 0;
-    margin-block-end: 0;
-    list-style-type: none;
-    display: flex;
-    flex-direction: column;
-    margin: 8px 0;
-    border: 1px solid black;
-    gap: 1px;
-    background-color: black;
-    border-radius: 8px;
-    overflow: auto;
+
+  .nav {
+    gap: 1.4rem;
+    font-size: 0.85rem;
   }
-  
-  li {
-    background-color: white;
-    padding: 8px;
+
+  .nav a:not(.cart) {
+    display: none;
   }
-  
-  li:hover {
-    background: #dadbf9;
+
+  .section {
+    padding: 4.5rem 0;
   }
-  
-  a {
-    font-weight: 800;
-    text-decoration: none;
+
+  /* عمود واحد على الهاتف — عمودان يجعلان البطاقة أضيق من أن تُقرأ */
+  .grid-2 {
+    grid-template-columns: 1fr;
   }
+
+  .detail {
+    padding-top: 8rem;
+  }
+}

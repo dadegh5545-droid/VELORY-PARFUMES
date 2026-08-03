@@ -185,6 +185,14 @@ a {
   font-size: 1.05rem;
 }
 
+/* زرٌّ لكل فرع — يُعرّف بالفرعين من أول شاشة وينزل إلى قسم كلٍّ منهما */
+.hero-actions {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
 /* ── الأزرار ───────────────────────────────────────────────────────────── */
 
 .btn {
@@ -254,6 +262,94 @@ a {
   margin: 0;
   color: var(--ivory-dim);
   font-size: 0.98rem;
+}
+
+/* ── أقسام الفروع ─────────────────────────────────────────────────────── */
+
+/* الترويسة ثابتة، فبدون هذا الهامش يختفي عنوان القسم تحتها عند القفز إليه.
+   و isolation تحبس وهج الفرع (z-index سالب) داخل القسم بدل أن يهبط
+   خلف خلفية الصفحة فيختفي. */
+.branch {
+  position: relative;
+  isolation: isolate;
+  scroll-margin-top: 6rem;
+}
+
+/* القسمان متتاليان، فيلزم ما يفصل فرعًا عن فرع */
+.branch + .branch {
+  border-top: 1px solid var(--line);
+}
+
+/* وهجٌ بلون الفرع خلف ترويسته — يميّز قسمًا عن قسم بلا صور */
+.branch::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  inset-inline-start: -12%;
+  z-index: -1;
+  width: min(46rem, 92%);
+  aspect-ratio: 2 / 1;
+  background: radial-gradient(ellipse at 50% 0%, var(--tint), transparent 70%);
+  pointer-events: none;
+}
+
+/* شريط معلومات المحل: العنوان والدوام والهاتف، ثم أزرار التواصل */
+.branch-info {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2rem 3rem;
+  flex-wrap: wrap;
+  margin-bottom: 3rem;
+  padding: 1.75rem 2rem;
+  border: 1px solid var(--line);
+  background: var(--noir-soft);
+}
+
+.branch-rows {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.2rem 3rem;
+  margin: 0;
+}
+
+.branch-rows dt {
+  margin-bottom: 0.15rem;
+  color: var(--gold-dim);
+  font-size: 0.82rem;
+}
+
+.branch-rows dd {
+  margin: 0;
+  font-size: 0.98rem;
+}
+
+.branch-rows a {
+  transition: color 0.4s var(--ease);
+}
+
+.branch-rows a:hover {
+  color: var(--gold);
+}
+
+.branch-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1.75rem;
+}
+
+.branch-map {
+  padding-bottom: 0.25rem;
+  border-bottom: 1px solid var(--line);
+  color: var(--ivory-dim);
+  font-size: 0.92rem;
+  transition: color 0.4s var(--ease), border-color 0.4s var(--ease);
+}
+
+.branch-map:hover {
+  color: var(--gold);
+  border-color: var(--gold-dim);
 }
 
 /* ── الفلترة بالعائلة العطرية ─────────────────────────────────────────── */
@@ -673,17 +769,57 @@ a {
   color: var(--ivory);
 }
 
-.detail-buy {
-  display: flex;
-  align-items: center;
-  gap: 2.5rem;
-  flex-wrap: wrap;
+/* التوفّر والأسعار: صفٌّ لكل فرع، لأن العطر الواحد يُسعَّر بعملة كل بلد */
+.offers {
   padding-top: 2rem;
   border-top: 1px solid var(--line);
 }
 
-.detail-price {
-  font-size: 2rem;
+.offers-head {
+  margin: 0 0 1rem;
+  color: var(--gold);
+  font-size: 0.85rem;
+}
+
+.offer {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem 2rem;
+  flex-wrap: wrap;
+  padding: 1.4rem 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.offer:last-child {
+  padding-bottom: 0;
+  border-bottom: 0;
+}
+
+/* اسم الفرع يدفع ما بعده إلى الطرف الآخر من السطر */
+.offer-where {
+  display: grid;
+  gap: 0.1rem;
+  margin-inline-end: auto;
+}
+
+.offer-where span {
+  font-family: var(--font-display), Georgia, serif;
+  font-size: 1.15rem;
+}
+
+.offer-where small {
+  color: var(--ivory-dim);
+  font-size: 0.85rem;
+}
+
+.offer .price {
+  font-size: 1.7rem;
+}
+
+/* في "قد يعجبك أيضًا" نذكر أين يُباع العطر بدل سعرٍ لا فرعَ له */
+.at-branches {
+  color: var(--ivory-dim);
+  font-size: 0.9rem;
 }
 
 .also {
@@ -792,5 +928,35 @@ a {
 
   .detail {
     padding-top: 8rem;
+  }
+
+  .branch-info {
+    padding: 1.5rem;
+  }
+
+  /* زرّ واتساب يملأ العرض على الهاتف — وهو أرجح وسيلة طلبٍ هناك */
+  .branch-actions {
+    width: 100%;
+  }
+
+  .branch-actions .btn {
+    flex: 1;
+    text-align: center;
+    padding-inline: 1.5rem;
+  }
+
+  /* السعر والزر تحت اسم الفرع: الصف الواحد يضيق عن ثلاثتها */
+  .offer {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1rem;
+  }
+
+  .offer-where {
+    margin-inline-end: 0;
+  }
+
+  .offer .btn {
+    text-align: center;
   }
 }

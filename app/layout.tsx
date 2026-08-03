@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Amiri, Tajawal } from "next/font/google";
+import { BRANCHES } from "./catalog";
 import { CartProvider } from "./cart";
 import { SiteHeader } from "./site-header";
 import "./app.css";
@@ -21,7 +22,7 @@ const sans = Tajawal({
 export const metadata: Metadata = {
   title: "فالوري | VALORY PARFUMES — فنُّ العِطر",
   description:
-    "دار فالوري للعطور الفاخرة. خلاصات نادرة تُمزج يدويًا في دفعات صغيرة.",
+    "دار فالوري للعطور الفاخرة، بفرعَي الدوحة ونجامينا. خلاصات نادرة تُمزج يدويًا في دفعات صغيرة.",
 };
 
 export default function RootLayout({
@@ -37,7 +38,7 @@ export default function RootLayout({
           {children}
           <footer className="footer" id="contact">
             <span>© 2026 فالوري بارفوم</span>
-            <span>الدار البيضاء · باريس</span>
+            <span>{BRANCHES.map((b) => b.city).join(" · ")}</span>
           </footer>
         </CartProvider>
       </body>

@@ -3,9 +3,10 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import {
   CATALOG,
-  formatPrice,
+  branchesOf,
   getPerfume,
   metaLine,
+  priceIn,
   specsOf,
 } from "../../catalog";
 import { AddButton } from "../../site-header";
@@ -21,10 +22,17 @@ export function generateMetadata({ params }: Props): Metadata {
   const perfume = getPerfume(params.id);
   if (!perfume) return { title: "عطر غير موجود | فالوري" };
 
+  const where = branchesOf(perfume)
+    .map((b) => b.city)
+    .join(" و");
+
   return {
     title: `${perfume.name} | فالوري`,
     description:
-      perfume.description ?? `${perfume.name} — متوفّر في متجر فالوري للعطور.`,
+      perfume.description ??
+      (where
+        ? `${perfume.name} — متوفّر في متجر فالوري بـ${where}.`
+        : `${perfume.name} — من مجموعة فالوري للعطور.`),
   };
 }
 
@@ -34,10 +42,13 @@ export default function PerfumePage({ params }: Props) {
 
   const others = CATALOG.filter((p) => p.id !== perfume.id).slice(0, 3);
   const specs = specsOf(perfume);
+  // العطر الواحد قد يُباع في الفرعين بسعرين وعملتين — فالشراء صفٌّ لكل فرع،
+  // لا سعرًا واحدًا وزرًّا واحدًا كما كان قبل افتتاح الفرع الثاني.
+  const offers = branchesOf(perfume);
 
   return (
     <main className="section detail">
-      <Link href="/#collection" className="back">
+      <Link href="/" className="back">
         العودة إلى المجموعة
       </Link>
 
@@ -86,13 +97,28 @@ export default function PerfumePage({ params }: Props) {
             </dl>
           )}
 
-          <div className="detail-buy">
-            <span className="price detail-price">
-              {perfume.price
-                ? `${formatPrice(perfume.price)} درهم`
-                : "السعر عند الطلب"}
-            </span>
-            <AddButton id={perfume.id} label="أضف إلى السلة" variant="btn" />
+          <div className="offers">
+            <p className="offers-head">التوفّر والأسعار</p>
+
+            {offers.length === 0 && (
+              <p className="notes">غير متوفّر حاليًا في أيٍّ من الفروع.</p>
+            )}
+
+            {offers.map((b) => (
+              <div className="offer" key={b.id}>
+                <div className="offer-where">
+                  <span>{b.name}</span>
+                  <small>{b.city}</small>
+                </div>
+                <span className="price">{priceIn(perfume, b)}</span>
+                <AddButton
+                  id={perfume.id}
+                  branch={b.id}
+                  label="أضف إلى السلة"
+                  variant="btn"
+                />
+              </div>
+            ))}
           </div>
         </div>
       </div>
@@ -101,7 +127,7 @@ export default function PerfumePage({ params }: Props) {
         <div className="section-head">
           <div>
             <p className="eyebrow">قد يعجبك أيضًا</p>
-            <h2>من المجموعة نفسها</h2>
+            <h2>عطورٌ أخرى</h2>
           </div>
         </div>
 
@@ -119,11 +145,13 @@ export default function PerfumePage({ params }: Props) {
                 <h3>{p.name}</h3>
                 {metaLine(p) && <p className="notes">{metaLine(p)}</p>}
               </Link>
+              {/* لا سعر هنا: السعر يخصّ فرعًا بعينه، فنكتفي بذكر أين يُباع */}
               <div className="card-foot">
-                <span className="price">
-                  {p.price ? `${formatPrice(p.price)} درهم` : "السعر عند الطلب"}
+                <span className="at-branches">
+                  {branchesOf(p)
+                    .map((b) => b.city)
+                    .join(" · ") || "غير متوفّر"}
                 </span>
-                <AddButton id={p.id} />
               </div>
             </article>
           ))}

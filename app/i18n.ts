@@ -113,6 +113,8 @@ export type Dict = {
   chooseBranch: string;
   chooseLocale: string;
   stepBack: string;
+  /** إغلاق الترحيب — فعلٌ غير "رجوع"، ولا يظهر إلا لمن سبق أن اختار */
+  close: string;
 };
 
 export const T: Record<Locale, Dict> = {
@@ -172,6 +174,7 @@ export const T: Record<Locale, Dict> = {
     chooseBranch: "اختر فرعك",
     chooseLocale: "اختر لغتك",
     stepBack: "رجوع",
+    close: "إغلاق",
   },
 
   en: {
@@ -233,6 +236,7 @@ export const T: Record<Locale, Dict> = {
     chooseBranch: "Choose your branch",
     chooseLocale: "Choose your language",
     stepBack: "Back",
+    close: "Close",
   },
 
   fr: {
@@ -295,6 +299,7 @@ export const T: Record<Locale, Dict> = {
     chooseBranch: "Choisissez votre succursale",
     chooseLocale: "Choisissez votre langue",
     stepBack: "Retour",
+    close: "Fermer",
   },
 };
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { BRANCHES, branchCity, branchName } from "./catalog";
 import { DIR, LOCALE_NAME, T, type Locale } from "./i18n";
 import { usePrefs } from "./prefs";
@@ -17,6 +17,7 @@ const LOCALES: Locale[] = ["ar", "en", "fr"];
 export function Welcome() {
   const { asking, set, prefs } = usePrefs();
   const [locale, setLocale] = useState<Locale | null>(null);
+  const panel = useRef<HTMLDivElement>(null);
 
   // كل فتحةٍ جديدة تبدأ من الصفر — ولو كان للزائر اختيارٌ سابق.
   useEffect(() => {
@@ -33,7 +34,50 @@ export function Welcome() {
     };
   }, [asking]);
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const focusables = useCallback(
+    () =>
+      Array.from(
+        panel.current?.querySelectorAll<HTMLElement>("button:not([disabled])") ??
+          []
+      ),
+    []
+  );
+
+  // أوّل ما يُفتح الحوار يذهب التركيز إلى داخله، وإلا بقي على ما خلف الطبقة
+  // فيتنقّل الزائرُ بلوحة المفاتيح في صفحةٍ لا يراها.
+  useEffect(() => {
+    if (!asking) return;
+    const first = focusables()[0];
+    first?.focus();
+  }, [asking, locale, focusables]);
+
   if (!asking) return null;
+
+  /** حبس التركيز: الحوار يحجب الصفحة بصريًّا، فليحجبها عن Tab كذلك.
+   *  و Escape يغلق لمن له اختيارٌ سابق — أوّل زيارةٍ لا مهرب منها. */
+  const onKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Escape" && prefs) {
+      set(prefs);
+      return;
+    }
+    if (e.key !== "Tab") return;
+
+    const items = focusables();
+    if (!items.length) return;
+
+    const first = items[0];
+    const last = items[items.length - 1];
+    const here = document.activeElement;
+
+    if (e.shiftKey && (here === first || !panel.current?.contains(here))) {
+      e.preventDefault();
+      last.focus();
+    } else if (!e.shiftKey && here === last) {
+      e.preventDefault();
+      first.focus();
+    }
+  };
 
   const t = locale ? T[locale] : null;
   const branches = locale
@@ -48,8 +92,22 @@ export function Welcome() {
       aria-label="VALORY PARFUMES"
       lang={locale ?? "ar"}
       dir={locale ? DIR[locale] : "rtl"}
+      onKeyDown={onKeyDown}
     >
-      <div className="welcome-panel">
+      <div className="welcome-panel" ref={panel}>
+        {/* زائرٌ سبق أن اختار ثم فتح الشاشة ليغيّر — له أن يتراجع.
+            أوّلُ عنصرٍ في اللوحة كي يبلغه Tab قبل الخيارات لا بعدها. */}
+        {prefs && (
+          <button
+            type="button"
+            className="welcome-dismiss"
+            onClick={() => set(prefs)}
+            aria-label={T[prefs.locale].close}
+          >
+            ✕
+          </button>
+        )}
+
         <p className="welcome-mark">
           VALORY<span>.</span>
         </p>
@@ -116,17 +174,6 @@ export function Welcome() {
           </div>
         )}
 
-        {/* زائرٌ سبق أن اختار ثم فتح الشاشة ليغيّر — له أن يتراجع */}
-        {prefs && (
-          <button
-            type="button"
-            className="welcome-dismiss"
-            onClick={() => set(prefs)}
-            aria-label={T[prefs.locale].stepBack}
-          >
-            ✕
-          </button>
-        )}
       </div>
     </div>
   );

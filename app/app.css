@@ -108,56 +108,6 @@ a {
   opacity: 1;
 }
 
-/* اسم الدار لاتيني — هنا وحده يُسمح بالتباعد بين الحروف */
-.wordmark {
-  font-family: var(--font-display), Georgia, serif;
-  font-size: 1.35rem;
-  letter-spacing: 0.34em;
-  text-indent: 0.34em;
-  white-space: nowrap;
-  direction: ltr;
-}
-
-.wordmark span {
-  color: var(--gold);
-}
-
-.nav {
-  display: flex;
-  gap: 2.5rem;
-  font-size: 0.92rem;
-  color: var(--ivory-dim);
-}
-
-.nav a {
-  position: relative;
-  padding-bottom: 0.35rem;
-  transition: color 0.4s var(--ease);
-}
-
-.nav a::after {
-  content: "";
-  position: absolute;
-  inset: auto 0 0 0;
-  height: 1px;
-  background: var(--gold);
-  transform: scaleX(0);
-  /* في RTL يبدأ الخطّ من اليمين */
-  transform-origin: right;
-  transition: transform 0.5s var(--ease);
-}
-
-.nav a:hover {
-  color: var(--ivory);
-}
-
-.nav a:hover::after {
-  transform: scaleX(1);
-}
-
-.cart span {
-  color: var(--gold);
-}
 
 /* ── الواجهة الرئيسية ──────────────────────────────────────────────────── */
 
@@ -262,61 +212,6 @@ a {
 
 /* ── الأزرار ───────────────────────────────────────────────────────────── */
 
-.btn {
-  position: relative;
-  display: inline-block;
-  padding: 0.95rem 3rem;
-  border: 1px solid var(--gold-dim);
-  background: none;
-  color: var(--ivory);
-  font-family: inherit;
-  font-size: 0.95rem;
-  font-weight: 400;
-  cursor: pointer;
-  overflow: hidden;
-  transition: color 0.5s var(--ease), border-color 0.5s var(--ease);
-}
-
-.btn::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: var(--gold);
-  transform: translateY(101%);
-  transition: transform 0.55s var(--ease);
-  z-index: -1;
-}
-
-.btn:hover {
-  color: var(--noir);
-  border-color: var(--gold);
-}
-
-.btn:hover::before {
-  transform: translateY(0);
-}
-
-.btn:focus-visible {
-  outline: 1px solid var(--gold);
-  outline-offset: 4px;
-}
-
-/* الفعل الرئيس في الصفحة يُملأ لا يُحدّ: الحدُّ وحده يجعله يساوي ما حوله،
-   والزائر يحتاج أن يعرف من أول نظرةٍ أين يضغط. */
-.btn-primary {
-  border-color: var(--gold);
-  background: var(--gold);
-  color: var(--noir);
-  font-weight: 500;
-}
-
-.btn-primary::before {
-  background: var(--ivory);
-}
-
-.btn-primary:hover {
-  color: var(--noir);
-}
 
 /* ── الأقسام ──────────────────────────────────────────────────────────── */
 
@@ -352,36 +247,6 @@ a {
 
 /* الفرع واللغة اختيارٌ واحد لا اختياران، فمفتاحٌ واحد يعيد فتح الترحيب:
    زرّان منفصلان يوهمان أن للغة استقلالًا عن الفرع، وليس لها. */
-.switcher {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.6rem;
-  padding: 0.3rem 0.9rem;
-  border: 1px solid var(--line);
-  background: none;
-  color: var(--ivory-dim);
-  font-family: inherit;
-  font-size: 0.85rem;
-  font-weight: 300;
-  cursor: pointer;
-  transition: color 0.4s var(--ease), border-color 0.4s var(--ease);
-}
-
-.switcher:hover {
-  color: var(--ivory);
-  border-color: var(--gold-dim);
-}
-
-.switcher:focus-visible {
-  outline: 1px solid var(--gold);
-  outline-offset: 3px;
-}
-
-.switcher-lang {
-  padding-inline-start: 0.6rem;
-  border-inline-start: 1px solid var(--line);
-  color: var(--gold);
-}
 
 /* ── أقسام الفروع ─────────────────────────────────────────────────────── */
 
@@ -443,13 +308,6 @@ a {
   font-size: 0.98rem;
 }
 
-.branch-rows a {
-  transition: color 0.4s var(--ease);
-}
-
-.branch-rows a:hover {
-  color: var(--gold);
-}
 
 .branch-actions {
   display: flex;
@@ -458,18 +316,6 @@ a {
   gap: 1.75rem;
 }
 
-.branch-map {
-  padding-bottom: 0.25rem;
-  border-bottom: 1px solid var(--line);
-  color: var(--ivory-dim);
-  font-size: 0.92rem;
-  transition: color 0.4s var(--ease), border-color 0.4s var(--ease);
-}
-
-.branch-map:hover {
-  color: var(--gold);
-  border-color: var(--gold-dim);
-}
 
 /* ── الفلترة بالعائلة العطرية ─────────────────────────────────────────── */
 
@@ -480,34 +326,6 @@ a {
   margin-bottom: 3rem;
 }
 
-.filter {
-  padding: 0.5rem 1.7rem;
-  border: 1px solid var(--line);
-  background: none;
-  color: var(--ivory-dim);
-  font-family: inherit;
-  font-size: 0.92rem;
-  font-weight: 300;
-  cursor: pointer;
-  transition: color 0.4s var(--ease), border-color 0.4s var(--ease),
-    background 0.4s var(--ease);
-}
-
-.filter:hover {
-  color: var(--ivory);
-  border-color: var(--gold-dim);
-}
-
-.filter[aria-pressed="true"] {
-  background: var(--gold);
-  border-color: var(--gold);
-  color: var(--noir);
-}
-
-.filter:focus-visible {
-  outline: 1px solid var(--gold);
-  outline-offset: 3px;
-}
 
 /* ── الشبكة والبطاقات ─────────────────────────────────────────────────── */
 
@@ -535,10 +353,6 @@ a {
   display: none;
 }
 
-.rail:focus-visible {
-  outline: 1px solid var(--gold);
-  outline-offset: 3px;
-}
 
 .rail > .card {
   flex: 0 0 clamp(16rem, 26vw, 21rem);
@@ -572,32 +386,6 @@ a {
   gap: 0.6rem;
 }
 
-.rail-btn {
-  width: 3rem;
-  height: 3rem;
-  border: 1px solid var(--line);
-  background: none;
-  color: var(--ivory);
-  font-size: 1.1rem;
-  line-height: 1;
-  cursor: pointer;
-  transition: color 0.4s var(--ease), border-color 0.4s var(--ease);
-}
-
-.rail-btn:hover:not(:disabled) {
-  color: var(--gold);
-  border-color: var(--gold-dim);
-}
-
-.rail-btn:disabled {
-  opacity: 0.25;
-  cursor: default;
-}
-
-.rail-btn:focus-visible {
-  outline: 1px solid var(--gold);
-  outline-offset: 3px;
-}
 
 .card {
   display: flex;
@@ -608,15 +396,7 @@ a {
   transition: background 0.6s var(--ease);
 }
 
-.card:hover {
-  background: var(--noir-card);
-}
 
-.card-link {
-  display: flex;
-  flex: 1;
-  flex-direction: column;
-}
 
 /* النصّ يتمدّد ليدفع صفَّ السعر إلى أسفل البطاقة، فتستوي أسافل البطاقات
    في الصف الواحد مهما اختلف طول الأسماء. */
@@ -626,10 +406,6 @@ a {
   flex-direction: column;
 }
 
-.card-link:focus-visible {
-  outline: 1px solid var(--gold);
-  outline-offset: 6px;
-}
 
 /* القارورة مرسومة بالـ CSS — لا صور خارجية، لا طلبات شبكة */
 .bottle {
@@ -662,9 +438,6 @@ a {
   transition: transform 0.7s var(--ease);
 }
 
-.card:hover .bottle-glass {
-  transform: translateY(-8px);
-}
 
 /* السدادة */
 .bottle-glass::before {
@@ -713,9 +486,6 @@ a {
 }
 
 /* تقريبٌ خفيف عند المرور — لا إزاحة، كي لا ينكشف طرفُ الإطار */
-.card:hover .bottle-photo {
-  transform: scale(1.04);
-}
 
 .card h3 {
   font-size: 1.65rem;
@@ -818,13 +588,6 @@ a {
   font-size: 1.02rem;
 }
 
-.card-foot {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding-top: 1.4rem;
-  border-top: 1px solid var(--line);
-}
 
 .price {
   font-family: var(--font-display), Georgia, serif;
@@ -832,36 +595,6 @@ a {
   color: var(--gold);
 }
 
-.add {
-  padding: 0;
-  border: 0;
-  background: none;
-  color: var(--ivory-dim);
-  font-family: inherit;
-  font-size: 0.92rem;
-  font-weight: 300;
-  cursor: pointer;
-  transition: color 0.4s var(--ease);
-}
-
-/* السهم يتبع اتجاه القراءة: يسارًا في العربية، ويمينًا في الأقسام اللاتينية */
-.add::after {
-  content: " ←";
-  color: var(--gold-dim);
-}
-
-[dir="ltr"] .add::after {
-  content: " →";
-}
-
-.add:hover {
-  color: var(--gold);
-}
-
-.add:focus-visible {
-  outline: 1px solid var(--gold);
-  outline-offset: 4px;
-}
 
 /* ── صفحة تفاصيل العطر ────────────────────────────────────────────────── */
 
@@ -869,27 +602,6 @@ a {
   padding-top: 9.5rem;
 }
 
-/* سهم العودة يشير نحو حيث بدأت القراءة — يمينًا في RTL ويسارًا في LTR */
-.back {
-  display: inline-block;
-  margin-bottom: 3rem;
-  color: var(--ivory-dim);
-  font-size: 0.95rem;
-  transition: color 0.4s var(--ease);
-}
-
-.back::before {
-  content: "→ ";
-  color: var(--gold-dim);
-}
-
-[dir="ltr"] .back::before {
-  content: "← ";
-}
-
-.back:hover {
-  color: var(--gold);
-}
 
 .detail-grid {
   display: grid;
@@ -1078,10 +790,6 @@ a {
     --shell: min(1240px, 100% - 2rem);
   }
 
-  .nav {
-    gap: 1.4rem;
-    font-size: 0.85rem;
-  }
 
   .nav a:not(.cart) {
     display: none;
@@ -1123,12 +831,6 @@ a {
 
   /* السعر فوق الزر لا بجانبه: العمود الواحد أضيق من أن يسعهما في سطر،
      و"السعر عند الطلب" أطول من أي رقم. */
-  .card-foot {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 0.8rem;
-    padding-top: 1rem;
-  }
 
   .card .price {
     font-size: 1.05rem;
@@ -1147,11 +849,6 @@ a {
     width: 100%;
   }
 
-  .branch-actions .btn {
-    flex: 1;
-    text-align: center;
-    padding-inline: 1.5rem;
-  }
 
   /* السعر والزر تحت اسم الفرع: الصف الواحد يضيق عن ثلاثتها */
   .offer {
@@ -1164,9 +861,6 @@ a {
     margin-inline-end: 0;
   }
 
-  .offer .btn {
-    text-align: center;
-  }
 }
 
 /* ── شاشة الترحيب ─────────────────────────────────────────────────────── */
@@ -1263,34 +957,453 @@ a {
 }
 
 /* بطاقة اختيار — كبيرةٌ عمدًا: تُلمس بالإبهام على الهاتف بلا تصويب */
+
+
+@keyframes welcome-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* ==========================================================================
+   VALORY — نظامُ الأزرار والعناصر التفاعلية
+   الملءُ نَفَسٌ واحدٌ يُنفَق مرّةً في الشاشة، وما عداه خيطٌ وحرفٌ وفراغ.
+
+   والخطرُ المقابلُ أن يُحسب الخيطُ زخرفةً لا زرًّا. يُدفع عنه بثلاثة:
+   صندوقٌ أو خطٌّ تحت كلِّ ما يُضغط، وحدٌّ عند 4.4:1 لا 1.3:1،
+   ووميضٌ ذهبيٌّ عند الضغط — لأن اللمس لا :hover له.
+
+   يحلّ محلّ هذه المدَيات في app.css فتُحذف:
+     111-160 · 265-319 · 355-384 · 446-452 · 461-472 · 483-510 · 538-541
+     575-600 · 611-613 · 615-619 · 629-632 · 665-667 · 716-718 · 821-827
+     835-864 · 872-892 · 1081-1084 · 1126-1131 · 1150-1154 · 1167-1169
+     1266-1305 · 1307-1351
+   ويبقى بلا مساس: 621-627 (.card-body) · 829-833 (.price)
+     · 1086-1088 (.nav a:not(.cart){display:none}) · 1057-1065 (سكونُ الحركة
+       العامّ — تُضاف إليه الكتلةُ الجديدة أدناه ولا يُحذف منه شيء).
+   ========================================================================== */
+
+/* ── الرموز — تُضاف إلى :root الموجود (11-23)، لا تحلّ محلّه ───────────── */
+
+:root {
+  /* --gold-dim يقف عند 4.14:1 على --noir-card: يكفي حدًّا (3:1) ولا يكفي
+     حرفًا. هذا يبلغ 5.34:1 هناك، فهو ذهبُ النصّ الصغير. */
+  --gold-ink: #a2864c;
+
+  /* --line خيطُ التخطيط: rgba(198,166,100,.18) على --noir تُركّب #2c2519،
+     أي 1.31:1 — تفصل خانةً عن خانة ولا تُعلن حدَّ زرّ. فلِما يُضغط حدٌّ
+     خاصٌّ عند 4.44:1 على --noir. */
+  --ctl-line: var(--gold-dim);
+
+  /* المعطَّل بلونٍ صريح لا بشفافية: الشفافيةُ تُذيب الخيطَ الذهبيَّ أوّلًا
+     فيبقى حرفٌ عائمٌ بلا حدّ. 3.71:1 على --noir. */
+  --ivory-mute: #6f6a63;
+
+  --ctl-h: 2.75rem; /* 44px — أرضيةُ اللمس، وقد كانت قبلُ حاصلَ صدفة */
+  --ctl-h-lg: 3.4rem; /* 54.4px — الفعلُ الأكبر في صفحته */
+  --ctl-px: 1.5rem;
+  --ctl-px-lg: 2.75rem;
+  --ctl-py: 0.6rem;
+  --ctl-size: 0.92rem;
+  /* أضيقُ من سطر المتن (1.9): الضابطُ سطرٌ واحدٌ غالبًا، والارتفاعَ يقرّره
+     min-height لا الخطّ. و1.45 تكفي سطرًا ثانيًا عربيًّا بنقاطه ومدّاته. */
+  --ctl-lh: 1.45;
+
+  --wash: rgba(198, 166, 100, 0.09);
+  --wash-on: rgba(198, 166, 100, 0.12);
+  --wash-hot: rgba(198, 166, 100, 0.18);
+
+  /* مدّتان لا خمس: الحالُ تتبدّل في 240ms، والضغطةُ تُجاب في 110ms.
+     نصفُ الثانية القديمة كانت تطول حتى يغادر المؤشّرُ قبل أن يستقرّ اللون. */
+  --t-state: 240ms;
+  --t-press: 110ms;
+
+  --ring: 2px solid var(--gold);
+  --ring-gap: 3px;
+
+  /* زاويةُ الضوء تتبع القراءة: 200deg يُنزل التدرّجَ من أعلى اليمين حيث
+     تبدأ العينُ العربية. رمزٌ واحدٌ يُقلب في موضعٍ واحد، فلا تُكرَّر
+     أجسادُ القواعد تحت [dir="ltr"]. */
+  --tint-dir: 200deg;
+}
+
+/* [dir="ltr"] بتخصيص :root نفسه (0,1,0)، فيلزم أن يليَه لا أن يسبقه.
+   ويقع أيضًا على بطاقات اللغة في الترحيب — لكلِّ بطاقةٍ dir خاصٌّ بها
+   (welcome.tsx:71) فتُضاء كلُّ واحدةٍ من ركن قراءتها هي. وهو المقصود. */
+[dir="ltr"] {
+  --tint-dir: 160deg;
+}
+
+/* ── اسمٌ للقارئ الآلي وحده ───────────────────────────────────────────── */
+
+/* زرُّ المفتاح ينطق "الدوحة ع" — اسمان بلا فعل — وtitle لا يحلّ محلّ
+   المحتوى في حساب الاسم، فيُدَسّ الفعلُ نصًّا مخفيًّا. */
+.vh {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ── الأصولُ المشتركة ─────────────────────────────────────────────────── */
+
+.btn,
+.filter,
+.switcher,
+.add,
+.choice,
+.welcome-back,
+.welcome-dismiss,
+.rail-btn,
+.back,
+.branch-map,
+.branch-rows a,
+.nav a,
+.wordmark {
+  cursor: pointer;
+  font-family: inherit;
+  /* الوميضُ الذهبيُّ عند الضغط بديلٌ مقصودٌ عن مستطيل المتصفّح الأزرق */
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* الصناديق: ارتفاعٌ مضمون. قبل هذا كان ارتفاعُ كلِّ عنصرٍ حاصلَ ضربِ حجمِ
+   خطّه في سطرٍ يختلف بين <a> (يرث 1.9) و<button> (يعيده المتصفّح إلى
+   normal) — فلا يقرّره أحد، وتقع .filter بين 38px و46px بلا حكم. */
+.btn,
+.filter,
+.switcher,
+.add,
+.welcome-back,
+.welcome-dismiss,
+.rail-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
+  min-height: var(--ctl-h);
+  padding: var(--ctl-py) var(--ctl-px);
+  border: 1px solid var(--ctl-line);
+  background: none;
+  color: var(--ivory);
+  font-size: var(--ctl-size);
+  font-weight: 400;
+  line-height: var(--ctl-lh);
+  text-align: center;
+}
+
+.filter,
+.switcher,
+.add,
+.welcome-dismiss,
+.rail-btn {
+  transition: color var(--t-state) var(--ease),
+    border-color var(--t-state) var(--ease),
+    background-color var(--t-state) var(--ease),
+    box-shadow var(--t-state) var(--ease);
+}
+
+.back,
+.branch-map,
+.branch-rows a,
+.welcome-back,
+.nav a,
+.wordmark {
+  transition: color var(--t-state) var(--ease),
+    border-color var(--t-state) var(--ease);
+}
+
+/* لا شفافيةَ على المعطَّل */
+.btn:disabled,
+.filter:disabled,
+.switcher:disabled,
+.add:disabled,
+.rail-btn:disabled,
+.welcome-dismiss:disabled {
+  border-color: rgba(198, 166, 100, 0.1);
+  background-color: transparent;
+  color: var(--ivory-mute);
+  opacity: 1;
+  cursor: default;
+}
+
+/* ── خيطُ التركيز ─────────────────────────────────────────────────────────
+   واحدٌ للجميع: 2px لا 1px (WCAG 2.2)، وإزاحةٌ واحدة لا ثلاث.
+   ولوحةُ المفاتيح ترى ما يراه المؤشّر — كلُّ قاعدة :hover تحتها قاعدةُ
+   :focus-visible معها في السطر نفسه. */
+
+.btn:focus-visible,
+.filter:focus-visible,
+.switcher:focus-visible,
+.add:focus-visible,
+.choice:focus-visible,
+.welcome-back:focus-visible,
+.welcome-dismiss:focus-visible,
+.rail:focus-visible,
+.rail-btn:focus-visible,
+.back:focus-visible,
+.branch-map:focus-visible,
+.branch-rows a:focus-visible,
+.nav a:focus-visible,
+.wordmark:focus-visible {
+  outline: var(--ring);
+  outline-offset: var(--ring-gap);
+}
+
+/* البطاقةُ وحدها تحتاج إزاحةً أوسع: الخيطُ يجب أن يتخطّى إطارَ صورة
+   القارورة (.bottle.has-photo) فلا يلتبس به. */
+.card-link:focus-visible {
+  outline: var(--ring);
+  outline-offset: 5px;
+}
+
+/* ── ٢ · الفعلُ الكبير: صفيحةٌ تُملأ ──────────────────────────────────── */
+
+/* الحجمُ هو ما يرفع هذا فوق ما حوله لا الملء: 54px ارتفاعًا و2.75rem
+   حشوًا جانبيًّا — لا يشاركه في صفحته عنصرٌ بهذا القدّ. */
+.btn {
+  position: relative;
+  /* isolation إصلاحُ العلّة القديمة: اللوحُ الذهبيُّ كان بـ z-index سالبٍ
+     بلا سياقِ تكديسٍ يحبسه، فيهرب إلى سياق .branch (isolate) ويرسو خلف
+     خلفية .branch-info المعتمة فلا يظهر أبدًا — ويبقى الحبرُ أسودَ على
+     أسود عند 1.03:1. السياقُ هنا يُبقيه فوق خلفية الزرّ وتحت حروفه،
+     وهو ترتيبُ الرسم داخل السياق الواحد. */
+  isolation: isolate;
+  min-height: var(--ctl-h-lg);
+  padding-inline: var(--ctl-px-lg);
+  font-size: 0.98rem;
+  overflow: hidden;
+  transition: color var(--t-press) linear,
+    border-color var(--t-state) var(--ease);
+}
+
+.btn::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: var(--gold);
+  transform: translateY(101%);
+  transition: transform var(--t-state) var(--ease);
+}
+
+.btn:hover,
+.btn:focus-visible {
+  border-color: var(--gold);
+  color: var(--noir);
+  /* الحبرُ لا يسودّ قبل أن يصل الذهبُ تحته: 90ms ريثما يغطّي اللوحُ مواضعَ
+     الحروف. وفي الخروج لا تأخير (القاعدةُ الأصل أعلاه) كي يعود الحبرُ
+     فاتحًا قبل انسحاب اللوح — التأخيرُ في اتجاهٍ واحدٍ فقط. */
+  transition: color var(--t-press) linear 90ms,
+    border-color var(--t-state) var(--ease);
+}
+
+.btn:hover::before,
+.btn:focus-visible::before {
+  transform: translateY(0);
+}
+
+/* ── ١ · الملءُ الواحد ───────────────────────────────────────────────────
+   دعوةُ الدخول إلى المجموعة (والواجهةُ min-height:100svh فهي وحدها في
+   شاشتها بحكم البناء)، ثمّ زرُّ الإضافة في صفحة العطر حين يكون العرضُ
+   واحدًا لا عرضين. :only-of-type لأن .offer هو الـdiv الوحيد داخل .offers
+   (view.tsx:85-105) — فإن بِيع العطرُ في الفرعين عاد الزرّان خطّين،
+   ولم يقع ملآن في شاشةٍ واحدة. و:is() يمنحها (0,3,0) فتعلو على
+   .btn:hover (0,2,0) بلا !important. */
+
+:is(.btn-primary, .offer:only-of-type .btn) {
+  border-color: var(--gold);
+  background: var(--gold);
+  color: var(--noir);
+  font-weight: 500;
+}
+
+/* اللوحُ عاجيٌّ لا ذهبيّ: الزرُّ ذهبيٌّ أصلًا، فلوحٌ ذهبيٌّ فوقه لا يُرى —
+   وهذه علّةُ القاعدة القديمة (313-315): كلُّ ما وعدت به عند المرور كان
+   لونَه الساكن. */
+:is(.btn-primary, .offer:only-of-type .btn)::before {
+  background: var(--ivory);
+}
+
+/* الحبرُ داكنٌ في الحالين، فلا لحظةَ يُقرأ فيها على لونٍ يقاربه،
+   ولا حاجةَ هنا لتأخير الحبر. */
+:is(.btn-primary, .offer:only-of-type .btn):hover,
+:is(.btn-primary, .offer:only-of-type .btn):focus-visible {
+  border-color: var(--ivory);
+  color: var(--noir);
+  transition: color var(--t-press) linear,
+    border-color var(--t-state) var(--ease);
+}
+
+/* ── ٣ · الإضافةُ من البطاقة ─────────────────────────────────────────────
+   كانت حرفًا عاريًا: بلا حدٍّ ولا حشو، 28px ارتفاعًا، داخل بطاقةٍ كلُّها
+   رابطٌ واحد. صارت صندوقًا — وهذا أبعدُ ما ذهب إليه هذا النظامُ عن
+   التقشّف، عن قصد: لا شيءَ في المتجر أولى بأن يُعرف من هذا. */
+
+.add {
+  gap: 0.5rem;
+  padding-inline: 1.1rem;
+  color: var(--ivory);
+}
+
+/* السهمُ السابق كان يقول "امضِ" لا "أضف"، وفي البطاقة نفسها رابطٌ يمضي بك
+   إلى العطر — علامتان متجاورتان تقولان الشيءَ وتعنيان شيئين. والزائدُ لا
+   اتجاهَ له، فسقط معه انعكاسُ [dir]: ترتيبُ flex يضعه في نهاية السطر
+   يمينًا كان أو يسارًا بلا قاعدةٍ زائدة. */
+.add::after {
+  content: "+";
+  color: var(--gold);
+  font-size: 1.05rem;
+  line-height: 1;
+}
+
+.add:hover,
+.add:focus-visible {
+  border-color: var(--gold);
+  background-color: var(--wash);
+}
+
+/* ── قاعُ البطاقة: السعرُ ثمّ الزرّ ─────────────────────────────────────
+   عمودٌ على كلّ العروض لا على الهاتف وحده. السعرُ الذي يُطبع فعلًا هو
+   t.priceOnRequest — "السعر عند الطلب" — بخطّ Amiri عند 1.35rem، وعمودُ
+   الشبكة 20rem يترك 256px بعد حشو البطاقة: السعرُ والزرُّ يتصادمان في
+   سطرٍ واحدٍ على الحاسوب لا على الهاتف فحسب. والزرُّ الممتدّ على العرض
+   هدفٌ لا يُخطأ، وهو الفعلُ الذي جاء الزائرُ لأجله. */
+.card-foot {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.9rem;
+  padding-top: 1.4rem;
+  border-top: 1px solid var(--line);
+}
+
+/* ── ٤ · المصافي والمفاتيح ───────────────────────────────────────────── */
+
+.filter {
+  color: var(--ivory-dim);
+}
+
+.filter:hover,
+.filter:focus-visible {
+  border-color: var(--gold-ink);
+  color: var(--ivory);
+}
+
+/* المختارُ يُوسَم بغِلَظ الحدّ ووشمٍ ذهبيٍّ خفيف، لا بملءٍ صريح: الملءُ
+   الصريح كان يجعل مِصفاةً يُتراجَع عنها بضغطةٍ تُشبه الدعوةَ الوحيدة في
+   الموقع تمامًا. والحدُّ الداخليُّ إشارةُ ثِخَنٍ لا لون، تُقرأ لمن لا
+   يميّز الألوان. */
+.filter[aria-pressed="true"] {
+  border-color: var(--gold);
+  box-shadow: inset 0 0 0 1px var(--gold);
+  background-color: var(--wash-on);
+  color: var(--gold);
+}
+
+/* كانت قاعدةُ الاختيار تأتي بعد قاعدة المرور بالتخصيص نفسه فتبتلعها،
+   فيبقى الزرُّ المختارُ وحده في الصفحة لا يردّ على المؤشّر بشيء. */
+.filter[aria-pressed="true"]:hover,
+.filter[aria-pressed="true"]:focus-visible {
+  background-color: var(--wash-hot);
+}
+
+.switcher {
+  gap: 0.6rem;
+}
+
+.switcher:hover,
+.switcher:focus-visible {
+  border-color: var(--gold);
+  background-color: var(--wash);
+}
+
+/* شارةُ اللسان بيانٌ لا حالةُ زرّ، فتبقى ذهبيةً في كلّ حال — ويتبع خيطُها
+   الفاصلُ حالَ الزرّ وحده. */
+.switcher-lang {
+  padding-inline-start: 0.6rem;
+  border-inline-start: 1px solid var(--line);
+  color: var(--gold);
+  transition: border-color var(--t-state) var(--ease);
+}
+
+.switcher:hover .switcher-lang,
+.switcher:focus-visible .switcher-lang {
+  border-inline-start-color: var(--gold-dim);
+}
+
+/* ── ٥ · الصفيحةُ الأيقونية ──────────────────────────────────────────── */
+
+.welcome-dismiss,
+.rail-btn {
+  width: var(--ctl-h);
+  height: var(--ctl-h);
+  padding: 0;
+  font-size: 1rem;
+  line-height: 1;
+}
+
+/* الإغلاقُ لا يظهر إلا لزائرٍ سبق أن اختار — أوّلُ زيارةٍ لا مهربَ منها.
+   ارتفع المربّعُ من 40px إلى 44px، فرُفع مقعدُه قليلًا كي لا يلامس
+   اسمَ الدار فوقه. */
+.welcome-dismiss {
+  position: absolute;
+  top: -0.75rem;
+  inset-inline-end: 0;
+  color: var(--ivory-dim);
+}
+
+.welcome-dismiss:hover,
+.welcome-dismiss:focus-visible {
+  border-color: var(--gold);
+  color: var(--gold);
+}
+
+.rail-btn:hover:not(:disabled),
+.rail-btn:focus-visible:not(:disabled) {
+  border-color: var(--gold);
+  color: var(--gold);
+}
+
+/* ── ٦ · بطاقاتُ الاختيار والبطاقةُ نفسها ────────────────────────────── */
+
 .choice {
   position: relative;
   display: flex;
   flex-direction: column;
+  justify-content: center;
   gap: 0.45rem;
+  min-height: 8rem;
   padding: 2.1rem 1.5rem;
-  border: 1px solid var(--line);
-  background: linear-gradient(
-    160deg,
+  border: 1px solid var(--ctl-line);
+  /* اللونُ والصورةُ منفصلان: التدرّجُ لا يُستوعَب في الانتقال (قِيَمُ
+     background-image متقطّعة)، فكانت "background .5s" في القائمة القديمة
+     حبرًا على ورق. الغسلةُ الذهبيةُ تحته لونٌ صِرفٌ فتتحرّك. */
+  background-color: transparent;
+  background-image: linear-gradient(
+    var(--tint-dir),
     var(--tint, rgba(198, 166, 100, 0.06)),
     transparent 70%
   );
   color: var(--ivory);
-  font-family: inherit;
-  cursor: pointer;
-  overflow: hidden;
-  transition: border-color 0.5s var(--ease), transform 0.5s var(--ease),
-    background 0.5s var(--ease);
+  font-weight: 400;
+  transition: border-color var(--t-state) var(--ease),
+    background-color var(--t-state) var(--ease),
+    transform var(--t-state) var(--ease);
 }
 
-.choice:hover {
-  border-color: var(--gold);
-  transform: translateY(-4px);
-}
-
+.choice:hover,
 .choice:focus-visible {
-  outline: 1px solid var(--gold);
-  outline-offset: 4px;
+  border-color: var(--gold);
+  background-color: rgba(198, 166, 100, 0.07);
+  transform: translateY(-4px);
 }
 
 .choice-main {
@@ -1304,58 +1417,373 @@ a {
   font-size: 0.88rem;
 }
 
+/* البطاقةُ رابطٌ بلا زينةٍ خاصّة: الأبُ يحمل الخلفيةَ ورفعَ القارورة
+   وتقريبَ الصورة. */
+.card-link {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+}
+
+.card:hover {
+  background: var(--noir-card);
+}
+
+.card:hover .bottle-glass {
+  transform: translateY(-8px);
+}
+
+.card:hover .bottle-photo {
+  transform: scale(1.04);
+}
+
+/* ونظيرُها للوحة المفاتيح — في قواعدَ منفصلةٍ عن قواعد :hover عمدًا:
+   لو جُمِعا في قائمةٍ واحدة لأسقط متصفّحٌ لا يعرف :has القائمةَ كلَّها،
+   فيفقد المؤشّرُ ما كان له. الانفصالُ يجعل الخسارةَ خسارةَ الجديد وحده. */
+.card:has(.card-link:focus-visible) {
+  background: var(--noir-card);
+}
+
+.card:has(.card-link:focus-visible) .bottle-glass {
+  transform: translateY(-8px);
+}
+
+.card:has(.card-link:focus-visible) .bottle-photo {
+  transform: scale(1.04);
+}
+
+/* ── ٧ · روابطُ تعمل عمل الأزرار ────────────────────────────────────────
+   خيطٌ تحتها دائمٌ لا عند المرور: في صفحةٍ كلُّها عاجٌ على أسود، رابطٌ بلا
+   سطرٍ ولا لونٍ مميّزٍ لا يُعرَف رابطًا إلا بالتجربة. */
+
+.back,
+.branch-map,
+.branch-rows a,
+.welcome-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: var(--ctl-h);
+  padding-block: var(--ctl-py);
+  border: 0;
+  border-block-end: 1px solid var(--ctl-line);
+  background: none;
+  color: var(--ivory);
+  font-size: var(--ctl-size);
+  font-weight: 400;
+  line-height: var(--ctl-lh);
+}
+
+/* هامشٌ سالبٌ مقابلٌ للحشو: مساحةُ اللمس تكبر والعنصرُ يبقى محاذيًا
+   لحافّة عموده كما كان وهو بلا حشو. */
+.back {
+  margin-block-end: 3rem;
+  margin-block-start: -0.35rem;
+}
+
+/* سهمُ العودة يشير نحو حيث بدأت القراءة. صار عنصرَ flex فاستغنى عن المسافة
+   التي كانت في نصّه، وارتفع لونُه من --gold-dim (4.14:1) إلى الذهب الصريح:
+   هو العلامةُ الوحيدة التي تدلّ على وجهة الرابط. */
+.back::before {
+  content: "→";
+  color: var(--gold);
+}
+
+[dir="ltr"] .back::before {
+  content: "←";
+}
+
+/* الخريطةُ تفتح في لسانٍ جديد، فعلامةُ الخروج تميل حيث ينتهي السطر */
+.branch-map {
+  margin-block: -0.35rem;
+}
+
+.branch-map::after {
+  content: "↖";
+  color: var(--gold);
+}
+
+[dir="ltr"] .branch-map::after {
+  content: "↗";
+}
+
+/* رقمُ الهاتف بيانٌ لا عنوان: يبقى بحجم أخواته في اللائحة (dd).
+   والهامشُ السالب يمنع صفَّ .branch-rows من أن ينتفخ 14px لمجرّد أن
+   الرابطَ صار قابلًا للمس — و.branch-rows تُرصَف بـ gap: 1.2rem 3rem. */
+.branch-rows a {
+  margin-block: -0.4rem;
+  font-size: inherit;
+}
+
+/* أهدأُ من بطاقات الاختيار عمدًا: رجوعٌ لا اختيار */
 .welcome-back {
   margin-top: 2.5rem;
-  padding: 0.5rem 1.5rem;
-  border: 0;
-  background: none;
+  padding-inline: 0.75rem;
   color: var(--ivory-dim);
-  font-family: inherit;
-  font-size: 0.9rem;
-  cursor: pointer;
-  transition: color 0.4s var(--ease);
 }
 
-.welcome-back:hover {
-  color: var(--gold);
-}
-
+.back:hover,
+.back:focus-visible,
+.branch-map:hover,
+.branch-map:focus-visible,
+.branch-rows a:hover,
+.branch-rows a:focus-visible,
+.welcome-back:hover,
 .welcome-back:focus-visible {
-  outline: 1px solid var(--gold);
-  outline-offset: 3px;
-}
-
-/* الإغلاق لا يظهر إلا لزائرٍ سبق أن اختار — أوّل زيارةٍ لا مهرب منها */
-.welcome-dismiss {
-  position: absolute;
-  top: -1rem;
-  inset-inline-end: 0;
-  width: 2.5rem;
-  height: 2.5rem;
-  border: 1px solid var(--line);
-  background: none;
-  color: var(--ivory-dim);
-  font-size: 0.9rem;
-  cursor: pointer;
-  transition: color 0.4s var(--ease), border-color 0.4s var(--ease);
-}
-
-.welcome-dismiss:hover {
+  border-color: var(--gold);
   color: var(--gold);
-  border-color: var(--gold-dim);
 }
 
-.welcome-dismiss:focus-visible {
-  outline: 1px solid var(--gold);
-  outline-offset: 3px;
+/* ── ٨ · روابطُ الترويسة ─────────────────────────────────────────────── */
+
+/* اسمُ الدار لاتينيّ — هنا وحده يُسمح بالتباعد بين الحروف */
+.wordmark {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--ctl-h);
+  font-family: var(--font-display), Georgia, serif;
+  font-size: 1.35rem;
+  letter-spacing: 0.34em;
+  text-indent: 0.34em;
+  white-space: nowrap;
+  direction: ltr;
 }
 
-@keyframes welcome-in {
-  from {
-    opacity: 0;
+.wordmark span {
+  color: var(--gold);
+  transition: color var(--t-state) var(--ease);
+}
+
+/* لا صندوقَ للاسم ولا خطَّ تحته: أيُّهما حوّل العلامةَ إلى زرّ. فتبادلُ
+   اللكنة — يذهب الاسمُ ذهبًا وتعود النقطةُ عاجًا — أصغرُ تبدّلٍ يُقرأ
+   حالًا، وكان الاسمُ قبله الرابطَ الوحيد في الموقع بلا حالٍ البتّة. */
+.wordmark:hover,
+.wordmark:focus-visible {
+  color: var(--gold);
+}
+
+.wordmark:hover span,
+.wordmark:focus-visible span {
+  color: var(--ivory);
+}
+
+.nav {
+  display: flex;
+  align-items: center;
+  gap: 2.5rem;
+  font-size: var(--ctl-size);
+  color: var(--ivory-dim);
+}
+
+.nav a {
+  position: relative;
+  padding-bottom: 0.35rem;
+}
+
+/* الهدفُ يكبر والحرفُ لا يكبر: الترويسةُ ثابتةٌ ضيّقة، ولو أُعطي الرابطُ
+   صندوقًا بارتفاع 44px لهبط خطُّه تحته تسعَ بكسلاتٍ وانفصل عن حروفه.
+   طبقةٌ شفّافةٌ ترفع مساحةَ اللمس إلى نحو 49×(العرض+16) وتترك الحرفَ في
+   موضعه. وامتدادُها 8px جانبًا دون نصفِ أضيقِ فجوةٍ بين الروابط،
+   فلا تتداخل الأهداف. */
+.nav a::before {
+  content: "";
+  position: absolute;
+  inset: -0.7rem -0.5rem;
+}
+
+.nav a::after {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  inset-block-end: 0;
+  height: 1px;
+  background: var(--gold);
+  transform: scaleX(0);
+  /* الخطُّ ينمو مع القراءة: من اليمين في العربية ومن اليسار في اللاتينية.
+     كان مثبّتًا على right فينمو في الإنجليزية والفرنسية عكسَ العين. */
+  transform-origin: right;
+  transition: transform var(--t-state) var(--ease);
+}
+
+[dir="ltr"] .nav a::after {
+  transform-origin: left;
+}
+
+.nav a:hover,
+.nav a:focus-visible {
+  color: var(--ivory);
+}
+
+.nav a:hover::after,
+.nav a:focus-visible::after {
+  transform: scaleX(1);
+}
+
+/* العدّادُ بأرقامٍ متساوية العرض: يتغيّر بالإضافة، ولو اختلفت عروضُه
+   لتزحزح ما حوله في ترويسةٍ ثابتة. ويبقى ظاهرًا دائمًا — إخفاؤه عند الصفر
+   يُخرجه من شجرة الوصول فلا يُعلَن أوّلُ ما يُضاف إلى سلّةٍ فارغة، وهو
+   بالضبط ما وُضع aria-live لأجله. */
+.cart span {
+  color: var(--gold);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── الضغط ────────────────────────────────────────────────────────────────
+   يأتي أخيرًا كي يعلوَ على المرور والاختيار بالترتيب لا بالتخصيص.
+
+   اللمسُ لا :hover له، والسلّةُ لا تُظهر عند الإضافة شيئًا إلا عدّادًا في
+   ترويسةٍ قد تكون خارج الشاشة — فالزرُّ نفسه هو من يُقرّ بالضغطة.
+   والملءُ هنا لحظيٌّ لا ساكن، فلا ينقض قاعدةَ الملء الواحد. */
+
+.btn:active,
+.filter:active,
+.filter[aria-pressed="true"]:active,
+.switcher:active,
+.add:active,
+.welcome-dismiss:active,
+.rail-btn:active:not(:disabled) {
+  background-color: var(--gold);
+  border-color: var(--gold);
+  color: var(--noir);
+  transition-duration: var(--t-press);
+}
+
+/* الممتلئُ لا يُجاب بوميضٍ ذهبيٍّ لأنه ذهبيٌّ أصلًا: يُجاب بانسحاب اللوح
+   العاجيّ ورجوعِ الذهب — نقيضُ حركة المرور، فيُقرأ ضغطًا. */
+:is(.btn-primary, .offer:only-of-type .btn):active::before {
+  transform: translateY(101%);
+  transition-duration: var(--t-press);
+}
+
+/* ما لا صندوقَ له يُجاب بخفوتٍ لا بملء */
+.back:active,
+.branch-map:active,
+.branch-rows a:active,
+.welcome-back:active,
+.nav a:active,
+.wordmark:active {
+  color: var(--gold-ink);
+  border-color: var(--gold-ink);
+}
+
+.choice:active {
+  transform: translateY(0);
+  background-color: rgba(198, 166, 100, 0.14);
+}
+
+/* نزلةٌ ببكسلٍ واحدٍ تشترك فيها كلُّ العناصر: إشارةُ الضغط الوحيدة التي
+   تصل من لا يميّز اللون */
+.btn:active,
+.filter:active,
+.switcher:active,
+.add:active,
+.welcome-back:active,
+.welcome-dismiss:active,
+.rail-btn:active:not(:disabled),
+.back:active,
+.branch-map:active,
+.branch-rows a:active,
+.nav a:active,
+.wordmark:active {
+  transform: translateY(1px);
+}
+
+/* ── سكونُ الحركة ─────────────────────────────────────────────────────────
+   تُضاف إلى الكتلة القائمة (1057-1065) ولا تحلّ محلّها. */
+
+@media (prefers-reduced-motion: reduce) {
+  /* html { scroll-behavior: smooth } تخصيصُه (0,0,1) يعلو على النجمة
+     (0,0,0)، وscroll-behavior وحدها في الكتلة القديمة بلا !important —
+     فيبقى كلُّ قفزٍ إلى قسمٍ منزلقًا لمن طلب ألّا ينزلق شيء. */
+  html {
+    scroll-behavior: auto !important;
   }
-  to {
-    opacity: 1;
+
+  /* تصفيرُ المُدّة وحدَه لا يكفي: النزلةُ والرفعةُ تقعان عندئذٍ فورًا —
+     قفزةً لا حركة، وهي أسوأُ لمن طلب السكون. فتسقط الإزاحةُ وحدها ويبقى
+     اللونُ والحدُّ والغسلة: من طلب السكون يحتاج أن يعرف أين هو، لا أن
+     يفقد الإشارة. و!important كي لا يتعلّق الأمرُ بموضع الكتلة في الملف. */
+  .btn:active,
+  .filter:active,
+  .switcher:active,
+  .add:active,
+  .welcome-back:active,
+  .welcome-dismiss:active,
+  .rail-btn:active:not(:disabled),
+  .back:active,
+  .branch-map:active,
+  .branch-rows a:active,
+  .nav a:active,
+  .wordmark:active,
+  .choice:hover,
+  .choice:focus-visible,
+  .choice:active {
+    transform: none !important;
+  }
+}
+
+/* ── الشاشاتُ الصغيرة ─────────────────────────────────────────────────────
+   يُدمج في كتلة 720px القائمة (1076-1170)، وتبقى فيها
+   .nav a:not(.cart) { display: none } (1086-1088) بلا مساس. */
+
+@media (max-width: 720px) {
+  /* الترويسةُ الثابتة تضيق عند 390px عن اسم الدار ومفتاح الفرع معًا،
+     ومفتاحُ الفرع هو السبيلُ الوحيد لتغيير الفرع واللغة هناك — فالاسمُ هو
+     من يتنازل. الغلافُ 358px، ومجموعُ الشريط بعد التقليص نحو 300px. */
+  .header {
+    gap: 1rem;
+  }
+
+  .wordmark {
+    font-size: 1.15rem;
+    letter-spacing: 0.28em;
+    text-indent: 0.28em;
+  }
+
+  /* حجمُ خطّ الترويسة لم يعد ينزل إلى 0.85rem: القياسُ واحدٌ في كلّ
+     العناصر التفاعلية، وأربعةُ أحجامٍ داخل عُشر rem لا يفرّقها بصر. */
+  .nav {
+    gap: 1rem;
+  }
+
+  .switcher {
+    gap: 0.45rem;
+    padding-inline: 0.75rem;
+  }
+
+  .switcher-lang {
+    padding-inline-start: 0.45rem;
+  }
+
+  .filters {
+    gap: 0.5rem;
+  }
+
+  .filter {
+    padding-inline: 1.1rem;
+  }
+
+  /* زرُّ واتساب يملأ العرض على الهاتف — وهو أرجحُ وسيلةِ طلبٍ هناك.
+     و.offer يصير عمودًا بـ align-items: stretch (القاعدةُ القائمة 1157-1161)
+     فيمتدّ زرُّ الإضافة على عرض الصفّ بلا width صريح. */
+  .branch-actions {
+    width: 100%;
+  }
+
+  .branch-actions .btn,
+  .offer .btn {
+    flex: 1;
+    padding-inline: var(--ctl-px);
+  }
+
+  /* .card-foot عمودٌ مُمتدٌّ أصلًا في كلّ العروض، فيبقى هنا تضييقُ الحشو */
+  .card-foot {
+    gap: 0.7rem;
+    padding-top: 1rem;
+  }
+
+  .add {
+    padding-inline: 0.75rem;
   }
 }
 

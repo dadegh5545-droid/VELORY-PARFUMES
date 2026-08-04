@@ -50,16 +50,20 @@ export function SiteHeader() {
         <Link href="/#contact">{t.navContact}</Link>
 
         <Link href={`/#${branch}`} className="cart">
-          {t.navCart} <span>({items.length})</span>
+          {/* aria-live كي يُعلَن العدد الجديد لمن لا يرى الترويسة عند الإضافة */}
+          {t.navCart} <span aria-live="polite">({items.length})</span>
         </Link>
 
-        {/* مفتاحٌ واحد يعيد فتح الترحيب: الفرع واللغة اختيارٌ واحدٌ مترابط */}
+        {/* مفتاحٌ واحد يعيد فتح الترحيب: الفرع واللغة اختيارٌ واحدٌ مترابط.
+            الزرّ ينطق "نجامينا عربي" — اسمان بلا فعل — وtitle لا يدخل في حساب
+            الاسم المتاح، فيُدَسّ الفعلُ نصًّا مخفيًّا عن البصر لا عن السمع. */}
         <button
           type="button"
           className="switcher"
           onClick={reopen}
-          title={t.navChange}
+          aria-haspopup="dialog"
         >
+          <span className="vh">{t.navChange}</span>
           <span>{active ? branchCity(active, locale) : ""}</span>
           <span className="switcher-lang">{LOCALE_SHORT[locale]}</span>
         </button>

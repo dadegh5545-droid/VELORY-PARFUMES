@@ -20,6 +20,9 @@
 .DS_Store
 *.pem
 
+# مراجع التصميم — تُقرأ ولا تُبنى، ولا داعي لتضخيم المستودع بها
+/design/
+
 # debug
 npm-debug.log*
 yarn-debug.log*

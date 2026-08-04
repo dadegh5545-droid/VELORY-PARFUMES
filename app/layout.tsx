@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import { Amiri, Tajawal } from "next/font/google";
-import { BRANCHES } from "./catalog";
 import { CartProvider } from "./cart";
-import { SiteHeader } from "./site-header";
+import { PrefsProvider, HtmlLang } from "./prefs";
+import { Welcome } from "./welcome";
+import { SiteFooter, SiteHeader } from "./site-header";
 import "./app.css";
 
 // أميري: خط نسخي كلاسيكي للعناوين — يقابل رونق Cormorant في اللاتينية.
@@ -31,16 +32,18 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
+    // العربية هي حال الصفحة قبل أن يختار الزائر، ثم يزامنها HtmlLang.
     <html lang="ar" dir="rtl" className={`${display.variable} ${sans.variable}`}>
       <body>
-        <CartProvider>
-          <SiteHeader />
-          {children}
-          <footer className="footer" id="contact">
-            <span>© 2026 فالوري بارفوم</span>
-            <span>{BRANCHES.map((b) => b.city).join(" · ")}</span>
-          </footer>
-        </CartProvider>
+        <PrefsProvider>
+          <HtmlLang />
+          <CartProvider>
+            <SiteHeader />
+            {children}
+            <SiteFooter />
+          </CartProvider>
+          <Welcome />
+        </PrefsProvider>
       </body>
     </html>
   );

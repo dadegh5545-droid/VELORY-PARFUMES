@@ -80,6 +80,34 @@ a {
   animation: fade-down 1.2s var(--ease) both;
 }
 
+/* ستارٌ خلف الترويسة الثابتة، يظهر عند النزول وحده.
+   بدونه يمرّ محتوى الصفحة تحتها فيختلط باسم الدار وعدّاد السلة —
+   والاصطدام أظهرُ ما يكون على الهاتف حيث الترويسة أقربُ إلى البطاقات.
+   ويبقى شفّافًا فوق الواجهة الأولى كي لا يقطعها شريطٌ معتم.
+   يمتدّ 100vw لأن الترويسة نفسها بعرض الغلاف لا بعرض الشاشة. */
+.header::before {
+  content: "";
+  position: absolute;
+  inset-block: 0;
+  left: 50%;
+  translate: -50%;
+  z-index: -1;
+  width: 100vw;
+  /* معتمٌ تمامًا لا شبهَ معتم: الـ7% المتبقية كانت تكفي كي يُقرأ سعرٌ
+     أو اسمُ دارٍ خلف الترويسة، والضبابُ وحده لا يمحوه. */
+  background: var(--noir);
+  border-bottom: 1px solid var(--line);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+  opacity: 0;
+  transition: opacity 0.45s var(--ease);
+  pointer-events: none;
+}
+
+.header-solid::before {
+  opacity: 1;
+}
+
 /* اسم الدار لاتيني — هنا وحده يُسمح بالتباعد بين الحروف */
 .wordmark {
   font-family: var(--font-display), Georgia, serif;
@@ -185,12 +213,51 @@ a {
   font-size: 1.05rem;
 }
 
-/* زرٌّ لكل فرع — يُعرّف بالفرعين من أول شاشة وينزل إلى قسم كلٍّ منهما */
 .hero-actions {
   display: flex;
   justify-content: center;
   flex-wrap: wrap;
   gap: 1rem;
+}
+
+/* خيطٌ ينزل تحت الطيّة: الواجهة تملأ الشاشة، فبدون إشارةٍ يظنّها الزائر
+   كلَّ الصفحة. متحرّكٌ لأن الساكن لا يُقرأ دعوةً إلى النزول. */
+.hero-scroll {
+  position: absolute;
+  bottom: 2.5rem;
+  left: 50%;
+  translate: -50%;
+  width: 1px;
+  height: 4.5rem;
+  overflow: hidden;
+  background: var(--line);
+}
+
+.hero-scroll::after {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: 45%;
+  background: var(--gold);
+  animation: scroll-hint 2.6s var(--ease) infinite;
+}
+
+@keyframes scroll-hint {
+  0% {
+    transform: translateY(-110%);
+  }
+  55%,
+  100% {
+    transform: translateY(240%);
+  }
+}
+
+/* من يفضّل سكون الحركة لا يُفرض عليه نبضٌ دائم في زاوية عينه */
+@media (prefers-reduced-motion: reduce) {
+  .hero-scroll::after {
+    animation: none;
+    transform: translateY(60%);
+  }
 }
 
 /* ── الأزرار ───────────────────────────────────────────────────────────── */
@@ -234,6 +301,23 @@ a {
   outline-offset: 4px;
 }
 
+/* الفعل الرئيس في الصفحة يُملأ لا يُحدّ: الحدُّ وحده يجعله يساوي ما حوله،
+   والزائر يحتاج أن يعرف من أول نظرةٍ أين يضغط. */
+.btn-primary {
+  border-color: var(--gold);
+  background: var(--gold);
+  color: var(--noir);
+  font-weight: 500;
+}
+
+.btn-primary::before {
+  background: var(--ivory);
+}
+
+.btn-primary:hover {
+  color: var(--noir);
+}
+
 /* ── الأقسام ──────────────────────────────────────────────────────────── */
 
 .section {
@@ -262,6 +346,41 @@ a {
   margin: 0;
   color: var(--ivory-dim);
   font-size: 0.98rem;
+}
+
+/* ── مفتاح الفرع واللغة في الترويسة ───────────────────────────────────── */
+
+/* الفرع واللغة اختيارٌ واحد لا اختياران، فمفتاحٌ واحد يعيد فتح الترحيب:
+   زرّان منفصلان يوهمان أن للغة استقلالًا عن الفرع، وليس لها. */
+.switcher {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.3rem 0.9rem;
+  border: 1px solid var(--line);
+  background: none;
+  color: var(--ivory-dim);
+  font-family: inherit;
+  font-size: 0.85rem;
+  font-weight: 300;
+  cursor: pointer;
+  transition: color 0.4s var(--ease), border-color 0.4s var(--ease);
+}
+
+.switcher:hover {
+  color: var(--ivory);
+  border-color: var(--gold-dim);
+}
+
+.switcher:focus-visible {
+  outline: 1px solid var(--gold);
+  outline-offset: 3px;
+}
+
+.switcher-lang {
+  padding-inline-start: 0.6rem;
+  border-inline-start: 1px solid var(--line);
+  color: var(--gold);
 }
 
 /* ── أقسام الفروع ─────────────────────────────────────────────────────── */
@@ -480,21 +599,6 @@ a {
   outline-offset: 3px;
 }
 
-/* عرض المجموعة: بطاقتان في الصف، والتمرير عمودي */
-.grid-2 {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-}
-
-/* البطاقة تتضاعف عرضًا في عمودين، فنُقصّر القارورة كي لا يطول الصف */
-.grid-2 .bottle {
-  aspect-ratio: 4 / 3;
-}
-
-.grid-2 .bottle-glass {
-  width: 26%;
-  height: 72%;
-}
-
 .card {
   display: flex;
   flex-direction: column;
@@ -509,6 +613,14 @@ a {
 }
 
 .card-link {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+}
+
+/* النصّ يتمدّد ليدفع صفَّ السعر إلى أسفل البطاقة، فتستوي أسافل البطاقات
+   في الصف الواحد مهما اختلف طول الأسماء. */
+.card-body {
   display: flex;
   flex: 1;
   flex-direction: column;
@@ -533,7 +645,10 @@ a {
   );
 }
 
+/* position: relative كي تُقاس السدادة والملصق بنسبة القارورة نفسها،
+   فيبقى شكلها واحدًا مهما اختلف مقاس القارورة بين الشبكة وصفحة التفاصيل */
 .bottle-glass {
+  position: relative;
   width: 42%;
   height: 62%;
   border: 1px solid var(--line);
@@ -555,13 +670,51 @@ a {
 .bottle-glass::before {
   content: "";
   position: absolute;
-  top: 12%;
+  top: -8%;
   left: 50%;
   translate: -50%;
-  width: 15%;
+  width: 34%;
   height: 9%;
   background: linear-gradient(var(--gold), var(--gold-dim));
   border-radius: 2px;
+}
+
+/* ملصقٌ يلفّ القارورة — كما في قوارير العطر الحقيقية.
+   خفيفٌ عمدًا: ما زاد عن ذلك يقطع تدرّج الزجاج فتبدو القارورة شرائحَ ملوّنة. */
+.bottle-glass::after {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  bottom: 23%;
+  height: 20%;
+  background: linear-gradient(
+    rgba(242, 237, 228, 0.12),
+    rgba(242, 237, 228, 0.04)
+  );
+  border-block: 1px solid rgba(242, 237, 228, 0.15);
+}
+
+/* صورة المنتج حين تُرفع — بديلة عن القارورة المرسومة.
+   اللقطات مؤلَّفةٌ بخلفياتها (خشب، ورد، ضوء)، فتُعرض كاملةً كما هي:
+   إطارٌ يقصّها ولا قناعَ يُذيب أطرافها، لأن الخلفية جزءٌ من الصورة لا عيبٌ فيها. */
+.bottle.has-photo {
+  overflow: hidden;
+  border-radius: 4px;
+  border: 1px solid var(--line);
+  background: none;
+}
+
+.bottle-photo {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.9s var(--ease);
+}
+
+/* تقريبٌ خفيف عند المرور — لا إزاحة، كي لا ينكشف طرفُ الإطار */
+.card:hover .bottle-photo {
+  transform: scale(1.04);
 }
 
 .card h3 {
@@ -574,17 +727,21 @@ a {
   font-size: 0.8rem;
 }
 
-/* أسماء العطور لاتينية — هنا يليق تباعدٌ طفيف، بخلاف النص العربي */
-.card h3,
-.detail-info h1 {
-  letter-spacing: 0.015em;
+/* الاسم اللاتيني تحت الاسم العربي — هنا وحده يليق التباعد بين الحروف.
+   direction: ltr كي لا تنقلب الأرقام في أسماء مثل "Baccarat Rouge 540". */
+.latin {
+  margin: 0 0 0.5rem;
+  font-family: var(--font-display), Georgia, serif;
+  font-size: 0.95rem;
+  color: var(--gold-dim);
+  letter-spacing: 0.09em;
+  direction: ltr;
+  text-align: right;
 }
 
-/* اسم الدار المصنّعة تحت اسم العطر */
-.brand {
-  margin: 0 0 0.5rem;
-  color: var(--gold-dim);
-  font-size: 0.85rem;
+.detail-latin {
+  font-size: 1.15rem;
+  margin-bottom: 0.75rem;
 }
 
 .notes {
@@ -687,10 +844,14 @@ a {
   transition: color 0.4s var(--ease);
 }
 
-/* السهم يشير يسارًا لأن اتجاه القراءة من اليمين */
+/* السهم يتبع اتجاه القراءة: يسارًا في العربية، ويمينًا في الأقسام اللاتينية */
 .add::after {
   content: " ←";
   color: var(--gold-dim);
+}
+
+[dir="ltr"] .add::after {
+  content: " →";
 }
 
 .add:hover {
@@ -708,7 +869,7 @@ a {
   padding-top: 9.5rem;
 }
 
-/* سهم العودة يشير يمينًا في RTL — نحو حيث بدأت القراءة */
+/* سهم العودة يشير نحو حيث بدأت القراءة — يمينًا في RTL ويسارًا في LTR */
 .back {
   display: inline-block;
   margin-bottom: 3rem;
@@ -720,6 +881,10 @@ a {
 .back::before {
   content: "→ ";
   color: var(--gold-dim);
+}
+
+[dir="ltr"] .back::before {
+  content: "← ";
 }
 
 .back:hover {
@@ -743,6 +908,11 @@ a {
 .detail-bottle .bottle-glass {
   width: 38%;
   height: 58%;
+}
+
+/* في صفحة التفاصيل تملأ الصورةُ الإطارَ: هي بطلُ الصفحة لا زخرفةٌ في زاويتها */
+.detail-bottle.has-photo {
+  border: 1px solid var(--line);
 }
 
 .detail-info h1 {
@@ -921,9 +1091,47 @@ a {
     padding: 4.5rem 0;
   }
 
-  /* عمود واحد على الهاتف — عمودان يجعلان البطاقة أضيق من أن تُقرأ */
-  .grid-2 {
-    grid-template-columns: 1fr;
+  /* بطاقتان جنبًا إلى جنب على الهاتف.
+     الشبكة العامة تطلب 20rem للعمود الواحد فلا يسع الهاتفَ إلا عمود،
+     فتصير الصفحة شريطًا طويلًا لا يُقارَن فيه عطرٌ بعطر. عمودان يُظهران
+     المقارنة، وثمنُهما تكثيفُ حشو البطاقة وخطوطها. */
+  .grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .card {
+    padding: 1.35rem 1rem 1.4rem;
+  }
+
+  .bottle {
+    margin-bottom: 1.2rem;
+  }
+
+  .card h3 {
+    font-size: 1.15rem;
+  }
+
+  .card .latin {
+    font-size: 0.8rem;
+    letter-spacing: 0.05em;
+  }
+
+  .card .notes {
+    margin-bottom: 1rem;
+    font-size: 0.78rem;
+  }
+
+  /* السعر فوق الزر لا بجانبه: العمود الواحد أضيق من أن يسعهما في سطر،
+     و"السعر عند الطلب" أطول من أي رقم. */
+  .card-foot {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.8rem;
+    padding-top: 1rem;
+  }
+
+  .card .price {
+    font-size: 1.05rem;
   }
 
   .detail {
@@ -958,5 +1166,214 @@ a {
 
   .offer .btn {
     text-align: center;
+  }
+}
+
+/* ── شاشة الترحيب ─────────────────────────────────────────────────────── */
+
+/* أوّل ما يرى الزائر: اللغة ثم الفرع. طبقةٌ تملأ الشاشة لأن السؤال
+   شرطٌ لما بعده — لا سعرَ ولا مجموعةَ قبل أن نعرف أيَّ محلٍّ يقصد. */
+.welcome {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: grid;
+  place-items: center;
+  padding: 2rem 1.5rem;
+  overflow-y: auto;
+  /* عتمةٌ عاليةٌ وضبابٌ ثخين: أقلُّ منهما يُرشِّح أزرارَ الصفحة تحتها
+     فتظهر بقعٌ ذهبية شبحية تُقرأ خطأً على أنها عناصر في الحوار. */
+  background: rgba(6, 5, 5, 0.94);
+  -webkit-backdrop-filter: blur(26px) saturate(1.05);
+  backdrop-filter: blur(26px) saturate(1.05);
+  animation: welcome-in 0.7s var(--ease) both;
+}
+
+/* الوهج نفسه الذي في الصفحة الأولى — الشاشتان دارٌ واحدة لا اثنتان */
+.welcome::before {
+  content: "";
+  position: absolute;
+  top: 44%;
+  left: 50%;
+  width: min(60rem, 140vw);
+  aspect-ratio: 1;
+  translate: -50% -50%;
+  background: radial-gradient(
+    circle,
+    rgba(198, 166, 100, 0.16) 0%,
+    rgba(198, 166, 100, 0.05) 38%,
+    transparent 68%
+  );
+  pointer-events: none;
+}
+
+.welcome-panel {
+  position: relative;
+  width: min(52rem, 100%);
+  text-align: center;
+}
+
+.welcome-mark {
+  margin: 0 0 3.5rem;
+  font-family: var(--font-display), Georgia, serif;
+  font-size: clamp(1.4rem, 3vw, 1.9rem);
+  letter-spacing: 0.4em;
+  text-indent: 0.4em;
+  direction: ltr;
+}
+
+.welcome-mark span {
+  color: var(--gold);
+}
+
+.welcome-step {
+  animation: fade-up 0.6s var(--ease) both;
+}
+
+.welcome-hello {
+  margin: 0 0 0.9rem;
+  color: var(--gold);
+  font-size: 0.85rem;
+}
+
+.welcome-title {
+  font-size: clamp(2rem, 5.5vw, 3.2rem);
+  margin-bottom: 1rem;
+}
+
+.welcome-sub {
+  max-width: 34rem;
+  margin: 0 auto 3rem;
+  color: var(--ivory-dim);
+  font-size: 0.98rem;
+}
+
+/* سقفٌ لعرض البطاقة وتوسيطٌ للصف: بلا السقف تتمدّد البطاقة الواحدة
+   على عرض اللوحة كلّه فتبدو شريطًا لا خيارًا. */
+.welcome-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(15rem, 20rem));
+  justify-content: center;
+  gap: 1.25rem;
+}
+
+/* ثلاث لغات تُعرض في صفٍّ واحد على الشاشات الواسعة، لا اثنتين وواحدة */
+.welcome-grid-3 {
+  grid-template-columns: repeat(auto-fit, minmax(11rem, 15rem));
+}
+
+/* بطاقة اختيار — كبيرةٌ عمدًا: تُلمس بالإبهام على الهاتف بلا تصويب */
+.choice {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  padding: 2.1rem 1.5rem;
+  border: 1px solid var(--line);
+  background: linear-gradient(
+    160deg,
+    var(--tint, rgba(198, 166, 100, 0.06)),
+    transparent 70%
+  );
+  color: var(--ivory);
+  font-family: inherit;
+  cursor: pointer;
+  overflow: hidden;
+  transition: border-color 0.5s var(--ease), transform 0.5s var(--ease),
+    background 0.5s var(--ease);
+}
+
+.choice:hover {
+  border-color: var(--gold);
+  transform: translateY(-4px);
+}
+
+.choice:focus-visible {
+  outline: 1px solid var(--gold);
+  outline-offset: 4px;
+}
+
+.choice-main {
+  font-family: var(--font-display), Georgia, serif;
+  font-size: 1.5rem;
+  line-height: 1.3;
+}
+
+.choice-sub {
+  color: var(--ivory-dim);
+  font-size: 0.88rem;
+}
+
+.welcome-back {
+  margin-top: 2.5rem;
+  padding: 0.5rem 1.5rem;
+  border: 0;
+  background: none;
+  color: var(--ivory-dim);
+  font-family: inherit;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: color 0.4s var(--ease);
+}
+
+.welcome-back:hover {
+  color: var(--gold);
+}
+
+.welcome-back:focus-visible {
+  outline: 1px solid var(--gold);
+  outline-offset: 3px;
+}
+
+/* الإغلاق لا يظهر إلا لزائرٍ سبق أن اختار — أوّل زيارةٍ لا مهرب منها */
+.welcome-dismiss {
+  position: absolute;
+  top: -1rem;
+  inset-inline-end: 0;
+  width: 2.5rem;
+  height: 2.5rem;
+  border: 1px solid var(--line);
+  background: none;
+  color: var(--ivory-dim);
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: color 0.4s var(--ease), border-color 0.4s var(--ease);
+}
+
+.welcome-dismiss:hover {
+  color: var(--gold);
+  border-color: var(--gold-dim);
+}
+
+.welcome-dismiss:focus-visible {
+  outline: 1px solid var(--gold);
+  outline-offset: 3px;
+}
+
+@keyframes welcome-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* الترحيب يملأ الشاشة على الهاتف، فيلزم تنفيسُ الحشو */
+@media (max-width: 40rem) {
+  .welcome {
+    place-items: start center;
+  }
+
+  .welcome-mark {
+    margin-bottom: 2.5rem;
+  }
+
+  .welcome-sub {
+    margin-bottom: 2rem;
+  }
+
+  .choice {
+    padding: 1.6rem 1.25rem;
   }
 }

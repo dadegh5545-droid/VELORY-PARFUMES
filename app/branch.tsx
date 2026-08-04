@@ -4,19 +4,30 @@ import { useState } from "react";
 import Link from "next/link";
 import {
   type Branch,
+  type Gender,
+  branchCity,
+  branchName,
   countLabel,
   filtersOf,
   metaLine,
+  perfumeName,
+  perfumeNotes,
   perfumesOf,
   priceIn,
 } from "./catalog";
+import { GENDER_TR, T } from "./i18n";
+import { useActive } from "./prefs";
+import { Bottle } from "./bottle";
 import { AddButton } from "./site-header";
+import type { Locale } from "./i18n";
 
 /** شريط معلومات المحل — يعرض ما مُلئ فقط، ويختفي كلّيًا إن لم يُملأ شيء */
-function BranchInfo({ branch }: { branch: Branch }) {
+function BranchInfo({ branch, locale }: { branch: Branch; locale: Locale }) {
+  const t = T[locale];
+
   const rows = [
-    branch.address ? { k: "العنوان", v: branch.address } : null,
-    branch.hours ? { k: "الدوام", v: branch.hours } : null,
+    branch.address ? { k: t.address, v: branch.address } : null,
+    branch.hours ? { k: t.hours, v: branch.hours } : null,
   ].filter(Boolean) as { k: string; v: string }[];
 
   if (!rows.length && !branch.phone && !branch.whatsapp && !branch.mapUrl) {
@@ -35,7 +46,7 @@ function BranchInfo({ branch }: { branch: Branch }) {
 
         {branch.phone && (
           <div>
-            <dt>الهاتف</dt>
+            <dt>{t.phone}</dt>
             {/* dir=ltr على الرقم: بدونه يقفز رمز الدولة إلى آخر السطر في RTL */}
             <dd>
               <a href={`tel:${branch.phone.replace(/\s/g, "")}`} dir="ltr">
@@ -55,7 +66,7 @@ function BranchInfo({ branch }: { branch: Branch }) {
               target="_blank"
               rel="noreferrer"
             >
-              اطلب عبر واتساب
+              {t.whatsapp}
             </a>
           )}
           {branch.mapUrl && (
@@ -65,7 +76,7 @@ function BranchInfo({ branch }: { branch: Branch }) {
               target="_blank"
               rel="noreferrer"
             >
-              موقع المحل على الخريطة
+              {t.mapLink}
             </a>
           )}
         </div>
@@ -75,12 +86,14 @@ function BranchInfo({ branch }: { branch: Branch }) {
 }
 
 export function BranchSection({ branch }: { branch: Branch }) {
+  // اللغة اختيارُ الزائر في الترحيب، لا اختيارُ كل قسمٍ على حدة.
+  const { locale } = useActive();
   const perfumes = perfumesOf(branch.id);
-  const filters = filtersOf(branch.id);
-  const [gender, setGender] = useState("الكل");
+  const genders = filtersOf(branch.id);
+  const [gender, setGender] = useState<Gender | null>(null);
 
-  const visible =
-    gender === "الكل" ? perfumes : perfumes.filter((p) => p.gender === gender);
+  const t = T[locale];
+  const visible = gender ? perfumes.filter((p) => p.gender === gender) : perfumes;
 
   return (
     <section
@@ -90,84 +103,95 @@ export function BranchSection({ branch }: { branch: Branch }) {
     >
       <div className="section-head">
         <div>
-          <p className="eyebrow">{branch.city}</p>
-          <h2>{branch.name}</h2>
+          <p className="eyebrow">{branchCity(branch, locale)}</p>
+          <h2>{branchName(branch, locale)}</h2>
         </div>
+        {/* فرعٌ بلا عطور لا يُقال له "اضغط على أيّ عطر" — الجملة تفترض وجودها */}
         <p>
-          {countLabel(perfumes.length)} — بأسعار الفرع. اضغط على أيّ عطرٍ
-          لتفاصيله الكاملة.
+          {countLabel(perfumes.length, locale)}{" "}
+          {perfumes.length ? t.sectionLead : t.sectionEmpty}
         </p>
       </div>
 
-      <BranchInfo branch={branch} />
+      <BranchInfo branch={branch} locale={locale} />
 
-      {filters.length > 0 && (
+      {genders.length > 0 && (
         <div
           className="filters"
           role="group"
-          aria-label={`تصفية عطور ${branch.name} حسب النوع`}
+          aria-label={t.filterGroup(branchName(branch, locale))}
         >
-          {filters.map((f) => (
+          <button
+            type="button"
+            className="filter"
+            aria-pressed={gender === null}
+            onClick={() => setGender(null)}
+          >
+            {t.filterAll}
+          </button>
+          {genders.map((g) => (
             <button
-              key={f}
+              key={g}
               type="button"
               className="filter"
-              aria-pressed={gender === f}
-              onClick={() => setGender(f)}
+              aria-pressed={gender === g}
+              onClick={() => setGender(g)}
             >
-              {f}
+              {GENDER_TR[g][locale]}
             </button>
           ))}
         </div>
       )}
 
-      <div className="grid grid-2">
-        {visible.map((p) => (
-          <article className="card" key={p.id}>
-            <Link href={`/parfum/${p.id}`} className="card-link">
-              <div
-                className="bottle"
-                style={{ ["--tint" as string]: p.tint }}
-                aria-hidden="true"
-              >
-                <div className="bottle-glass" />
-              </div>
+      {/* الشبكة الفارغة إطارٌ مرسومٌ حول لا شيء، فتُحذف بدل أن تُعرض خاوية */}
+      {visible.length > 0 && (
+        <div className="grid">
+          {visible.map((p) => {
+            const notes = perfumeNotes(p, locale);
+            const meta = metaLine(p, locale);
 
-              <h3>{p.name}</h3>
-              {metaLine(p) && <p className="notes">{metaLine(p)}</p>}
+            return (
+              <article className="card" key={p.id}>
+                <Link href={`/parfum/${p.id}`} className="card-link">
+                  <Bottle perfume={p} />
 
-              {p.notes && (
-                <dl className="pyramid">
-                  <div>
-                    <dt>المقدّمة</dt>
-                    <dd>{p.notes.head}</dd>
+                  <div className="card-body">
+                    <h3>{perfumeName(p, locale)}</h3>
+                    {/* الاسم اللاتيني سطرٌ ثانٍ تحت العربي فقط —
+                        في الإنجليزية والفرنسية هو العنوانُ نفسه، فلا يُكرَّر */}
+                    {locale === "ar" && p.latin && (
+                      <p className="latin">{p.latin}</p>
+                    )}
+                    {meta && <p className="notes">{meta}</p>}
+
+                    {notes && (
+                      <dl className="pyramid">
+                        <div>
+                          <dt>{t.head}</dt>
+                          <dd>{notes.head}</dd>
+                        </div>
+                        <div>
+                          <dt>{t.heart}</dt>
+                          <dd>{notes.heart}</dd>
+                        </div>
+                        <div>
+                          <dt>{t.base}</dt>
+                          <dd>{notes.base}</dd>
+                        </div>
+                      </dl>
+                    )}
                   </div>
-                  <div>
-                    <dt>القلب</dt>
-                    <dd>{p.notes.heart}</dd>
-                  </div>
-                  <div>
-                    <dt>القاعدة</dt>
-                    <dd>{p.notes.base}</dd>
-                  </div>
-                </dl>
-              )}
+                </Link>
 
-              {p.longevity && (
-                <p className="spec">
-                  <span>الثبات</span>
-                  {p.longevity}
-                </p>
-              )}
-            </Link>
-
-            <div className="card-foot">
-              <span className="price">{priceIn(p, branch)}</span>
-              <AddButton id={p.id} branch={branch.id} />
-            </div>
-          </article>
-        ))}
-      </div>
+                <div className="card-foot">
+                  <span className="price">{priceIn(p, branch, locale)}</span>
+                  <AddButton id={p.id} branch={branch.id} label={t.add} />
+                </div>
+              </article>
+            );
+          })}
+        </div>
+      )}
     </section>
   );
 }

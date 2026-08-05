@@ -876,8 +876,11 @@ a {
   padding: 2rem 1.5rem;
   overflow-y: auto;
   /* عتمةٌ عاليةٌ وضبابٌ ثخين: أقلُّ منهما يُرشِّح أزرارَ الصفحة تحتها
-     فتظهر بقعٌ ذهبية شبحية تُقرأ خطأً على أنها عناصر في الحوار. */
-  background: rgba(6, 5, 5, 0.94);
+     فتظهر بقعٌ ذهبية شبحية تُقرأ خطأً على أنها عناصر في الحوار.
+     كانت 0.94 — تمرّر 6%، وهو ما يكفي ليُقرأ عنوانُ البطل وزرُّه خلف
+     خطوةِ الترحيب وهي أخفُّ الخطوات محتوًى. والضبابُ وحده لا يسدّها:
+     متصفّحاتٌ تُسقط backdrop-filter، فتبقى العتمةُ هي الضمان. */
+  background: rgba(6, 5, 5, 0.985);
   -webkit-backdrop-filter: blur(26px) saturate(1.05);
   backdrop-filter: blur(26px) saturate(1.05);
   animation: welcome-in 0.7s var(--ease) both;
@@ -920,6 +923,26 @@ a {
   color: var(--gold);
 }
 
+/* شعارُ الدار — في خطوة الترحيب وحدها، وفيه اسمُ الدار مرسومًا،
+   فلا يُكرَّر تحته نصًّا. */
+.welcome-logo {
+  display: block;
+  width: min(17rem, 62vw);
+  height: auto;
+  margin: 0 auto 1.75rem;
+  /* خلفيةُ الملفّ سوداءُ صمّاءُ لا شفافة: screen يُسقط الأسودَ على
+     طبقةٍ داكنة ويُبقي الذهب، فلا يظهر مربّعٌ حول الشعار — ولا يلزم
+     ملفٌّ مقصوصُ الخلفية. */
+  mix-blend-mode: screen;
+}
+
+@media (max-width: 720px) {
+  .welcome-logo {
+    width: min(13rem, 56vw);
+    margin-bottom: 1.25rem;
+  }
+}
+
 .welcome-step {
   animation: fade-up 0.6s var(--ease) both;
 }
@@ -928,6 +951,67 @@ a {
   margin: 0 0 0.9rem;
   color: var(--gold);
   font-size: 0.85rem;
+}
+
+/* ترحيبُ الدار — يقوم مقام welcome-hello في خطوة اللغة وحدها.
+   ثلاثةُ أسطرٍ لا سطرٌ واحد: الزائر لم يُفصح عن لسانه بعد، فيُخاطَب
+   بالثلاثة ويقرأ ما يعرف منها. */
+.welcome-intro {
+  display: grid;
+  gap: 0.65rem;
+  max-width: 38rem;
+  margin: 0 auto 2.75rem;
+}
+
+.welcome-intro p {
+  margin: 0;
+  color: var(--ivory-dim);
+  font-size: 1.02rem;
+  line-height: 1.85;
+  /* الأسطر تُقسم متقاربةً بدل أن تتدلّى كلمةٌ وحدها في آخرها */
+  text-wrap: balance;
+}
+
+/* اسم الدار داخل الجملة — لونٌ لا وزن: التغليظُ يكسر خفّة السطر */
+.welcome-intro b {
+  color: var(--gold);
+  font-weight: inherit;
+  letter-spacing: 0.06em;
+}
+
+/* اللاتينيّتان ترجمةٌ للأولى لا زيادةٌ عليها، فتخفتان حجمًا لا لونًا:
+   --ivory-mute لونُ المعطَّل، وتباينُه 3.8:1 على طبقة الترحيب — دون
+   عتبة النصّ الصغير. الترتيبُ وحده يكفي لقيادة العين. */
+.welcome-intro p + p {
+  font-size: 0.86rem;
+  line-height: 1.7;
+}
+
+/* زرُّ الدخول — الفعلُ الوحيد في شاشة الترحيب. عريضٌ قليلًا لأن نصّه
+   ثلاثيُّ اللسان، ولا شيءَ حولَه ينازعه على العين. */
+.welcome-enter {
+  min-width: 14rem;
+  letter-spacing: 0.06em;
+}
+
+/* على الجوال يلتفّ كلُّ سطرٍ إلى سطرين، فتصير الرسالةُ ستةً وتزحم
+   بطاقاتِ اللغة إلى ما تحت الحافة. تُضغط هنا لا تُختصر: الزائرُ يقرأ
+   الثلاثةَ كاملةً على كلِّ مقاس. */
+@media (max-width: 720px) {
+  .welcome-intro {
+    gap: 0.5rem;
+    margin-bottom: 1.85rem;
+  }
+
+  .welcome-intro p {
+    font-size: 0.95rem;
+    line-height: 1.7;
+  }
+
+  .welcome-intro p + p {
+    font-size: 0.8rem;
+    line-height: 1.6;
+  }
 }
 
 .welcome-title {
@@ -1793,8 +1877,10 @@ a {
     place-items: start center;
   }
 
+  /* كانت 2.5rem حين لم يكن تحت الشعار إلا سطرُ تحية. صارت تحته رسالةُ
+     الدار بثلاث لغات، فالفُسحةُ تتنازل قبل أن تتنازل أرضيةُ اللمس. */
   .welcome-mark {
-    margin-bottom: 2.5rem;
+    margin-bottom: 1.75rem;
   }
 
   .welcome-sub {

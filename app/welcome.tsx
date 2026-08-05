@@ -7,22 +7,33 @@ import { usePrefs } from "./prefs";
 
 const LOCALES: Locale[] = ["ar", "en", "fr"];
 
+/** خطوات الترحيب بترتيبها: ترحيبُ الدار، ثم اللغة، ثم الفرع */
+type Step = "intro" | "locale" | "branch";
+
 /**
  * شاشة الترحيب — أوّل ما يرى الزائر.
  *
- * اللغة أوّلًا ثم الفرع، لأن اللغة تحصر الفروع المعروضة:
- * العربية تفتح الفرعين، والإنجليزية قطر وحدها، والفرنسية تشاد وحدها.
- * فلا يُعرض على الزائر فرعٌ لا يخاطبه بلغته.
+ * ترحيبٌ أوّلًا يُقرأ وحده بلا أزرارٍ تنازعه، ثم اللغة ثم الفرع —
+ * لأن اللغة تحصر الفروع المعروضة: العربية تفتح الفرعين، والإنجليزية
+ * قطر وحدها، والفرنسية تشاد وحدها. فلا يُعرض على الزائر فرعٌ لا
+ * يخاطبه بلغته.
  */
 export function Welcome() {
   const { asking, set, prefs } = usePrefs();
+  const [step, setStep] = useState<Step>("intro");
   const [locale, setLocale] = useState<Locale | null>(null);
+  /** شعارٌ لم يُحمَّل يعود إلى اسم الدار نصًّا — أفضلُ من صورةٍ مكسورة
+   *  في أوّل ما يرى الزائر */
+  const [logoOk, setLogoOk] = useState(true);
   const panel = useRef<HTMLDivElement>(null);
 
-  // كل فتحةٍ جديدة تبدأ من الصفر — ولو كان للزائر اختيارٌ سابق.
+  // كل فتحةٍ جديدة تبدأ من الصفر — إلا الترحيب: من سبق أن اختار إنما
+  // فتح الشاشة ليغيّر، فلا يُحبس خلف تحيةٍ قرأها في زيارته الأولى.
   useEffect(() => {
-    if (asking) setLocale(null);
-  }, [asking]);
+    if (!asking) return;
+    setLocale(null);
+    setStep(prefs ? "locale" : "intro");
+  }, [asking, prefs]);
 
   // الخلفية لا تُمرَّر تحت الطبقة: تمريرها يُفقد الحوار معناه.
   useEffect(() => {
@@ -50,7 +61,7 @@ export function Welcome() {
     if (!asking) return;
     const first = focusables()[0];
     first?.focus();
-  }, [asking, locale, focusables]);
+  }, [asking, step, focusables]);
 
   if (!asking) return null;
 
@@ -108,13 +119,57 @@ export function Welcome() {
           </button>
         )}
 
-        <p className="welcome-mark">
-          VALORY<span>.</span>
-        </p>
+        {/* الترحيب وحده يحمل الشعار كاملًا — وهي شاشةُ التعريف بالدار.
+            وفي خطوتَي اللغة والفرع يتقلّص إلى كلمة: الاختيارُ هو المقصود
+            هناك، فلا يزاحمه شعارٌ يملأ نصفَ شاشة الهاتف. */}
+        {step === "intro" && logoOk ? (
+          <img
+            className="welcome-logo"
+            src="/valory-logo.png"
+            alt="VALORY PARFUMES"
+            onError={() => setLogoOk(false)}
+          />
+        ) : (
+          <p className="welcome-mark">
+            VALORY<span>.</span>
+          </p>
+        )}
 
-        {!locale && (
+        {step === "intro" && (
           <div className="welcome-step">
-            {/* لا لغة بعد، فالتحية بالثلاث — ولا يُفترض على الزائر لسان */}
+            {/* لا لغة بعد، فالترحيب بالثلاث — ولا يُفترض على الزائر لسان.
+                والعربية أوّلًا لأنها لسانُ الفرعين معًا لا لسانُ أحدهما،
+                واسمُ الدار فيها وحدها: أربعُ مرّاتٍ تحت شعارٍ يحمله زحام. */}
+            <div className="welcome-intro">
+              <p lang="ar" dir="rtl">
+                مرحبًا بكم في <b>VALORY PARFUMES</b> — وجهتكم لعطورٍ تحكي
+                أناقتكم، وتترك أثرًا لا يُنسى{" "}
+                <span aria-hidden="true">✨</span>
+              </p>
+              <p lang="en" dir="ltr">
+                Welcome — your destination for fragrances that speak your
+                elegance and leave a trace unforgotten.
+              </p>
+              <p lang="fr" dir="ltr">
+                Bienvenue — votre destination pour des parfums qui disent votre
+                élégance et laissent une trace inoubliable.
+              </p>
+            </div>
+
+            {/* فعلٌ واحدٌ في الشاشة لا ينازعه ثانٍ — وبالثلاث لأن
+                الزائر لم يُفصح عن لسانه بعد */}
+            <button
+              type="button"
+              className="btn btn-primary welcome-enter"
+              onClick={() => setStep("locale")}
+            >
+              ادخل · Enter · Entrer
+            </button>
+          </div>
+        )}
+
+        {step === "locale" && (
+          <div className="welcome-step">
             <p className="welcome-hello">أهلًا بك · Welcome · Bienvenue</p>
             <h2 className="welcome-title">اختر لغتك</h2>
             <p className="welcome-sub">Choose your language · Choisissez votre langue</p>
@@ -127,7 +182,10 @@ export function Welcome() {
                   className="choice"
                   lang={l}
                   dir={DIR[l]}
-                  onClick={() => setLocale(l)}
+                  onClick={() => {
+                    setLocale(l);
+                    setStep("branch");
+                  }}
                 >
                   <span className="choice-main">{LOCALE_NAME[l]}</span>
                   <span className="choice-sub">
@@ -141,7 +199,7 @@ export function Welcome() {
           </div>
         )}
 
-        {locale && t && (
+        {step === "branch" && locale && t && (
           <div className="welcome-step">
             <p className="welcome-hello">{t.welcomeGreeting}</p>
             <h2 className="welcome-title">{t.chooseBranch}</h2>
@@ -164,10 +222,15 @@ export function Welcome() {
               ))}
             </div>
 
+            {/* الرجوع إلى اللغة لا إلى الترحيب: التحيةُ تُقرأ مرّةً،
+                واللغةُ هي ما قد يُعاد فيه النظر */}
             <button
               type="button"
               className="welcome-back"
-              onClick={() => setLocale(null)}
+              onClick={() => {
+                setLocale(null);
+                setStep("locale");
+              }}
             >
               {t.stepBack}
             </button>

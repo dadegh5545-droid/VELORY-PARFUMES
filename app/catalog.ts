@@ -557,6 +557,17 @@ export const CATALOG: Perfume[] = [
     branches: { chad: {} },
   },
   {
+    id: "white-crystals",
+    // اسمٌ يصف ما تراه العين — لا يدّعي مادّةً بعينها (شبّ؟ كافور؟ مسك؟)
+    // لأن الكيس بلا ملصق. بدّله بكلمةٍ متى عرفتَ مادّته.
+    name: "بلّور أبيض",
+    latin: "Cristal Blanc",
+    tr: { fr: { name: "Cristal blanc" }, en: { name: "White Crystal" } },
+    tint: "rgba(208, 210, 202, 0.26)",
+    image: "/products/white-crystals.jpg",
+    branches: { chad: {} },
+  },
+  {
     id: "hemani-wood-chips",
     name: "قشرة صندل — علبة",
     latin: "Sandal Oil Wood Chips",

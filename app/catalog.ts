@@ -74,19 +74,27 @@ const CHAD_SCENES: Scene[] = [
     tr: { fr: "Lacs d’Ounianga", en: "Ounianga Lakes" },
   },
   {
-    image: "/scenes/aloba-arch.jpg",
-    place: "قوس علوبا · إنيدي",
-    tr: { fr: "Arche d’Aloba · Ennedi", en: "Aloba Arch · Ennedi" },
+    image: "/scenes/ennedi-plateau.jpg",
+    place: "هضبة إنيدي",
+    tr: { fr: "Plateau de l’Ennedi", en: "Ennedi Plateau" },
   },
   {
-    image: "/scenes/tibesti.jpg",
-    place: "جبال تيبستي",
-    tr: { fr: "Massif du Tibesti", en: "Tibesti Mountains" },
+    image: "/scenes/archei-cliff.jpg",
+    place: "جرف أرشي",
+    tr: { fr: "Falaise d’Archei", en: "Archei Cliff" },
   },
   {
-    image: "/scenes/lake-chad.jpg",
-    place: "بحيرة تشاد",
-    tr: { fr: "Lac Tchad", en: "Lake Chad" },
+    image: "/scenes/ouaddai-ruins.jpg",
+    place: "أطلال مملكة وداي",
+    tr: {
+      fr: "Ruines du royaume du Ouaddaï",
+      en: "Ruins of the Ouaddai Kingdom",
+    },
+  },
+  {
+    image: "/scenes/abeche.jpg",
+    place: "أبشة",
+    tr: { fr: "Abéché", en: "Abéché" },
   },
 ];
 

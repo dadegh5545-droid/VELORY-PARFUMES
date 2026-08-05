@@ -7,6 +7,7 @@ import {
   type Gender,
   branchCity,
   branchName,
+  branchScene,
   countLabel,
   filtersOf,
   metaLine,
@@ -18,6 +19,7 @@ import {
 import { GENDER_TR, T } from "./i18n";
 import { useActive } from "./prefs";
 import { Bottle } from "./bottle";
+import { Scene } from "./scene";
 import { AddButton } from "./site-header";
 import type { Locale } from "./i18n";
 
@@ -94,13 +96,16 @@ export function BranchSection({ branch }: { branch: Branch }) {
 
   const t = T[locale];
   const visible = gender ? perfumes.filter((p) => p.gender === gender) : perfumes;
+  const scene = branchScene(branch);
 
   return (
     <section
-      className="section branch"
+      className={scene ? "section branch has-scene" : "section branch"}
       id={branch.id}
       style={{ ["--tint" as string]: branch.tint }}
     >
+      {scene && <Scene scene={scene} locale={locale} />}
+
       <div className="section-head">
         <div>
           <p className="eyebrow">{branchCity(branch, locale)}</p>

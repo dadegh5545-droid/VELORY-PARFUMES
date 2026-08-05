@@ -11,12 +11,14 @@ import {
   perfumeDescription,
   perfumeName,
   perfumeNotes,
+  perfumeScene,
   priceIn,
   specsOf,
 } from "../../catalog";
 import { T } from "../../i18n";
 import { useActive } from "../../prefs";
 import { Bottle } from "../../bottle";
+import { Scene } from "../../scene";
 import { AddButton } from "../../site-header";
 
 /**
@@ -34,9 +36,13 @@ export function PerfumeView({ perfume }: { perfume: Perfume }) {
   const meta = metaLine(perfume, locale);
   // العطر الواحد قد يُباع في الفرعين بسعرين وعملتين — فالشراء صفٌّ لكل فرع.
   const offers = branchesOf(perfume);
+  // موضعٌ غيرُ موضع القسم: الزائر يتنقّل في بلد الفرع لا يقف عند مشهدٍ واحد
+  const scene = perfumeScene(perfume);
 
   return (
-    <main className="section detail">
+    <main className={scene ? "section detail has-scene" : "section detail"}>
+      {scene && <Scene scene={scene} locale={locale} />}
+
       <Link href="/" className="back">
         {t.back}
       </Link>

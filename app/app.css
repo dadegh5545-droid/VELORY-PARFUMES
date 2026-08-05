@@ -863,6 +863,93 @@ a {
 
 }
 
+/* ── مشهدُ البلد ────────────────────────────────────────────────────────
+   صورةٌ من بلد الفرع خلف قسمه وخلف صفحات عطوره. القاعدةُ الحاكمة هنا
+   واحدة: النصُّ أوّلًا. الصورةُ تُخفت وتُغطّى حتى يبقى كلُّ حرفٍ فوقها
+   عند تباينه المطلوب، لا حتى تُرى الصورةُ أحسنَ ما تُرى. */
+
+/* القسمُ يصير مرجعَ الوضع للمشهد، ويُقصّ عنده فلا يسيل إلى ما بعده */
+.has-scene {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+}
+
+.scene {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+}
+
+.scene-photo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  /* المشهدُ خلفيةٌ لا معرض: يخفت ويُسحب لونُه قليلًا نحو الدفء
+     كي لا ينازع صورَ القوارير على العين. */
+  opacity: 0.34;
+  filter: saturate(0.72) contrast(1.04);
+}
+
+/* حجابان: رأسيٌّ يُظلم الأعلى والأسفل حيث يقع العنوان والبطاقات،
+   وصلبٌ فوق الكلِّ يضمن أرضيةً دنيا مهما كانت الصورةُ فاتحة. */
+.scene::before,
+.scene::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+}
+
+.scene::before {
+  background: linear-gradient(
+    to bottom,
+    var(--noir) 0%,
+    rgba(10, 9, 8, 0.72) 26%,
+    rgba(10, 9, 8, 0.66) 62%,
+    var(--noir) 100%
+  );
+}
+
+.scene::after {
+  background: rgba(10, 9, 8, 0.28);
+}
+
+/* توقيعُ الموضع — الصورةُ بلا اسمٍ خلفيةٌ لا مكان. صغيرٌ في الركن
+   الأسفل، ولا يزاحم شيئًا: هو حاشيةٌ لا عنوان. */
+.scene-place {
+  position: absolute;
+  inset-inline-end: 1.5rem;
+  bottom: 1.25rem;
+  color: var(--ivory-dim);
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.scene-place::before {
+  content: "◈";
+  margin-inline-end: 0.5rem;
+  color: var(--gold);
+}
+
+@media (max-width: 720px) {
+  /* الصورةُ أضيقُ أفقًا على الهاتف فتُقصّ كثيرًا، ويعلو النصُّ فوقها
+     أكثر — فتخفت أكثر. */
+  .scene-photo {
+    opacity: 0.26;
+  }
+
+  .scene-place {
+    inset-inline-end: 1rem;
+    bottom: 0.9rem;
+    font-size: 0.66rem;
+  }
+}
+
+/* من طلب سكونَ الحركة لم يطلب سكونَ الصور، لكنّ خلفيةً متحرّكةً
+   بالتمرير تُتعب — ولا حركةَ هنا أصلًا، فلا شيء يُستثنى. */
+
 /* ── شاشة الترحيب ─────────────────────────────────────────────────────── */
 
 /* أوّل ما يرى الزائر: اللغة ثم الفرع. طبقةٌ تملأ الشاشة لأن السؤال

@@ -19,6 +19,18 @@ export type Gender = "رجالي" | "نسائي" | "للجنسين";
 export type Season = "صيفي" | "شتوي" | "لكل الفصول";
 export type BranchId = "qatar" | "chad";
 
+/** مشهدٌ من بلد الفرع، يقع خلف المحتوى.
+ *  ليس زخرفةً: العطرُ يُشترى من مكانٍ له وجه، والمشهدُ يذكّر بأيّ بلدٍ
+ *  يقف الزائر. ولكلِّ مشهدٍ اسمُ موضعه — صورةٌ بلا اسمٍ خلفيةٌ لا مكان. */
+export type Scene = {
+  /** مسار الصورة تحت public */
+  image: string;
+  /** اسم الموضع بالعربية — يوقَّع في ركن المشهد */
+  place: string;
+  /** اسم الموضع في اللغات اللاتينية */
+  tr?: Partial<Record<SecondLocale, string>>;
+};
+
 export type Branch = {
   id: BranchId;
   /** عنوان القسم في الصفحة الرئيسية */
@@ -34,6 +46,9 @@ export type Branch = {
     Record<SecondLocale, { name: string; city: string; currency?: string }>
   >;
   tint: string;
+  /** مشاهدُ بلد الفرع: أوّلُها خلف قسمه في الصفحة الأولى، وبقيّتُها
+   *  تدور على صفحات عطوره — فلكلِّ عطرٍ منظرٌ من بلده لا منظرٌ واحد. */
+  scenes?: Scene[];
   address?: string;
   /** الهاتف كما يُعرض للزبون، مثل: +974 5551 2345 */
   phone?: string;
@@ -43,6 +58,37 @@ export type Branch = {
   /** رابط المحل على خرائط جوجل */
   mapUrl?: string;
 };
+
+// مشاهدُ تشاد — مواضعُ حقيقيةٌ بأسمائها، لا صورَ صحراءَ بلا نسب.
+// الأوّلُ يفتح قسمَ الفرع، والبقيّةُ تدور على صفحات العطور بالترتيب
+// الذي تراه هنا. أضِف مشهدًا فيدخل الدورةَ بلا تعديلٍ في مكانٍ آخر.
+const CHAD_SCENES: Scene[] = [
+  {
+    image: "/scenes/guelta-archei.jpg",
+    place: "قلة أرشي · إنيدي",
+    tr: { fr: "Guelta d’Archei · Ennedi", en: "Guelta d’Archei · Ennedi" },
+  },
+  {
+    image: "/scenes/ounianga.jpg",
+    place: "بحيرات أونيانغا",
+    tr: { fr: "Lacs d’Ounianga", en: "Ounianga Lakes" },
+  },
+  {
+    image: "/scenes/aloba-arch.jpg",
+    place: "قوس علوبا · إنيدي",
+    tr: { fr: "Arche d’Aloba · Ennedi", en: "Aloba Arch · Ennedi" },
+  },
+  {
+    image: "/scenes/tibesti.jpg",
+    place: "جبال تيبستي",
+    tr: { fr: "Massif du Tibesti", en: "Tibesti Mountains" },
+  },
+  {
+    image: "/scenes/lake-chad.jpg",
+    place: "بحيرة تشاد",
+    tr: { fr: "Lac Tchad", en: "Lake Chad" },
+  },
+];
 
 // ترتيب الفروع هنا هو ترتيب ظهور الأقسام في الصفحة.
 // املأ العنوان والهاتف والدوام: كل حقلٍ يُملأ يظهر سطرًا في بطاقة المحل،
@@ -71,6 +117,7 @@ export const BRANCHES: Branch[] = [
       en: { name: "Chad Branch", city: "N’Djamena" },
     },
     tint: "rgba(60, 115, 165, 0.26)",
+    scenes: CHAD_SCENES,
   },
 ];
 
@@ -361,6 +408,33 @@ export const CATALOG: Perfume[] = [
 ];
 
 export const getBranch = (id: BranchId) => BRANCHES.find((b) => b.id === id);
+
+/* ــــــــ المشاهد ــــــــ */
+
+/** اسم موضع المشهد بلغة الزائر — والعربيةُ إن لم يُترجَم */
+export const scenePlace = (s: Scene, locale: Locale) =>
+  locale === "ar" ? s.place : s.tr?.[locale as SecondLocale] ?? s.place;
+
+/** مشهدُ قسم الفرع في الصفحة الأولى — أوّلُ مشاهده */
+export const branchScene = (b: Branch): Scene | undefined => b.scenes?.[0];
+
+/**
+ * مشهدُ صفحة العطر.
+ *
+ * يُشتقّ من حروف المعرّف لا من ترتيبه في الكتالوج: العطرُ الواحد يفتح
+ * على موضعه نفسِه في كلِّ زيارة، ولا تتبدّل المناظرُ كلُّها لأن عطرًا
+ * أُدرج قبله. ويُستثنى الأوّل — هو مشهدُ القسم، فلا يُعاد هنا.
+ */
+export const perfumeScene = (p: Perfume): Scene | undefined => {
+  const scenes = branchesOf(p).flatMap((b) => b.scenes ?? []);
+  if (!scenes.length) return undefined;
+
+  const rest = scenes.length > 1 ? scenes.slice(1) : scenes;
+  // حلقةٌ لا نشرٌ للنصّ: النشرُ يطلب downlevelIteration وهدفُ البناء دونه
+  let sum = 0;
+  for (let i = 0; i < p.id.length; i++) sum += p.id.charCodeAt(i);
+  return rest[sum % rest.length];
+};
 
 export const getPerfume = (id: string) => CATALOG.find((p) => p.id === id);
 

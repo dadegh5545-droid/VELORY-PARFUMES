@@ -26,9 +26,10 @@ export type Branch = {
   city: string;
   /** رمز العملة كما يُكتب بعد الرقم */
   currency: string;
-  /** لغتا الفرع: العربية أولًا ثم لغة زبائنه الثانية */
-  locales: [Locale, SecondLocale];
-  /** اسم الفرع ومدينته وعملته بلغته الثانية */
+  /** لغات الفرع: العربية أوّلًا ثم لغاته اللاتينية.
+   *  كلا الفرعين يخاطب بالثلاث — فمن قصده بلسانٍ وجد مجموعته به. */
+  locales: Locale[];
+  /** اسم الفرع ومدينته وعملته في كلِّ لغةٍ لاتينية يخاطب بها */
   tr: Partial<
     Record<SecondLocale, { name: string; city: string; currency?: string }>
   >;
@@ -52,8 +53,11 @@ export const BRANCHES: Branch[] = [
     name: "فرع قطر",
     city: "الدوحة",
     currency: "ر.ق",
-    locales: ["ar", "en"],
-    tr: { en: { name: "Qatar Branch", city: "Doha", currency: "QAR" } },
+    locales: ["ar", "en", "fr"],
+    tr: {
+      en: { name: "Qatar Branch", city: "Doha", currency: "QAR" },
+      fr: { name: "Succursale du Qatar", city: "Doha", currency: "QAR" },
+    },
     tint: "rgba(140, 35, 65, 0.26)",
   },
   {
@@ -61,8 +65,11 @@ export const BRANCHES: Branch[] = [
     name: "فرع تشاد",
     city: "نجامينا",
     currency: "FCFA",
-    locales: ["ar", "fr"],
-    tr: { fr: { name: "Succursale du Tchad", city: "N’Djamena" } },
+    locales: ["ar", "fr", "en"],
+    tr: {
+      fr: { name: "Succursale du Tchad", city: "N’Djamena" },
+      en: { name: "Chad Branch", city: "N’Djamena" },
+    },
     tint: "rgba(60, 115, 165, 0.26)",
   },
 ];
@@ -384,10 +391,10 @@ export const branchCity = (b: Branch, locale: Locale) =>
   locale === "ar" ? b.city : b.tr[locale as SecondLocale]?.city ?? b.city;
 
 /** اسم الفرع في صفحةٍ قد تكون بلغةٍ لا يتكلّمها هذا الفرع.
- *  صفحةُ التفاصيل تعرض الفرعين معًا، فلو قُرئت بالفرنسية ظهر فرع قطر
- *  باسمه الإنجليزي لا العربي: حرفٌ لاتيني في صفحةٍ لاتينية أقرب للقارئ. */
+ *  صار الفرعان يخاطبان بالثلاث، فلا يقع السقوط اليوم — ويبقى حارسًا
+ *  لفرعٍ يُضاف غدًا بألسنةٍ أقلّ. والعربيةُ ملجؤه: هي أصلُ المحتوى. */
 const spoken = (b: Branch, locale: Locale): Locale =>
-  b.locales.includes(locale) ? locale : locale === "ar" ? "ar" : b.locales[1];
+  b.locales.includes(locale) ? locale : "ar";
 
 export const branchNameIn = (b: Branch, locale: Locale) =>
   branchName(b, spoken(b, locale));

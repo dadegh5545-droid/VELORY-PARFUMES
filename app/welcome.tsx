@@ -137,27 +137,21 @@ export function Welcome() {
 
         {step === "intro" && (
           <div className="welcome-step">
-            {/* لا لغة بعد، فالترحيب بالثلاث — ولا يُفترض على الزائر لسان.
-                والعربية أوّلًا لأنها لسانُ الفرعين معًا لا لسانُ أحدهما،
-                واسمُ الدار فيها وحدها: أربعُ مرّاتٍ تحت شعارٍ يحمله زحام. */}
+            {/* ترحيبُ الدار بالعربية وحدها: هي لسانُ الفرعين معًا، وأنأى
+                عن أن تُقرأ كصفحةِ ترجمةٍ ثلاثية. ومن لا يقرؤها يبلغ
+                اختيار اللغة بضغطةٍ واحدة. */}
             <div className="welcome-intro">
               <p lang="ar" dir="rtl">
-                مرحبًا بكم في <b>VALORY PARFUMES</b> — وجهتكم لعطورٍ تحكي
-                أناقتكم، وتترك أثرًا لا يُنسى{" "}
+                مرحبًا بكم في <b>VALORY PARFUMES</b>
+              </p>
+              <p lang="ar" dir="rtl">
+                وجهتكم لعطورٍ تحكي أناقتكم، وتترك أثرًا لا يُنسى{" "}
                 <span aria-hidden="true">✨</span>
-              </p>
-              <p lang="en" dir="ltr">
-                Welcome — your destination for fragrances that speak your
-                elegance and leave a trace unforgotten.
-              </p>
-              <p lang="fr" dir="ltr">
-                Bienvenue — votre destination pour des parfums qui disent votre
-                élégance et laissent une trace inoubliable.
               </p>
             </div>
 
-            {/* فعلٌ واحدٌ في الشاشة لا ينازعه ثانٍ — وبالثلاث لأن
-                الزائر لم يُفصح عن لسانه بعد */}
+            {/* فعلٌ واحدٌ في الشاشة لا ينازعه ثانٍ. ونصُّه بالثلاث وحده،
+                لأنه المعبرُ إلى اختيار اللغة فلا يقف دونه لسان. */}
             <button
               type="button"
               className="btn btn-primary welcome-enter"

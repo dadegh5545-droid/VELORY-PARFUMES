@@ -37,9 +37,10 @@ export function SiteHeader() {
 
   return (
     <header className={solid ? "header header-solid" : "header"}>
-      {/* اسم الدار يبقى باللاتينية — وهو العرف في العلامات الفاخرة */}
+      {/* اسم الدار يبقى باللاتينية — وهو العرف في العلامات الفاخرة.
+          وسطران كما هو في شعارها المرسوم: الاسمُ فوق والصفةُ تحته. */}
       <Link href="/" className="wordmark">
-        VALORY<span>.</span>
+        VALORY<span>Parfumes</span>
       </Link>
 
       <nav className="nav">

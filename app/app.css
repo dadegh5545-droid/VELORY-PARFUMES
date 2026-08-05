@@ -914,13 +914,21 @@ a {
   margin: 0 0 3.5rem;
   font-family: var(--font-display), Georgia, serif;
   font-size: clamp(1.4rem, 3vw, 1.9rem);
+  line-height: 1.12;
   letter-spacing: 0.4em;
   text-indent: 0.4em;
   direction: ltr;
 }
 
+/* كما في الترويسة: صفةُ الدار سطرًا ثانيًا تحت اسمها، أصغرَ وأوسعَ
+   تباعدًا. وblock لأن الأبَ فقرةٌ لا صندوقُ عمود. */
 .welcome-mark span {
+  display: block;
   color: var(--gold);
+  font-size: 0.42em;
+  letter-spacing: 0.46em;
+  text-indent: 0.46em;
+  text-transform: uppercase;
 }
 
 /* شعارُ الدار — في خطوة الترحيب وحدها، وفيه اسمُ الدار مرسومًا،
@@ -1624,23 +1632,35 @@ a {
 /* اسمُ الدار لاتينيّ — هنا وحده يُسمح بالتباعد بين الحروف */
 .wordmark {
   display: inline-flex;
+  flex-direction: column;
   align-items: center;
+  justify-content: center;
   min-height: var(--ctl-h);
   font-family: var(--font-display), Georgia, serif;
   font-size: 1.35rem;
+  /* سطرٌ ضيّقٌ عمدًا: السطران اسمٌ واحد لا سطران متجاوران */
+  line-height: 1.08;
   letter-spacing: 0.34em;
   text-indent: 0.34em;
   white-space: nowrap;
   direction: ltr;
 }
 
+/* PARFUMES تحت VALORY كما هو في الشعار المرسوم — أصغرُ حجمًا وأوسعُ
+   تباعدًا، فيتساوى عرضُ السطرين تقريبًا وتُقرأ الكتلةُ كتلةً واحدة.
+   والتباعدُ يُعاد ضبطُه هنا: letter-spacing يورَث فيرث السطرُ الصغير
+   قيمةً حُسبت لحجمٍ أكبر منه. */
 .wordmark span {
   color: var(--gold);
+  font-size: 0.42em;
+  letter-spacing: 0.44em;
+  text-indent: 0.44em;
+  text-transform: uppercase;
   transition: color var(--t-state) var(--ease);
 }
 
 /* لا صندوقَ للاسم ولا خطَّ تحته: أيُّهما حوّل العلامةَ إلى زرّ. فتبادلُ
-   اللكنة — يذهب الاسمُ ذهبًا وتعود النقطةُ عاجًا — أصغرُ تبدّلٍ يُقرأ
+   اللكنة — يذهب VALORY ذهبًا ويعود PARFUMES عاجًا — أصغرُ تبدّلٍ يُقرأ
    حالًا، وكان الاسمُ قبله الرابطَ الوحيد في الموقع بلا حالٍ البتّة. */
 .wordmark:hover,
 .wordmark:focus-visible {

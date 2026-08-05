@@ -131,7 +131,7 @@ export function Welcome() {
           />
         ) : (
           <p className="welcome-mark">
-            VALORY<span>.</span>
+            VALORY<span>Parfumes</span>
           </p>
         )}
 

@@ -16,13 +16,8 @@ import { useCart, type CartItem } from "./cart";
 import { useActive } from "./prefs";
 import type { Locale } from "./i18n";
 
-/**
- * نصُّ الطلب كما يصل تاجرَ الفرع على واتساب.
- *
- * سطرٌ لكل عطر باسمه وكمّيته وسعره في هذا الفرع — لا في غيره: الفرعُ
- * هو ما يحدّد السعر والعملة، ورسالةٌ بلا فرعٍ رسالةٌ غامضة.
- */
-function orderText(branch: Branch, rows: CartItem[], locale: Locale) {
+/** كتلةُ الطلب بلغةٍ واحدة: تحيّةٌ، ثم الفرع، ثم سطرٌ لكل عطر */
+function orderBlock(branch: Branch, rows: CartItem[], locale: Locale) {
   const t = T[locale];
   const lines = rows.map((r) => {
     const p = getPerfume(r.id);
@@ -37,6 +32,21 @@ function orderText(branch: Branch, rows: CartItem[], locale: Locale) {
     "",
     ...lines.filter(Boolean),
   ].join("\n");
+}
+
+/**
+ * نصُّ الطلب كما يصل تاجرَ الفرع على واتساب.
+ *
+ * سطرٌ لكل عطر باسمه وكمّيته وسعره في هذا الفرع — لا في غيره: الفرعُ
+ * هو ما يحدّد السعر والعملة، ورسالةٌ بلا فرعٍ رسالةٌ غامضة.
+ *
+ * وتُذيَّل بنسخةٍ فرنسية حين لا تكون الفرنسيةُ لغةَ الزائر: نجامينا
+ * لسانُها فرنسي، فمن يستلم الطلبَ أو يناوله زميلَه يقرؤه بلا ترجمة.
+ */
+function orderText(branch: Branch, rows: CartItem[], locale: Locale) {
+  const blocks = [orderBlock(branch, rows, locale)];
+  if (locale !== "fr") blocks.push(orderBlock(branch, rows, "fr"));
+  return blocks.join("\n\n— — —\n\n");
 }
 
 /** لوحةُ السلة — تنزلق من جهة البداية وتُغلق بـ Escape أو بالنقر خارجها */

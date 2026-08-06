@@ -315,7 +315,9 @@ export const T: Record<Locale, Dict> = {
     remove: "Retirer un",
     branchNoContact: "Le numéro de cette succursale n'est pas encore renseigné.",
     orderHello: "Bonjour, je souhaite commander ces parfums chez VALORY :",
-    orderBranch: "Succursale",
+    // « Boutique » et non « Succursale » : le nom de la succursale le porte
+    // déjà, et « Succursale : Succursale du Tchad » se répète.
+    orderBranch: "Boutique",
     navChange: "Changer de succursale et de langue",
 
     heroEyebrow: "Maison de parfums",

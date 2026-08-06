@@ -3,6 +3,7 @@
 import { useEffect, useRef } from "react";
 import {
   branchNameIn,
+  formatPrice,
   getBranch,
   getPerfume,
   perfumeName,
@@ -14,21 +15,73 @@ import { useCart, type CartItem } from "./cart";
 import { useActive } from "./prefs";
 import type { Locale } from "./i18n";
 
-/** كتلةُ الطلب بلغةٍ واحدة: تحيّةٌ، ثم الفرع، ثم سطرٌ لكل عطر */
+/**
+ * مجموعُ الطلب في هذا الفرع.
+ *
+ * ما لم يُسعَّر بعدُ لا يدخل المجموع ولا يُفترض له سعر — بل يُعدّ، ليُقال
+ * للزبون صراحةً إن بعض أصنافه سعرُها عند الطلب. مجموعٌ يبتلع المجهولَ
+ * صامتًا أسوأ من غياب المجموع.
+ */
+function orderTotals(branch: Branch, rows: CartItem[]) {
+  let sum = 0;
+  let priced = 0;
+  let unpriced = 0;
+
+  for (const r of rows) {
+    const p = getPerfume(r.id);
+    if (!p) continue;
+    const price = p.branches[branch.id]?.price;
+    if (price) {
+      sum += price * r.qty;
+      priced += 1;
+    } else {
+      unpriced += 1;
+    }
+  }
+
+  return { sum, priced, unpriced };
+}
+
+/** كتلةُ الطلب بلغةٍ واحدة: تحيّةٌ، ثم الفرع، ثم سطرٌ لكل عطر، ثم المجموع */
 function orderBlock(branch: Branch, rows: CartItem[], locale: Locale) {
   const t = T[locale];
   const lines = rows.map((r) => {
     const p = getPerfume(r.id);
     if (!p) return "";
     const qty = r.qty > 1 ? ` ×${r.qty}` : "";
-    return `• ${perfumeName(p, locale)}${qty} — ${priceIn(p, branch, locale)}`;
+    const unit = p.branches[branch.id]?.price;
+
+    // مع الكمّية يُكتب إجماليُّ السطر لا سعرُ الواحدة، وتُبيَّن الوحدةُ
+    // بين قوسين: «12,500» بجانب «×2» تُقرأ خطأً على أنها ثمنُ الاثنين.
+    const money =
+      unit && r.qty > 1
+        ? `${formatPrice(unit * r.qty, branch, locale)} (${formatPrice(
+            unit,
+            branch,
+            locale
+          )} × ${r.qty})`
+        : priceIn(p, branch, locale);
+
+    return `• ${perfumeName(p, locale)}${qty} — ${money}`;
   });
+
+  const { sum, priced, unpriced } = orderTotals(branch, rows);
+  const tail: string[] = [];
+
+  if (priced > 0) {
+    tail.push("", `${t.orderTotal}: ${formatPrice(sum, branch, locale)}`);
+    if (unpriced > 0) tail.push(t.orderSomeOnRequest);
+  } else {
+    // لا صنفَ مسعَّرًا بعد: يُقال ذلك بدل أن يُكتب «المجموع: 0»
+    tail.push("", t.orderAllOnRequest);
+  }
 
   return [
     t.orderHello,
     `${t.orderBranch}: ${branchNameIn(branch, locale)}`,
     "",
     ...lines.filter(Boolean),
+    ...tail,
   ].join("\n");
 }
 
@@ -40,11 +93,23 @@ function orderBlock(branch: Branch, rows: CartItem[], locale: Locale) {
  *
  * وتُذيَّل بنسخةٍ فرنسية حين لا تكون الفرنسيةُ لغةَ الزائر: نجامينا
  * لسانُها فرنسي، فمن يستلم الطلبَ أو يناوله زميلَه يقرؤه بلا ترجمة.
+ *
+ * وتنتهي بطلبِ بيانات التوصيل داخل واتساب — لا حسابَ يُنشأ ولا نموذجَ
+ * يُملأ في الموقع: الزبونُ يكتب اسمَه ومنطقتَه وعنوانَه في المحادثة نفسِها.
  */
 function orderText(branch: Branch, rows: CartItem[], locale: Locale) {
+  const t = T[locale];
   const blocks = [orderBlock(branch, rows, locale)];
   if (locale !== "fr") blocks.push(orderBlock(branch, rows, "fr"));
-  return blocks.join("\n\n— — —\n\n");
+
+  const ask = [
+    t.orderAsk,
+    `• ${t.orderName}:`,
+    `• ${t.orderArea}:`,
+    `• ${t.orderAddress}:`,
+  ].join("\n");
+
+  return [...blocks, ask].join("\n\n— — —\n\n");
 }
 
 /**
@@ -137,6 +202,24 @@ export function CartPanel() {
                   );
                 })}
               </ul>
+
+              {/* المجموعُ يُرى قبل الإرسال لا بعده: ما يذهب في الرسالة
+                  هو نفسُه ما تقرؤه العين هنا. */}
+              {(() => {
+                const { sum, priced, unpriced } = orderTotals(branch, rows);
+                if (priced === 0) {
+                  return <p className="cart-note">{t.orderAllOnRequest}</p>;
+                }
+                return (
+                  <div className="cart-total">
+                    <span>{t.orderTotal}</span>
+                    <strong>{formatPrice(sum, branch, locale)}</strong>
+                    {unpriced > 0 && (
+                      <small>{t.orderSomeOnRequest}</small>
+                    )}
+                  </div>
+                );
+              })()}
 
               {/* زرُّ الإتمام لا يظهر لفرعٍ بلا رقم: زرٌّ لا يفعل شيئًا
                   أسوأ من غيابه، والرقمُ يُملأ في `catalog.ts`. */}

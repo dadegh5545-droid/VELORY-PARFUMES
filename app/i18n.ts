@@ -106,6 +106,15 @@ export type Dict = {
   /** صدرُ رسالة الواتساب وسطرُ الفرع فيها */
   orderHello: string;
   orderBranch: string;
+  /** المجموعُ الكلي في ذيل الطلب، وحالُ ما لم يُسعَّر بعد */
+  orderTotal: string;
+  orderSomeOnRequest: string;
+  orderAllOnRequest: string;
+  /** بياناتُ التوصيل تُطلب داخل واتساب — لا حسابَ في الموقع ولا نموذج */
+  orderAsk: string;
+  orderName: string;
+  orderArea: string;
+  orderAddress: string;
 
   heroEyebrow: string;
   /** العنوان مشطورٌ لأن نصفه الثاني يُبرز بخطٍّ ذهبي */
@@ -177,6 +186,13 @@ export const T: Record<Locale, Dict> = {
     branchNoContact: "رقم هذا الفرع لم يُضَف بعد.",
     orderHello: "السلام عليكم، أودّ طلب هذه العطور من فالوري:",
     orderBranch: "الفرع",
+    orderTotal: "المجموع الكلي",
+    orderSomeOnRequest: "(بعض الأصناف سعرُها عند الطلب، غير محسوبة في المجموع)",
+    orderAllOnRequest: "أسعار هذه الأصناف عند الطلب — أفيدوني بالمجموع من فضلكم.",
+    orderAsk: "بياناتي للتوصيل:",
+    orderName: "الاسم",
+    orderArea: "المنطقة",
+    orderAddress: "عنوان التوصيل",
     navChange: "تغيير الفرع واللغة",
 
     heroEyebrow: "دار عطور",
@@ -245,6 +261,13 @@ export const T: Record<Locale, Dict> = {
     branchNoContact: "This branch has no number yet.",
     orderHello: "Hello, I would like to order these perfumes from VALORY:",
     orderBranch: "Branch",
+    orderTotal: "Total",
+    orderSomeOnRequest: "(some items are priced on request and are not in the total)",
+    orderAllOnRequest: "These items are priced on request — please send me the total.",
+    orderAsk: "My delivery details:",
+    orderName: "Name",
+    orderArea: "Area",
+    orderAddress: "Delivery address",
     navChange: "Change branch and language",
 
     heroEyebrow: "Perfume house",
@@ -318,6 +341,13 @@ export const T: Record<Locale, Dict> = {
     // « Boutique » et non « Succursale » : le nom de la succursale le porte
     // déjà, et « Succursale : Succursale du Tchad » se répète.
     orderBranch: "Boutique",
+    orderTotal: "Total",
+    orderSomeOnRequest: "(certains articles sont à prix sur demande, hors total)",
+    orderAllOnRequest: "Ces articles sont à prix sur demande — merci de m'indiquer le total.",
+    orderAsk: "Mes coordonnées de livraison :",
+    orderName: "Nom",
+    orderArea: "Quartier",
+    orderAddress: "Adresse de livraison",
     navChange: "Changer de succursale et de langue",
 
     heroEyebrow: "Maison de parfums",

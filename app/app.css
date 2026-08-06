@@ -1078,6 +1078,31 @@ a {
   border-color: var(--gold-dim);
 }
 
+/* المجموعُ فوق زرّ الإتمام مباشرةً: آخرُ ما تقرؤه العينُ قبل الضغط */
+.cart-total {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: baseline;
+  gap: 0.5rem 1rem;
+  margin-bottom: 1.25rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--line);
+}
+
+.cart-total strong {
+  color: var(--gold);
+  font-family: var(--font-display), Georgia, serif;
+  font-size: 1.3rem;
+  font-weight: 400;
+}
+
+.cart-total small {
+  grid-column: 1 / -1;
+  color: var(--ivory-dim);
+  font-size: 0.74rem;
+  line-height: 1.7;
+}
+
 .cart-send {
   display: flex;
   justify-content: center;

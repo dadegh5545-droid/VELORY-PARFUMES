@@ -95,6 +95,18 @@ export type Dict = {
   /** يفتح الترحيب من جديد لتغيير الفرع أو اللغة */
   navChange: string;
 
+  /* لوحة السلة */
+  cartEmpty: string;
+  cartClear: string;
+  /** إتمامُ الطلب على واتساب الفرع — لا رقمَ عامًّا للدار */
+  checkoutWhatsapp: string;
+  remove: string;
+  /** يظهر مكان زرّ الإتمام لفرعٍ لم يُملأ رقمُه بعد */
+  branchNoContact: string;
+  /** صدرُ رسالة الواتساب وسطرُ الفرع فيها */
+  orderHello: string;
+  orderBranch: string;
+
   heroEyebrow: string;
   /** العنوان مشطورٌ لأن نصفه الثاني يُبرز بخطٍّ ذهبي */
   heroTitle: { lead: string; em: string };
@@ -158,6 +170,13 @@ export const T: Record<Locale, Dict> = {
     navHouse: "الدار",
     navContact: "تواصل",
     navCart: "السلة",
+    cartEmpty: "سلّتك فارغة — اختر عطرًا من مجموعة الفرع.",
+    cartClear: "إفراغ السلة",
+    checkoutWhatsapp: "إتمام الطلب عبر واتساب",
+    remove: "أنقص",
+    branchNoContact: "رقم هذا الفرع لم يُضَف بعد.",
+    orderHello: "السلام عليكم، أودّ طلب هذه العطور من فالوري:",
+    orderBranch: "الفرع",
     navChange: "تغيير الفرع واللغة",
 
     heroEyebrow: "دار عطور",
@@ -219,6 +238,13 @@ export const T: Record<Locale, Dict> = {
     navHouse: "The house",
     navContact: "Contact",
     navCart: "Cart",
+    cartEmpty: "Your cart is empty — pick a perfume from the branch collection.",
+    cartClear: "Empty cart",
+    checkoutWhatsapp: "Complete order on WhatsApp",
+    remove: "Remove one",
+    branchNoContact: "This branch has no number yet.",
+    orderHello: "Hello, I would like to order these perfumes from VALORY:",
+    orderBranch: "Branch",
     navChange: "Change branch and language",
 
     heroEyebrow: "Perfume house",
@@ -283,6 +309,13 @@ export const T: Record<Locale, Dict> = {
     navHouse: "La maison",
     navContact: "Contact",
     navCart: "Panier",
+    cartEmpty: "Votre panier est vide — choisissez un parfum de la collection.",
+    cartClear: "Vider le panier",
+    checkoutWhatsapp: "Finaliser la commande sur WhatsApp",
+    remove: "Retirer un",
+    branchNoContact: "Le numéro de cette succursale n'est pas encore renseigné.",
+    orderHello: "Bonjour, je souhaite commander ces parfums chez VALORY :",
+    orderBranch: "Succursale",
     navChange: "Changer de succursale et de langue",
 
     heroEyebrow: "Maison de parfums",

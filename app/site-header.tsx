@@ -30,7 +30,7 @@ function useScrolled() {
 }
 
 export function SiteHeader() {
-  const { items } = useCart();
+  const { count, setOpen } = useCart();
   const { reopen } = usePrefs();
   const { branch, locale } = useActive();
   const t = T[locale];
@@ -52,10 +52,11 @@ export function SiteHeader() {
         <Link href="/#maison">{t.navHouse}</Link>
         <Link href="/#contact">{t.navContact}</Link>
 
-        <Link href={`/#${branch}`} className="cart">
+        {/* زرٌّ لا رابط: السلةُ لوحةٌ تُفتح فوق الصفحة، ولا صفحةَ لها */}
+        <button type="button" className="cart" onClick={() => setOpen(true)}>
           {/* aria-live كي يُعلَن العدد الجديد لمن لا يرى الترويسة عند الإضافة */}
-          {t.navCart} <span aria-live="polite">({items.length})</span>
-        </Link>
+          {t.navCart} <span aria-live="polite">({count})</span>
+        </button>
 
         {/* مفتاحٌ واحد يعيد فتح الترحيب: الفرع واللغة اختيارٌ واحدٌ مترابط.
             الزرّ ينطق "نجامينا عربي" — اسمان بلا فعل — وtitle لا يدخل في حساب

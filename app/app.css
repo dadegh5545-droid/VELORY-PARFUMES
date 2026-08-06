@@ -936,6 +936,200 @@ a {
   unicode-bidi: isolate;
 }
 
+/* ── لوحة السلة ────────────────────────────────────────────────────────
+   تنزلق من جهة البداية فوق ستارٍ داكن. الطلبُ فيها مجموعٌ بالفرع، ولكلِّ
+   فرعٍ زرُّ إتمامه على واتساب رقمِه هو — طلبُ نجامينا لا يذهب إلى الدوحة. */
+.cart-veil {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  display: flex;
+  justify-content: flex-start;
+  background: rgba(4, 4, 3, 0.72);
+  -webkit-backdrop-filter: blur(3px);
+  backdrop-filter: blur(3px);
+  animation: veil-in 0.35s var(--ease) both;
+}
+
+@keyframes veil-in {
+  from {
+    opacity: 0;
+  }
+}
+
+.cart-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 1.75rem;
+  width: min(30rem, 100%);
+  height: 100%;
+  padding: 2.5rem 2rem;
+  overflow-y: auto;
+  background: linear-gradient(to bottom, #131110, var(--noir) 40%, #070605);
+  border-inline-end: 1px solid var(--line);
+  animation: cart-in 0.45s var(--ease) both;
+}
+
+.cart-panel:focus {
+  outline: none;
+}
+
+@keyframes cart-in {
+  from {
+    transform: translateX(var(--cart-from, -18px));
+    opacity: 0;
+  }
+}
+
+/* الانزلاقُ يأتي من جهة البداية: يمينًا في العربية ويسارًا في اللاتينية */
+[dir="rtl"] .cart-panel {
+  --cart-from: 18px;
+}
+
+.cart-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 1.25rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.cart-head h2 {
+  font-size: 1.5rem;
+}
+
+.cart-close {
+  padding: 0.35rem 0.6rem;
+  color: var(--ivory-dim);
+  background: none;
+  border: 1px solid transparent;
+  font-size: 1.1rem;
+  transition: color 0.4s var(--ease), border-color 0.4s var(--ease);
+}
+
+.cart-close:hover {
+  color: var(--gold);
+  border-color: var(--line);
+}
+
+.cart-empty {
+  color: var(--ivory-dim);
+  line-height: 2;
+}
+
+.cart-group h3 {
+  margin-bottom: 1rem;
+  font-size: 1.15rem;
+  color: var(--gold);
+}
+
+.cart-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  margin: 0 0 1.5rem;
+  padding: 0;
+  list-style: none;
+}
+
+.cart-rows li {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  gap: 1rem;
+  align-items: center;
+  padding-bottom: 0.85rem;
+  border-bottom: 1px solid rgba(198, 166, 100, 0.1);
+}
+
+.cart-name {
+  font-size: 1rem;
+}
+
+/* الكمّيةُ رقمٌ لاتيني دائمًا، فتُعزل كي لا تنقلب في RTL */
+.cart-qty {
+  margin-inline-start: 0.5rem;
+  color: var(--gold-dim);
+  font-size: 0.85rem;
+  direction: ltr;
+  unicode-bidi: isolate;
+}
+
+.cart-price {
+  color: var(--gold);
+  font-family: var(--font-display), Georgia, serif;
+  font-size: 0.95rem;
+  white-space: nowrap;
+}
+
+.cart-drop {
+  width: 1.9rem;
+  height: 1.9rem;
+  color: var(--ivory-dim);
+  background: none;
+  border: 1px solid var(--line);
+  border-radius: 2px;
+  font-size: 1.1rem;
+  line-height: 1;
+  transition: color 0.4s var(--ease), border-color 0.4s var(--ease);
+}
+
+.cart-drop:hover {
+  color: var(--gold);
+  border-color: var(--gold-dim);
+}
+
+.cart-send {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  text-decoration: none;
+}
+
+.cart-note {
+  color: var(--ivory-dim);
+  font-size: 0.85rem;
+}
+
+.cart-clear {
+  align-self: flex-start;
+  margin-top: auto;
+  padding: 0.4rem 0;
+  color: var(--ivory-dim);
+  background: none;
+  border: none;
+  border-bottom: 1px solid transparent;
+  font-size: 0.82rem;
+  transition: color 0.4s var(--ease), border-color 0.4s var(--ease);
+}
+
+.cart-clear:hover {
+  color: var(--ivory);
+  border-bottom-color: var(--line);
+}
+
+/* على الهاتف تملأ اللوحةُ العرضَ كلَّه: لا معنى لعمودٍ ضيّقٍ في شاشةٍ ضيّقة */
+@media (max-width: 40rem) {
+  .cart-panel {
+    width: 100%;
+    padding: 2rem 1.25rem;
+    border-inline-end: none;
+  }
+
+  .cart-rows li {
+    grid-template-columns: 1fr auto;
+    row-gap: 0.4rem;
+  }
+
+  .cart-drop {
+    grid-row: 1 / 3;
+    grid-column: 2;
+  }
+
+  .cart-price {
+    grid-column: 1;
+  }
+}
+
 /* ── الحركة ───────────────────────────────────────────────────────────── */
 
 @keyframes fade-up {
@@ -2155,6 +2349,50 @@ a {
 .cart span {
   color: var(--gold);
   font-variant-numeric: tabular-nums;
+}
+
+/* السلّةُ صارت زرًّا لا رابطًا — لأنها تفتح لوحةً لا تنقل إلى صفحة —
+   فتأخذ هيئةَ روابط الترويسة نفسَها: اللونُ والخطُّ والحدُّ النامي أسفلها. */
+.nav .cart {
+  position: relative;
+  padding: 0 0 0.35rem;
+  color: inherit;
+  background: none;
+  border: none;
+  font-size: inherit;
+  line-height: inherit;
+}
+
+.nav .cart::before {
+  content: "";
+  position: absolute;
+  inset: -0.7rem -0.5rem;
+}
+
+.nav .cart::after {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  inset-block-end: 0;
+  height: 1px;
+  background: var(--gold);
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform var(--t-state) var(--ease);
+}
+
+[dir="ltr"] .nav .cart::after {
+  transform-origin: left;
+}
+
+.nav .cart:hover,
+.nav .cart:focus-visible {
+  color: var(--ivory);
+}
+
+.nav .cart:hover::after,
+.nav .cart:focus-visible::after {
+  transform: scaleX(1);
 }
 
 /* ── الضغط ────────────────────────────────────────────────────────────────

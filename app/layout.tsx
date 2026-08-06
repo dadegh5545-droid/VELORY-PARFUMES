@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Amiri, Tajawal } from "next/font/google";
 import { CartProvider } from "./cart";
+import { CartPanel } from "./cart-panel";
 import { PrefsProvider, HtmlLang } from "./prefs";
 import { Welcome } from "./welcome";
 import { SiteFooter, SiteHeader } from "./site-header";
@@ -41,6 +42,8 @@ export default function RootLayout({
             <SiteHeader />
             {children}
             <SiteFooter />
+            {/* اللوحةُ آخرَ الشجرة كي تعلو كلَّ شيءٍ بلا مزايدةٍ في z-index */}
+            <CartPanel />
           </CartProvider>
           <Welcome />
         </PrefsProvider>

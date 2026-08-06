@@ -104,6 +104,8 @@ export type Dict = {
   quote: [string, string];
   quoteCite: string;
   rights: string;
+  /** صدرُ سطر إسناد صور المشاهد في التذييل */
+  photosBy: string;
 
   /* شاشة الترحيب */
   welcomeGreeting: string;
@@ -167,6 +169,7 @@ export const T: Record<Locale, Dict> = {
     quote: ["العِطرُ ليس زينة.", "إنه ذاكرةٌ تُلبَس."],
     quoteCite: "فالوري — دار عطور",
     rights: "فالوري بارفوم",
+    photosBy: "صور المشاهد من ويكيميديا كومنز:",
 
     welcomeGreeting: "أهلًا بك",
     welcomeTagline: "دارُ عطورٍ بفرعَين — اختر فرعك لنعرض لك مجموعته وأسعاره.",
@@ -227,6 +230,7 @@ export const T: Record<Locale, Dict> = {
     quote: ["Perfume is no ornament.", "It is a memory you wear."],
     quoteCite: "VALORY — Perfume house",
     rights: "VALORY PARFUMES",
+    photosBy: "Scene photography from Wikimedia Commons:",
 
     welcomeGreeting: "Welcome",
     welcomeTagline:
@@ -290,6 +294,7 @@ export const T: Record<Locale, Dict> = {
     quote: ["Le parfum n'est pas un ornement.", "C'est une mémoire que l'on porte."],
     quoteCite: "VALORY — Maison de parfums",
     rights: "VALORY PARFUMES",
+    photosBy: "Photographies des paysages via Wikimedia Commons :",
 
     welcomeGreeting: "Bienvenue",
     welcomeTagline:

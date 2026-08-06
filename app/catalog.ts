@@ -23,12 +23,17 @@ export type BranchId = "qatar" | "chad";
  *  ليس زخرفةً: العطرُ يُشترى من مكانٍ له وجه، والمشهدُ يذكّر بأيّ بلدٍ
  *  يقف الزائر. ولكلِّ مشهدٍ اسمُ موضعه — صورةٌ بلا اسمٍ خلفيةٌ لا مكان. */
 export type Scene = {
-  /** مسار الصورة تحت public */
+  /** النسخة العريضة (16:9) — خلف صدر القسم وصفحةِ العطر */
   image: string;
+  /** النسخة الطولية (4:5) — خلف بطاقة العطر في الشبكة.
+   *  نسختان لا واحدة: بطاقةٌ طوليةٌ تقصّ العريضةَ إلى خيطٍ لا منظرَ فيه. */
+  card: string;
   /** اسم الموضع بالعربية — يوقَّع في ركن المشهد */
   place: string;
   /** اسم الموضع في اللغات اللاتينية */
   tr?: Partial<Record<SecondLocale, string>>;
+  /** المصوّر ورخصتُه — شرطُ رخص المشاع الإبداعي، ويُعرض في تذييل الصفحة */
+  credit: { by: string; license: string; source: string };
 };
 
 export type Branch = {
@@ -65,38 +70,96 @@ export type Branch = {
 const CHAD_SCENES: Scene[] = [
   {
     image: "/scenes/guelta-archei.jpg",
+    card: "/scenes/guelta-archei-card.jpg",
     place: "قلة أرشي · إنيدي",
     tr: { fr: "Guelta d’Archei · Ennedi", en: "Guelta d’Archei · Ennedi" },
-  },
-  {
-    image: "/scenes/ounianga.jpg",
-    place: "بحيرات أونيانغا",
-    tr: { fr: "Lacs d’Ounianga", en: "Ounianga Lakes" },
-  },
-  {
-    image: "/scenes/ennedi-plateau.jpg",
-    place: "هضبة إنيدي",
-    tr: { fr: "Plateau de l’Ennedi", en: "Ennedi Plateau" },
-  },
-  {
-    image: "/scenes/archei-cliff.jpg",
-    place: "جرف أرشي",
-    tr: { fr: "Falaise d’Archei", en: "Archei Cliff" },
-  },
-  {
-    image: "/scenes/ouaddai-ruins.jpg",
-    place: "أطلال مملكة وداي",
-    tr: {
-      fr: "Ruines du royaume du Ouaddaï",
-      en: "Ruins of the Ouaddai Kingdom",
+    credit: {
+      by: "anmede",
+      license: "CC BY-SA 2.0",
+      source: "https://commons.wikimedia.org/wiki/File:Chad._Guelta_de_Archei_-_24930442767.jpg",
     },
   },
   {
-    image: "/scenes/abeche.jpg",
-    place: "أبشة",
-    tr: { fr: "Abéché", en: "Abéché" },
+    image: "/scenes/ounianga.jpg",
+    card: "/scenes/ounianga-card.jpg",
+    place: "بحيرات أونيانغا",
+    tr: { fr: "Lacs d’Ounianga", en: "Ounianga Lakes" },
+    credit: {
+      by: "anmede",
+      license: "CC BY-SA 2.0",
+      source: "https://commons.wikimedia.org/wiki/File:Lake_Yoa_2018_01.jpg",
+    },
+  },
+  {
+    image: "/scenes/ennedi-plateau.jpg",
+    card: "/scenes/ennedi-plateau-card.jpg",
+    place: "هضبة إنيدي",
+    tr: { fr: "Plateau de l’Ennedi", en: "Ennedi Plateau" },
+    credit: {
+      by: "anmede",
+      license: "CC BY-SA 2.0",
+      source: "https://commons.wikimedia.org/wiki/File:Ennedi_Plateau_(39815457451).jpg",
+    },
+  },
+  {
+    image: "/scenes/ennedi-maze.jpg",
+    card: "/scenes/ennedi-maze-card.jpg",
+    place: "متاهة إنيدي",
+    tr: { fr: "Labyrinthe de l’Ennedi", en: "Ennedi Labyrinth" },
+    credit: {
+      by: "Valerian Guillot",
+      license: "CC BY 2.0",
+      source: "https://commons.wikimedia.org/wiki/File:Camels_in_the_Labyrinthe_(Maze)_sandstone_area_of_the_Ennedi,_Chad_(42405451704).jpg",
+    },
+  },
+  {
+    image: "/scenes/guelta-maya.jpg",
+    card: "/scenes/guelta-maya-card.jpg",
+    place: "قلة مايا · إنيدي",
+    tr: { fr: "Guelta Maya · Ennedi", en: "Guelta Maya · Ennedi" },
+    credit: {
+      by: "Sven.oehm",
+      license: "CC BY-SA 4.0",
+      source: "https://commons.wikimedia.org/wiki/File:Guelta_Maya,_Ennedi,_Tschad.jpg",
+    },
+  },
+  {
+    image: "/scenes/tibesti.jpg",
+    card: "/scenes/tibesti-card.jpg",
+    place: "جبال تيبستي",
+    tr: { fr: "Massif du Tibesti", en: "Tibesti Mountains" },
+    credit: {
+      by: "Michael Kerling",
+      license: "Public domain",
+      source: "https://commons.wikimedia.org/wiki/File:Tibesti_east_of_bardai.jpg",
+    },
+  },
+  {
+    image: "/scenes/zakouma.jpg",
+    card: "/scenes/zakouma-card.jpg",
+    place: "حديقة زاكوما",
+    tr: { fr: "Parc national de Zakouma", en: "Zakouma National Park" },
+    credit: {
+      by: "Yacoub Doungous",
+      license: "CC BY-SA 4.0",
+      source: "https://commons.wikimedia.org/wiki/File:Troupeau_de_Girafe_Dikala.jpg",
+    },
+  },
+  {
+    image: "/scenes/lake-chad.jpg",
+    card: "/scenes/lake-chad-card.jpg",
+    place: "بحيرة تشاد",
+    tr: { fr: "Lac Tchad", en: "Lake Chad" },
+    credit: {
+      by: "Coolthoom1",
+      license: "CC BY-SA 4.0",
+      source: "https://commons.wikimedia.org/wiki/File:An_evergreen_lake_chad_shore_(detilt).jpg",
+    },
   },
 ];
+
+/** كلُّ مشاهد الموقع — لصفحة الإسناد في التذييل */
+export const ALL_SCENES = CHAD_SCENES;
 
 // ترتيب الفروع هنا هو ترتيب ظهور الأقسام في الصفحة.
 // املأ العنوان والهاتف والدوام: كل حقلٍ يُملأ يظهر سطرًا في بطاقة المحل،
@@ -602,10 +665,14 @@ export const perfumeScene = (p: Perfume): Scene | undefined => {
   if (!scenes.length) return undefined;
 
   const rest = scenes.length > 1 ? scenes.slice(1) : scenes;
-  // حلقةٌ لا نشرٌ للنصّ: النشرُ يطلب downlevelIteration وهدفُ البناء دونه
-  let sum = 0;
-  for (let i = 0; i < p.id.length; i++) sum += p.id.charCodeAt(i);
-  return rest[sum % rest.length];
+  // حلقةٌ لا نشرٌ للنصّ: النشرُ يطلب downlevelIteration وهدفُ البناء دونه.
+  // ومجموعُ الحروف وحده يكدّس المعرّفاتِ المتقاربة في مشهدٍ واحد، فيُخلط
+  // بضربٍ في عددٍ أوّليّ: توزيعٌ أعدلُ على المشاهد، وثباتٌ لكلِّ معرّف.
+  let h = 0;
+  for (let i = 0; i < p.id.length; i++) {
+    h = (h * 31 + p.id.charCodeAt(i)) >>> 0;
+  }
+  return rest[h % rest.length];
 };
 
 export const getPerfume = (id: string) => CATALOG.find((p) => p.id === id);

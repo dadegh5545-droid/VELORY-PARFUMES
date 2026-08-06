@@ -388,12 +388,57 @@ a {
 
 
 .card {
+  position: relative;
   display: flex;
   flex-direction: column;
   background: var(--noir);
   padding: 2.5rem 2rem 2.25rem;
   box-shadow: 1px 0 0 var(--line), 0 1px 0 var(--line);
   transition: background 0.6s var(--ease);
+}
+
+/* ── النقشُ الهندسي ────────────────────────────────────────────────────
+   معيّناتٌ متشابكة، من نسيج الحصير والوشم في التراث التشادي والساحلي.
+   ثلاثةُ مواضع لا رابع: نسيجٌ خافتٌ جدًّا على السواد، وزوايا على حدود
+   البطاقات، وزوايا أكبر على الأقسام. ولا نقشَ فوق صورةٍ ولا فوق نصّ —
+   هو حاشيةٌ للفراغ لا طبقةٌ على المحتوى. */
+:root {
+  --naqsh-lattice: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='36' height='36' viewBox='0 0 36 36'%3E%3Cpath d='M18 0 36 18 18 36 0 18Z' fill='none' stroke='%23c6a664' stroke-width='0.7'/%3E%3Cpath d='M18 9 27 18 18 27 9 18Z' fill='none' stroke='%23c6a664' stroke-width='0.4'/%3E%3C/svg%3E");
+  --naqsh-corner: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='26' height='26' viewBox='0 0 26 26'%3E%3Cpath d='M0 12V0h12' fill='none' stroke='%238c7440' stroke-width='1.1'/%3E%3Cpath d='M3 15 15 3' fill='none' stroke='%238c7440' stroke-width='0.6'/%3E%3Cpath d='M7 7 11 11' fill='none' stroke='%238c7440' stroke-width='0.6'/%3E%3C/svg%3E");
+}
+
+/* زوايا البطاقة: علامتان متقابلتان لا إطارٌ كامل — الإطارُ يسجن،
+   والزاويتان تُلمّحان. `pointer-events: none` كي لا تعترضا الضغط. */
+.card::before,
+.card::after {
+  content: "";
+  position: absolute;
+  z-index: 3;
+  width: 26px;
+  height: 26px;
+  pointer-events: none;
+  background: var(--naqsh-corner) no-repeat;
+  opacity: 0.55;
+  transition: opacity 0.6s var(--ease);
+}
+
+.card::before {
+  top: 10px;
+  inset-inline-start: 10px;
+}
+
+/* الزاوية المقابلة: تُقلب أفقيًّا وعموديًّا فتشير إلى داخل البطاقة */
+.card::after {
+  bottom: 10px;
+  inset-inline-end: 10px;
+  scale: -1 -1;
+}
+
+@media (hover: hover) {
+  .card:hover::before,
+  .card:hover::after {
+    opacity: 0.9;
+  }
 }
 
 
@@ -412,7 +457,8 @@ a {
   position: relative;
   display: grid;
   place-items: center;
-  aspect-ratio: 3 / 4;
+  /* 4:5 — نسبةُ نسخةِ البطاقة من المشهد، فلا تُقصّ الخلفيةُ قصًّا ثانيًا */
+  aspect-ratio: 4 / 5;
   margin-bottom: 2rem;
   background: radial-gradient(
     ellipse at 50% 38%,
@@ -483,6 +529,94 @@ a {
   height: 100%;
   object-fit: cover;
   transition: transform 0.9s var(--ease);
+}
+
+/* ── مشهدُ البلد خلف عبوة العطر ────────────────────────────────────────
+   كلُّ عطرٍ يقف في منظرٍ من بلد فرعه. المنظرُ خلفيةٌ لا موضوع: يُحجب
+   بين ٤٥٪ و٦٥٪ فتبقى العبوةُ هي أوّلَ ما تقع عليه العين — وهي غايةُ
+   البطاقة. الطبقات من تحت إلى فوق: منظر ← حجاب ← عبوة. */
+.bottle.has-scene-bg {
+  overflow: hidden;
+  border-radius: 4px;
+  background: var(--noir);
+}
+
+.bottle-scene {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  /* المنتصفُ من المنظر هو ما يبقى خلف العبوة في كل المقاسات */
+  object-position: center;
+  /* ألوانٌ طبيعية لا مبالَغ فيها — الصورةُ تُحجب لا تُشبَّع.
+     ورفعُ السطوع قليلًا يعوّض ما يأخذه الحجابُ منها. */
+  filter: saturate(0.96) contrast(1.02) brightness(1.12);
+  transition: transform 1.1s var(--ease), opacity 0.8s var(--ease);
+}
+
+/* الحجاب: أدكنُ عند الحواف حيث لا شيء يُرى، وأخفُّ في القلب حيث
+   تقف العبوة، فلا يُطمس المنظرُ كلُّه ولا تُنازع العبوةَ تفاصيلُه. */
+.bottle.has-scene-bg::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: radial-gradient(
+      ellipse at 50% 56%,
+      rgba(10, 9, 8, 0.45) 0%,
+      rgba(10, 9, 8, 0.56) 62%,
+      rgba(10, 9, 8, 0.65) 100%
+    ),
+    linear-gradient(to bottom, rgba(10, 9, 8, 0.22), transparent 30%);
+}
+
+/* العبوةُ فوق الحجاب، أصغرَ من ملء الإطار: تقف في المنظر لا تحجبه،
+   وحدُّها الذهبي الرفيع وظلُّها يفصلانها عنه فلا تبدو ملصقةً عليه. */
+.bottle.has-scene-bg .bottle-photo {
+  position: relative;
+  z-index: 2;
+  width: 68%;
+  height: auto;
+  max-height: 62%;
+  object-fit: contain;
+  border-radius: 3px;
+  border: 1px solid rgba(198, 166, 100, 0.42);
+  box-shadow: 0 18px 34px rgba(0, 0, 0, 0.62), 0 2px 10px rgba(0, 0, 0, 0.5);
+}
+
+/* حركةٌ ناعمةٌ واحدة عند المرور: المنظرُ يقترب قليلًا والعبوةُ ترتفع.
+   لا انتقالَ مفاجئ — الفخامةُ في البطء. */
+@media (hover: hover) {
+  .card-link:hover .bottle-scene {
+    transform: scale(1.06);
+  }
+
+  .card-link:hover .bottle.has-scene-bg .bottle-photo {
+    transform: translateY(-4px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bottle-scene,
+  .bottle.has-scene-bg .bottle-photo {
+    transition: none;
+  }
+
+  .card-link:hover .bottle-scene,
+  .card-link:hover .bottle.has-scene-bg .bottle-photo {
+    transform: none;
+  }
+}
+
+/* على الهاتف تضيق البطاقة، فتكبر العبوةُ نسبيًّا كي تبقى مقروءة */
+@media (max-width: 720px) {
+  .bottle.has-scene-bg .bottle-photo {
+    width: 74%;
+    max-height: 66%;
+  }
 }
 
 /* تقريبٌ خفيف عند المرور — لا إزاحة، كي لا ينكشف طرفُ الإطار */
@@ -741,13 +875,43 @@ a {
   width: var(--shell);
   margin-inline: auto;
   padding: 5rem 0 3rem;
+  font-size: 0.88rem;
+  color: var(--ivory-dim);
+}
+
+.footer-line {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 2rem;
   flex-wrap: wrap;
-  font-size: 0.88rem;
-  color: var(--ivory-dim);
+}
+
+/* الإسنادُ حقٌّ لا زينة، لكنه ليس محتوى الصفحة: يُكتب أصغرَ وأخفت،
+   ويُفصل عمّا فوقه بخيطٍ ذهبيٍّ رفيع. */
+.footer-credits {
+  margin: 1.75rem 0 0;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--line);
+  font-size: 0.72rem;
+  line-height: 1.9;
+  color: rgba(164, 156, 143, 0.72);
+}
+
+.footer-credits a {
+  color: var(--gold-dim);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+}
+
+.footer-credits a:hover {
+  border-bottom-color: var(--gold-dim);
+}
+
+.footer-by {
+  /* اسمُ المصوّر ورخصتُه لاتينيان دائمًا، فيبقيان بترتيبهما في RTL */
+  direction: ltr;
+  unicode-bidi: isolate;
 }
 
 /* ── الحركة ───────────────────────────────────────────────────────────── */
@@ -875,6 +1039,52 @@ a {
   overflow: hidden;
 }
 
+/* نسيجُ المعيّنات على سواد الصفحة — عند حدّ الرؤية عمدًا (٣٪): يُحسّ
+   ولا يُقرأ، فلا ينازع صورًا ولا نصًّا. */
+.section {
+  position: relative;
+}
+
+.section::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  pointer-events: none;
+  background-image: var(--naqsh-lattice);
+  background-size: 36px 36px;
+  opacity: 0.03;
+}
+
+/* زوايا القسم: أكبرُ من زوايا البطاقة بمرّةٍ ونصف، وأخفتُ منها */
+.section > .section-head::before {
+  content: "";
+  position: absolute;
+  z-index: 2;
+  top: -1.4rem;
+  inset-inline-start: -1.2rem;
+  width: 40px;
+  height: 40px;
+  pointer-events: none;
+  background: var(--naqsh-corner) no-repeat;
+  background-size: contain;
+  opacity: 0.42;
+}
+
+.section-head {
+  position: relative;
+}
+
+@media (max-width: 720px) {
+  /* على الهاتف تضيق الحواف، فتنكمش زاويةُ القسم ولا تزاحم العنوان */
+  .section > .section-head::before {
+    top: -0.9rem;
+    inset-inline-start: -0.5rem;
+    width: 28px;
+    height: 28px;
+  }
+}
+
 /* المشهدُ شريطٌ في صدر القسم لا خلفيةٌ تحته كلِّه: قسمٌ فيه أربعون بطاقةً
    يطول اثني عشر ألفَ بكسل، فصورةٌ عرضُها ألفٌ ونصف تُقصّ عنده إلى خيطٍ
    عموديٍّ يُكبَّر أربعةَ عشر ضعفًا — لا يبقى منها منظرٌ يُعرَف. الشريطُ
@@ -892,10 +1102,38 @@ a {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  /* العنوانُ يقف في جهة البداية — يمينًا في العربية ويسارًا في اللاتينية.
+     فنُزيح المنظرَ إلى الجهة المقابلة: يبقى تحت العنوان أهدأُ ما في
+     الصورة (سماءٌ أو رمل)، ويقع مركزُ اهتمامها في النصف الحرّ. */
+  object-position: 68% center;
   /* بلا إخفاتٍ هنا: الحجابُ وحده يضبط التباين، فالإخفاتُ فوقه كان
      يطمس المنظرَ ولا يزيد النصَّ وضوحًا. */
   filter: saturate(0.95) contrast(1.03);
 }
+
+[dir="ltr"] .scene-photo {
+  object-position: 32% center;
+}
+
+/* على الشاشات الضيّقة تُقصّ الصورةُ العريضة قصًّا شديدًا، فيُقرَّب
+   موضعُها من المنتصف كي لا يضيع الموضوعُ خارج الكادر. */
+@media (max-width: 900px) {
+  .scene-photo {
+    object-position: 60% center;
+  }
+
+  [dir="ltr"] .scene-photo {
+    object-position: 40% center;
+  }
+}
+
+@media (max-width: 560px) {
+  .scene-photo,
+  [dir="ltr"] .scene-photo {
+    object-position: center;
+  }
+}
+
 
 /* حجابان: رأسيٌّ يُظلم الأعلى والأسفل حيث يقع العنوان والبطاقات،
    وصلبٌ فوق الكلِّ يضمن أرضيةً دنيا مهما كانت الصورةُ فاتحة. */
@@ -921,8 +1159,36 @@ a {
   );
 }
 
+/* المساحةُ الهادئة: عمودٌ من السواد يتدرّج من جهة العنوان — يمينًا في
+   العربية ويسارًا في اللاتينية — فيقرأ العنوانُ على لونٍ واحد لا على
+   تفاصيلِ صخر. وتحته أرضيةٌ دنيا تضمن التباين مهما فتحت الصورة. */
 .scene::after {
-  background: rgba(10, 9, 8, 0.12);
+  background-image: linear-gradient(
+    to left,
+    rgba(10, 9, 8, 0.6) 0%,
+    rgba(10, 9, 8, 0.26) 28%,
+    transparent 54%
+  );
+  background-color: rgba(10, 9, 8, 0.12);
+}
+
+[dir="ltr"] .scene::after {
+  background-image: linear-gradient(
+    to right,
+    rgba(10, 9, 8, 0.6) 0%,
+    rgba(10, 9, 8, 0.26) 28%,
+    transparent 54%
+  );
+}
+
+/* على الهاتف يمتدّ العنوانُ عرضَ الشاشة، فلا معنى لعمودٍ في جهة —
+   يُستبدل بحجابٍ متساوٍ خفيف. */
+@media (max-width: 560px) {
+  .scene::after,
+  [dir="ltr"] .scene::after {
+    background-image: none;
+    background-color: rgba(10, 9, 8, 0.2);
+  }
 }
 
 /* عنوانُ القسم يقع في صدر الشريط فوق الصورة — والظلُّ يحمله عند أيّ

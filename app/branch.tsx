@@ -11,7 +11,6 @@ import {
   countLabel,
   filtersOf,
   metaLine,
-  perfumeScene,
   perfumeName,
   perfumeNotes,
   perfumesOf,
@@ -159,9 +158,10 @@ export function BranchSection({ branch }: { branch: Branch }) {
             return (
               <article className="card" key={p.id}>
                 <Link href={`/parfum/${p.id}`} className="card-link">
-                  {/* لكلِّ عطرٍ مشهدُه من بلد الفرع خلف عبوته — مشتقٌّ من
-                      حروف معرّفه فلا يتبدّل بين زيارةٍ وأخرى */}
-                  <Bottle perfume={p} scene={perfumeScene(p)} />
+                  {/* لا مشهدَ خلف العبوة في الشبكة: منظرُ البلد يبقى في
+                      صدر القسم وفي صفحة العطر، أمّا البطاقةُ فمسرحٌ للعبوة
+                      وحدها — سوادٌ وإضاءةٌ ذهبية وظلّ. */}
+                  <Bottle perfume={p} />
 
                   <div className="card-body">
                     <h3>{perfumeName(p, locale)}</h3>

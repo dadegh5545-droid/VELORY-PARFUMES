@@ -2,14 +2,12 @@
 
 import { useEffect, useRef } from "react";
 import {
-  BRANCHES,
   branchNameIn,
   getBranch,
   getPerfume,
   perfumeName,
   priceIn,
   type Branch,
-  type BranchId,
 } from "./catalog";
 import { T } from "./i18n";
 import { useCart, type CartItem } from "./cart";
@@ -49,10 +47,15 @@ function orderText(branch: Branch, rows: CartItem[], locale: Locale) {
   return blocks.join("\n\n— — —\n\n");
 }
 
-/** لوحةُ السلة — تنزلق من جهة البداية وتُغلق بـ Escape أو بالنقر خارجها */
+/**
+ * لوحةُ السلة — تنزلق من جهة البداية وتُغلق بـ Escape أو بالنقر خارجها.
+ *
+ * تعرض **سلّةَ الفرع الذي يقف فيه الزائر وحدها**: من انتقل من نجامينا
+ * إلى الدوحة لا تنتقل عطورُه معه، وتبقى سلّتُه هناك كما تركها حتى يعود.
+ */
 export function CartPanel() {
-  const { items, drop, clear, open, setOpen } = useCart();
-  const { locale } = useActive();
+  const { itemsOf, drop, clear, open, setOpen } = useCart();
+  const { branch: activeId, locale } = useActive();
   const t = T[locale];
   const panelRef = useRef<HTMLDivElement>(null);
 
@@ -69,12 +72,10 @@ export function CartPanel() {
 
   if (!open) return null;
 
-  // الطلبُ يُجمع بالفرع: لكلِّ فرعٍ رسالتُه ورقمُه، فلا يذهب طلبُ نجامينا
+  // فرعُ الزائر وحده: رقمُه ورسالتُه وأسعارُه — فلا يذهب طلبُ نجامينا
   // إلى الدوحة ولا العكس.
-  const byBranch = BRANCHES.map((b) => ({
-    branch: b,
-    rows: items.filter((i) => i.branch === b.id),
-  })).filter((g) => g.rows.length > 0);
+  const branch = getBranch(activeId);
+  const rows = itemsOf(activeId);
 
   return (
     <div className="cart-veil" onClick={() => setOpen(false)}>
@@ -99,64 +100,68 @@ export function CartPanel() {
           </button>
         </div>
 
-        {byBranch.length === 0 ? (
+        {!branch || rows.length === 0 ? (
           <p className="cart-empty">{t.cartEmpty}</p>
         ) : (
           <>
-            {byBranch.map(({ branch, rows }) => (
-              <section className="cart-group" key={branch.id}>
-                <h3>{branchNameIn(branch, locale)}</h3>
+            <section className="cart-group">
+              <h3>{branchNameIn(branch, locale)}</h3>
 
-                <ul className="cart-rows">
-                  {rows.map((r) => {
-                    const p = getPerfume(r.id);
-                    if (!p) return null;
-                    return (
-                      <li key={`${r.branch}-${r.id}`}>
-                        <span className="cart-name">
-                          {perfumeName(p, locale)}
-                          {r.qty > 1 && (
-                            <span className="cart-qty" dir="ltr">
-                              ×{r.qty}
-                            </span>
-                          )}
-                        </span>
-                        <span className="cart-price">
-                          {priceIn(p, branch, locale)}
-                        </span>
-                        <button
-                          type="button"
-                          className="cart-drop"
-                          onClick={() => drop(r.id, r.branch)}
-                          aria-label={`${t.remove} ${perfumeName(p, locale)}`}
-                        >
-                          −
-                        </button>
-                      </li>
-                    );
-                  })}
-                </ul>
+              <ul className="cart-rows">
+                {rows.map((r) => {
+                  const p = getPerfume(r.id);
+                  if (!p) return null;
+                  return (
+                    <li key={`${r.branch}-${r.id}`}>
+                      <span className="cart-name">
+                        {perfumeName(p, locale)}
+                        {r.qty > 1 && (
+                          <span className="cart-qty" dir="ltr">
+                            ×{r.qty}
+                          </span>
+                        )}
+                      </span>
+                      {/* السعرُ في هذا الفرع بعملته — لا سعرَ مجرّدٌ للعطر */}
+                      <span className="cart-price">
+                        {priceIn(p, branch, locale)}
+                      </span>
+                      <button
+                        type="button"
+                        className="cart-drop"
+                        onClick={() => drop(r.id, r.branch)}
+                        aria-label={`${t.remove} ${perfumeName(p, locale)}`}
+                      >
+                        −
+                      </button>
+                    </li>
+                  );
+                })}
+              </ul>
 
-                {/* زرُّ الإتمام لا يظهر لفرعٍ بلا رقم: زرٌّ لا يفعل شيئًا
-                    أسوأ من غيابه، والرقمُ يُملأ في `catalog.ts`. */}
-                {branch.whatsapp ? (
-                  <a
-                    className="btn cart-send"
-                    href={`https://wa.me/${branch.whatsapp}?text=${encodeURIComponent(
-                      orderText(branch, rows, locale)
-                    )}`}
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    {t.checkoutWhatsapp}
-                  </a>
-                ) : (
-                  <p className="cart-note">{t.branchNoContact}</p>
-                )}
-              </section>
-            ))}
+              {/* زرُّ الإتمام لا يظهر لفرعٍ بلا رقم: زرٌّ لا يفعل شيئًا
+                  أسوأ من غيابه، والرقمُ يُملأ في `catalog.ts`. */}
+              {branch.whatsapp ? (
+                <a
+                  className="btn cart-send"
+                  href={`https://wa.me/${branch.whatsapp}?text=${encodeURIComponent(
+                    orderText(branch, rows, locale)
+                  )}`}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  {t.checkoutWhatsapp}
+                </a>
+              ) : (
+                <p className="cart-note">{t.branchNoContact}</p>
+              )}
+            </section>
 
-            <button type="button" className="cart-clear" onClick={clear}>
+            {/* التفريغُ لسلّة هذا الفرع وحدها */}
+            <button
+              type="button"
+              className="cart-clear"
+              onClick={() => clear(activeId)}
+            >
               {t.cartClear}
             </button>
           </>
@@ -166,12 +171,3 @@ export function CartPanel() {
   );
 }
 
-/** يُستدعى من الترويسة: عددُ القطع وفتحُ اللوحة */
-export function useCartBadge(): { count: number; openCart: () => void } {
-  const { count, setOpen } = useCart();
-  return { count, openCart: () => setOpen(true) };
-}
-
-/** مذكورٌ هنا كي لا يستورد الرأسُ الكتالوجَ من أجل نوعٍ واحد */
-export type { BranchId };
-export { getBranch };

@@ -8,13 +8,17 @@ import type { BranchId } from "./catalog";
 export type CartItem = { id: string; branch: BranchId; qty: number };
 
 type CartValue = {
+  /** كلُّ ما في التخزين — لا يُعرض كما هو، بل يُصفّى بالفرع دائمًا */
   items: CartItem[];
   add: (id: string, branch: BranchId) => void;
   /** إنقاصُ واحدٍ من الكمّية، وحذفُ السطر عند بلوغها صفرًا */
   drop: (id: string, branch: BranchId) => void;
-  clear: () => void;
-  /** عددُ القطع لا عددُ الأسطر — هو ما يُعرض في الترويسة */
-  count: number;
+  /** تفريغُ سلّةِ فرعٍ بعينه — سلّةُ الفرع الآخر لا تُمَسّ */
+  clear: (branch: BranchId) => void;
+  /** سلّةُ فرعٍ بعينه: ما أضافه الزائر وهو فيه، لا ما أضافه في غيره */
+  itemsOf: (branch: BranchId) => CartItem[];
+  /** عددُ قطع فرعٍ بعينه — هو ما يُعرض في الترويسة */
+  countOf: (branch: BranchId) => number;
   open: boolean;
   setOpen: (v: boolean) => void;
 };
@@ -24,7 +28,8 @@ const CartContext = createContext<CartValue>({
   add: () => {},
   drop: () => {},
   clear: () => {},
-  count: 0,
+  itemsOf: () => [],
+  countOf: () => 0,
   open: false,
   setOpen: () => {},
 });
@@ -92,13 +97,19 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       )
     );
 
-  const clear = () => setItems(() => save([]));
+  // التفريغُ يمسّ فرعًا واحدًا: زائرٌ يفرغ سلّة نجامينا لا يُفرغ سلّةَ
+  // الدوحة معها — ولكلِّ فرعٍ سلّتُه القائمة بذاتها.
+  const clear = (branch: BranchId) =>
+    setItems((prev) => save(prev.filter((i) => i.branch !== branch)));
 
-  const count = items.reduce((n, i) => n + i.qty, 0);
+  const itemsOf = (branch: BranchId) => items.filter((i) => i.branch === branch);
+
+  const countOf = (branch: BranchId) =>
+    items.reduce((n, i) => (i.branch === branch ? n + i.qty : n), 0);
 
   return (
     <CartContext.Provider
-      value={{ items, add, drop, clear, count, open, setOpen }}
+      value={{ items, add, drop, clear, itemsOf, countOf, open, setOpen }}
     >
       {children}
     </CartContext.Provider>

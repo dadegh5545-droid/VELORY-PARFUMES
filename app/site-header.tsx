@@ -30,7 +30,7 @@ function useScrolled() {
 }
 
 export function SiteHeader() {
-  const { count, setOpen } = useCart();
+  const { countOf, setOpen } = useCart();
   const { reopen } = usePrefs();
   const { branch, locale } = useActive();
   const t = T[locale];
@@ -55,7 +55,8 @@ export function SiteHeader() {
         {/* زرٌّ لا رابط: السلةُ لوحةٌ تُفتح فوق الصفحة، ولا صفحةَ لها */}
         <button type="button" className="cart" onClick={() => setOpen(true)}>
           {/* aria-live كي يُعلَن العدد الجديد لمن لا يرى الترويسة عند الإضافة */}
-          {t.navCart} <span aria-live="polite">({count})</span>
+          {/* عدّادُ الفرع الذي يقف فيه الزائر وحده — لكلِّ فرعٍ سلّتُه */}
+          {t.navCart} <span aria-live="polite">({countOf(branch)})</span>
         </button>
 
         {/* مفتاحٌ واحد يعيد فتح الترحيب: الفرع واللغة اختيارٌ واحدٌ مترابط.

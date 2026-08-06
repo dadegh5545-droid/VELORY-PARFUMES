@@ -251,7 +251,7 @@ export const CATALOG: Perfume[] = [
     size: "100 مل",
     tint: "rgba(190, 155, 60, 0.28)",
     image: "/products/thaljee.jpg",
-    branches: { chad: {} },
+    branches: { chad: { price: 1200 } },
   },
   {
     id: "bushra",
@@ -261,7 +261,7 @@ export const CATALOG: Perfume[] = [
     size: "100 مل",
     tint: "rgba(160, 190, 110, 0.24)",
     image: "/products/bushra.jpg",
-    branches: { chad: {} },
+    branches: { chad: { price: 1200 } },
   },
   {
     id: "be-sugar",

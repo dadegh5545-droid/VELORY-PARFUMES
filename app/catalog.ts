@@ -62,6 +62,10 @@ export type Branch = {
   hours?: string;
   /** رابط المحل على خرائط جوجل */
   mapUrl?: string;
+  /** معرّفُ عطرِ الواجهة — العطرُ الذي يقف في صدر الصفحة الأولى.
+   *  غيّرِ المعرّفَ هنا فيتغيّر بطلُ الواجهة، ولا موضعَ آخرَ يُمسّ.
+   *  ولا يُعرض إلا إن كان معروضًا في هذا الفرع وله صورة. */
+  featured?: string;
 };
 
 // مشاهدُ تشاد — مواضعُ حقيقيةٌ بأسمائها، لا صورَ صحراءَ بلا نسب.
@@ -197,6 +201,7 @@ export const BRANCHES: Branch[] = [
     // والإحداثيّةُ تصل إلى الباب. ولا `hl=` في الرابط — فرضُ لغةٍ على الخريطة
     // يفتحها بالعربية في يد زبونٍ فرنسيّ اللسان، وتركُها يتبع لغةَ جهازه.
     mapUrl: "https://www.google.com/maps?q=12.1142871,15.0559209&z=17",
+    featured: "thaljee",
   },
 ];
 
@@ -688,6 +693,20 @@ export const perfumeScene = (p: Perfume): Scene | undefined => {
 };
 
 export const getPerfume = (id: string) => CATALOG.find((p) => p.id === id);
+
+/**
+ * عطرُ واجهة الفرع.
+ *
+ * ثلاثةُ شروطٍ لا واحد: أن يكون المعرّف مملوءًا، وأن يكون العطرُ معروضًا
+ * في هذا الفرع، وأن تكون له صورة. فلو حُذف العطرُ من الفرع أو أُخرج من
+ * الكتالوج سقطت الواجهةُ إلى صورتها المجرّدة ولم تُعرض عبوةُ عطرٍ لا
+ * يُباع هناك — ولا تُعرض القارورةُ المرسومة بديلًا، فبطلُ الواجهة صورة.
+ */
+export const featuredOf = (b: Branch): Perfume | undefined => {
+  if (!b.featured) return undefined;
+  const p = getPerfume(b.featured);
+  return p && p.image && p.branches[b.id] ? p : undefined;
+};
 
 /** عطور فرعٍ بعينه — تقرأ منها شبكة القسم */
 export const perfumesOf = (branch: BranchId) =>

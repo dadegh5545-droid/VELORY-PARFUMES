@@ -122,6 +122,23 @@ export type Dict = {
   heroText: string;
   heroCta: string;
 
+  /**
+   * واجهةُ فرع تشاد وحدَها.
+   *
+   * فرعٌ له واجهتُه لأن له بلدَه: العنوانُ يسمّي تشاد، والشريطُ يعِد
+   * بتوصيلٍ داخلها وطلبٍ على واتسابها. وقطرُ تبقى على الواجهة العامّة
+   * أعلاه حتى تُرسل بياناتُها — فلا يُوعَد زبونٌ بما لا فرعَ له فيه.
+   * والعنوانُ سطرٌ واحدٌ لا مشطور: `heroTitle` كُسر إلى نصفين فتكسّر معه.
+   */
+  heroChad: {
+    title: string;
+    text: string;
+    shop: string;
+    featured: string;
+    /** ثلاثُ وعودٍ قصيرة أسفل الواجهة — لا رابعَ لها في التخطيط */
+    strip: [string, string, string];
+  };
+
   quote: [string, string];
   quoteCite: string;
   rights: string;
@@ -201,6 +218,14 @@ export const T: Record<Locale, Dict> = {
       "خلاصاتٌ نادرة، تُمزج يدويًا في دفعاتٍ صغيرة. لكلِّ فرعٍ مجموعتُه وأسعارُه بعملة بلده.",
     heroCta: "تصفّح المجموعة",
 
+    heroChad: {
+      title: "عطورٌ تحكي روحَ تشاد",
+      text: "اكتشف مجموعةً مختارةً من العطور الفاخرة، بروائحَ تناسب كلَّ لحظة.",
+      shop: "تسوّق المجموعة",
+      featured: "اكتشف العطر المميّز",
+      strip: ["عطورٌ أصلية", "توصيل داخل تشاد", "طلبٌ سريع عبر واتساب"],
+    },
+
     quote: ["العِطرُ ليس زينة.", "إنه ذاكرةٌ تُلبَس."],
     quoteCite: "فالوري — دار عطور",
     rights: "فالوري بارفوم",
@@ -275,6 +300,18 @@ export const T: Record<Locale, Dict> = {
     heroText:
       "Rare extracts, blended by hand in small batches. Each branch has its own collection and its own prices.",
     heroCta: "Browse the collection",
+
+    heroChad: {
+      title: "Fragrances that tell the soul of Chad",
+      text: "Discover a curated selection of fine perfumes — a scent for every moment.",
+      shop: "Shop the collection",
+      featured: "Meet the featured scent",
+      strip: [
+        "Authentic perfumes",
+        "Delivery within Chad",
+        "Fast ordering on WhatsApp",
+      ],
+    },
 
     quote: ["Perfume is no ornament.", "It is a memory you wear."],
     quoteCite: "VALORY — Perfume house",
@@ -355,6 +392,18 @@ export const T: Record<Locale, Dict> = {
     heroText:
       "Des extraits rares, assemblés à la main en petits lots. Chaque succursale a sa collection et ses prix.",
     heroCta: "Parcourir la collection",
+
+    heroChad: {
+      title: "Des parfums qui racontent l'âme du Tchad",
+      text: "Découvrez une sélection de parfums d'exception, une fragrance pour chaque instant.",
+      shop: "Découvrir la collection",
+      featured: "Voir le parfum vedette",
+      strip: [
+        "Parfums authentiques",
+        "Livraison au Tchad",
+        "Commande rapide sur WhatsApp",
+      ],
+    },
 
     quote: ["Le parfum n'est pas un ornement.", "C'est une mémoire que l'on porte."],
     quoteCite: "VALORY — Maison de parfums",

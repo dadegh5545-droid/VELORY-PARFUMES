@@ -210,6 +210,255 @@ a {
   }
 }
 
+/* ── واجهةُ فرع تشاد ───────────────────────────────────────────────────
+   سوادٌ وذهبٌ وعبوةٌ واحدة — لا صورةَ منظرٍ خلفها. والقاعدةُ الحاكمة هنا
+   الارتفاع: الواجهةُ العامّة `100svh` فتملأ الشاشةَ ولا يظهر تحتها شيء،
+   وهذه تقف دونه فيبدو صدرُ المجموعة عند أوّل تمرير. */
+
+.hero-chad {
+  position: relative;
+  display: grid;
+  place-items: center;
+  /* الحدّان معًا: النسبةُ تتبع الشاشةَ القصيرة، والسقفُ يمنع الواجهةَ
+     من التمدّد بلا داعٍ على شاشةٍ طويلة. */
+  min-height: min(78svh, 680px);
+  /* قيست الواجهةُ على شاشة 800px فبلغت 834 — أطولَ من الشاشة، فلا يظهر
+     تحتها شيءٌ وهو نقضُ الغرض. الحشوُ والهوامشُ وقدُّ العبوة خُفضت حتى
+     استقرّت دون الشاشة بفرجةٍ تُري صدرَ القسم التالي. */
+  padding: 6.75rem 0 2.25rem;
+  text-align: center;
+  overflow: hidden;
+}
+
+.hero-chad-inner {
+  position: relative;
+  width: var(--shell);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* العنوانُ سطرٌ واحدٌ يُقرأ لا شعارٌ يُفكّ.
+   الواجهةُ العامّة تضعه عند `clamp(3rem, 9vw, 7.5rem)` مشطورًا بـ`<em>`
+   إلى سطرين، فتتكسّر العربيةُ على الشاشة الضيّقة أسطرًا غريبة. هنا نصفُ
+   ذلك القدّ ونصٌّ واحد، و`balance` يوزّع ما اضطرّ إلى سطرين توزيعًا
+   متساويًا بدل كلمةٍ يتيمةٍ في آخره. */
+.hero-chad-title {
+  font-size: clamp(1.8rem, 4.3vw, 3.05rem);
+  line-height: 1.4;
+  text-wrap: balance;
+  /* صريحًا لا اتّكالًا على الموروث: كسرُ الكلمة يشوّه العربيةَ المتّصلة */
+  overflow-wrap: normal;
+  word-break: normal;
+  margin-bottom: 0.85rem;
+  animation: fade-up 0.9s var(--ease) 0.05s both;
+}
+
+.hero-chad-text {
+  max-width: 34rem;
+  color: var(--ivory-dim);
+  font-size: clamp(0.95rem, 1.5vw, 1.05rem);
+  text-wrap: pretty;
+  margin-bottom: clamp(1.15rem, 2.2vw, 1.6rem);
+  animation: fade-up 0.9s var(--ease) 0.16s both;
+}
+
+/* مسرحُ العبوة: الهالةُ والنقشُ طبقتان مطلقتان تحتها، والاسمُ تحتهنّ
+   في تدفّق العمود — فلا يتراكب حرفٌ على صورة. */
+.hero-chad-stage {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: clamp(1.35rem, 2.6vw, 1.85rem);
+}
+
+.hero-chad-halo,
+.hero-chad-naqsh {
+  position: absolute;
+  /* 46% لا 50%: مركزُ العمود يهبط باسم العطر تحته، فتُرفع الطبقتان
+     قليلًا حتى يقع مركزُهما على العبوة نفسِها لا على ما بعدها. */
+  top: 46%;
+  left: 50%;
+  translate: -50% -50%;
+  aspect-ratio: 1;
+  pointer-events: none;
+}
+
+.hero-chad-halo {
+  width: min(30rem, 94vw);
+  background: radial-gradient(
+    circle,
+    rgba(198, 166, 100, 0.2) 0%,
+    rgba(198, 166, 100, 0.07) 40%,
+    transparent 70%
+  );
+  animation: hero-glow 1.5s var(--ease) both;
+}
+
+/* النقشُ التشاديّ خلف العبوة — عند حدّ الرؤية كما هو في سائر الموقع.
+   ويُقصّ إلى قرصٍ يخفت عند حافّته: مربّعُ نقشٍ ذو حدٍّ حادٍّ خلف عبوةٍ
+   يقرأ لوحًا مركونًا لا زخرفةً في الهواء. */
+.hero-chad-naqsh {
+  width: min(23rem, 80vw);
+  background-image: var(--naqsh-lattice);
+  background-size: 36px 36px;
+  /* أرفعُ قليلًا من نسيج الأقسام (٣٪): هذا يقع خلف عبوةٍ مضيئةٍ وهالة،
+     فما يُحسّ على سوادٍ خالٍ يبتلعه الضوءُ هنا. ويبقى دون حدِّ القراءة. */
+  opacity: 0.09;
+  -webkit-mask-image: radial-gradient(circle, #000 26%, transparent 68%);
+  mask-image: radial-gradient(circle, #000 26%, transparent 68%);
+  animation: hero-naqsh-in 1.7s var(--ease) both;
+}
+
+/* صورةُ المنتج بخلفيّتها كما صُوِّرت — لا تُقصّ ولا تُنزع خلفيّتُها.
+   ولأن حافّتها مستقيمةٌ فتقرأ مربّعًا طافيًا على السواد، يُحاط بخيطٍ
+   ذهبيٍّ رفيعٍ كخيط بطاقات المجموعة: تصير الحافّةُ مقصودةً لا عرضية. */
+.hero-chad-photo {
+  position: relative;
+  z-index: 1;
+  height: clamp(180px, 24vh, 260px);
+  width: auto;
+  max-width: min(100%, 22rem);
+  object-fit: contain;
+  border: 1px solid var(--line);
+  filter: drop-shadow(0 22px 38px rgba(10, 9, 8, 0.8));
+  animation: hero-rise 1.05s var(--ease) 0.22s both;
+}
+
+.hero-chad-name {
+  margin-top: 0.9rem;
+  font-size: 0.98rem;
+  letter-spacing: 0.06em;
+  color: var(--ivory);
+  animation: fade-up 0.9s var(--ease) 0.4s both;
+}
+
+/* الدارُ سطرٌ ثانٍ خافت: تُعرَف ولا تنازع اسمَ العطر */
+.hero-chad-name span {
+  display: block;
+  margin-top: 0.35rem;
+  font-size: 0.7rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--gold-ink);
+}
+
+.hero-chad-actions {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+  animation: fade-up 0.9s var(--ease) 0.5s both;
+}
+
+/* شريطُ الوعود: ثلاثةٌ في سطر، يفصل بينها معيّنٌ ذهبيّ صغير */
+.hero-chad-strip {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem 1.4rem;
+  margin: clamp(1.4rem, 2.8vw, 2rem) 0 0;
+  padding: 0;
+  list-style: none;
+  color: var(--ivory-dim);
+  font-size: 0.76rem;
+  letter-spacing: 0.1em;
+  animation: fade-up 0.9s var(--ease) 0.62s both;
+}
+
+.hero-chad-strip li + li::before {
+  content: "◈";
+  margin-inline-end: 1.4rem;
+  color: var(--gold-dim);
+}
+
+@keyframes hero-rise {
+  from {
+    opacity: 0;
+    transform: translateY(24px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes hero-glow {
+  from {
+    opacity: 0;
+    transform: scale(0.82);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* النقشُ يستوي من ميلٍ خفيف — و`translate` في القاعدة يتولّى التمركز
+   فلا تنازعه `transform` هنا: خاصّتان مستقلّتان تتراكبان. */
+@keyframes hero-naqsh-in {
+  from {
+    opacity: 0;
+    transform: rotate(-7deg) scale(0.88);
+  }
+  to {
+    opacity: 0.07;
+    transform: none;
+  }
+}
+
+@media (max-width: 720px) {
+  .hero-chad {
+    /* على الهاتف يقرّر المحتوى الارتفاع: نسبةٌ من الشاشة تترك فراغًا
+       تحت الشريط أو تضغط العبوة، والحشوُ وحده أصدق. */
+    min-height: auto;
+    padding: 5.75rem 0 2.25rem;
+  }
+
+  .hero-chad-photo {
+    height: clamp(160px, 36vw, 230px);
+  }
+
+  .hero-chad-strip {
+    font-size: 0.72rem;
+    gap: 0.45rem 1rem;
+  }
+
+  .hero-chad-strip li + li::before {
+    margin-inline-end: 1rem;
+  }
+}
+
+/* الوعودُ الثلاثة تنزل بعضُها تحت بعض على أضيق الشاشات، فيسقط المعيّنُ
+   الفاصل: فاصلٌ في أوّل سطرٍ جديدٍ يقرأ علامةَ ترقيمٍ ضالّة. */
+@media (max-width: 420px) {
+  .hero-chad-strip {
+    flex-direction: column;
+  }
+
+  .hero-chad-strip li + li::before {
+    content: none;
+  }
+}
+
+/* من طلب سكونَ الحركة يرى الواجهةَ تامّةً من أوّل لحظة — لا دخولَ ولا
+   ميل. والنقشُ يعود إلى شفافيّته من قاعدته لا من نهاية حركته. */
+@media (prefers-reduced-motion: reduce) {
+  .hero-chad-title,
+  .hero-chad-text,
+  .hero-chad-halo,
+  .hero-chad-naqsh,
+  .hero-chad-photo,
+  .hero-chad-name,
+  .hero-chad-actions,
+  .hero-chad-strip {
+    animation: none;
+  }
+}
+
+
 /* ── الأزرار ───────────────────────────────────────────────────────────── */
 
 

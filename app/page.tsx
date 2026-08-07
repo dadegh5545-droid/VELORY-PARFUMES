@@ -6,6 +6,7 @@ import { branchCity, getBranch } from "./catalog";
 import { T } from "./i18n";
 import { useActive } from "./prefs";
 import { BranchSection } from "./branch";
+import { ChadHero } from "./hero-chad";
 
 // الاتصال بـ AWS يبقى مهيّأً — جاهز لربط الكتالوج بموديل Perfume لاحقًا.
 Amplify.configure(outputs);
@@ -18,25 +19,32 @@ export default function Home() {
 
   return (
     <main>
-      <section className="hero">
-        <div className="hero-inner">
-          <p className="eyebrow">
-            {t.heroEyebrow}
-            {active && ` · ${branchCity(active, locale)}`}
-          </p>
-          <h1>
-            {t.heroTitle.lead}
-            <em>{t.heroTitle.em}</em>
-          </h1>
-          <p className="hero-text">{t.heroText}</p>
-          <div className="hero-actions">
-            <a href={`#${branch}`} className="btn btn-primary">
-              {t.heroCta}
-            </a>
+      {/* لتشادَ واجهتُها ولقطرَ الواجهةُ العامّة — والفرعُ الواحد لا يرث
+          وعودَ الآخر. ما بعد الواجهة مشتركٌ كما كان: قسمُ الفرع بمشهده
+          وبطاقةِ محلِّه، ثم المقولة. */}
+      {active?.id === "chad" ? (
+        <ChadHero branch={active} locale={locale} />
+      ) : (
+        <section className="hero">
+          <div className="hero-inner">
+            <p className="eyebrow">
+              {t.heroEyebrow}
+              {active && ` · ${branchCity(active, locale)}`}
+            </p>
+            <h1>
+              {t.heroTitle.lead}
+              <em>{t.heroTitle.em}</em>
+            </h1>
+            <p className="hero-text">{t.heroText}</p>
+            <div className="hero-actions">
+              <a href={`#${branch}`} className="btn btn-primary">
+                {t.heroCta}
+              </a>
+            </div>
           </div>
-        </div>
-        <div className="hero-scroll" aria-hidden="true" />
-      </section>
+          <div className="hero-scroll" aria-hidden="true" />
+        </section>
+      )}
 
       {active && <BranchSection branch={active} />}
 

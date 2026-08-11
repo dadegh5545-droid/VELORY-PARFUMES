@@ -459,6 +459,16 @@ const BRAND_TR: Record<string, string> = {
   "زمزم للعطور": "Zamzam Perfumes",
   "عطورات العنود": "Al Anoud Perfumes",
   هيماني: "Hemani",
+  سوماتي: "Sumati",
+  النعيم: "Al-Nuaim",
+  "شمس العربية": "Shams Arabia",
+  "أستانا أريانا": "Astana Aryana",
+  سيفكو: "Sifco",
+  الرحاب: "Al Rehab",
+  الجوهرجي: "Al Jawharji",
+  "أستانا لاكجري": "Astana Luxury",
+  شرفان: "Shurfan",
+  فايزة: "Faiza",
 };
 
 export const trSize = (size: string, locale: Locale) =>

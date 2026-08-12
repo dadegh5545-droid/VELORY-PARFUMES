@@ -1,16 +1,17 @@
-// لوحة إدخال الأسعار — تُفتح على الجهاز وقت التطوير لا على الموقع المنشور.
+// لوحة إدخال بيانات الكتالوج — تُفتح على الجهاز وقت التطوير لا على الموقع المنشور.
 // مصدرها وهدفها ملفٌّ واحد: app/catalog.ts، فما يُحفظ هنا يُرفع مع الكود.
 
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { BRANCHES, CATALOG } from "../../catalog";
+import { LONGEVITY_OPTIONS, SIZE_OPTIONS } from "../../i18n";
 import { PricesForm } from "./prices-form";
 import "../admin.css";
 
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "أسعار الكتالوج — فالوري",
+  title: "بيانات الكتالوج — فالوري",
 };
 
 export default function PricesPage() {
@@ -30,12 +31,23 @@ export default function PricesPage() {
     id: p.id,
     name: p.name,
     latin: p.latin ?? "",
-    meta: [p.brand, p.size].filter(Boolean).join(" · "),
+    // الدارُ وحدها في السطر الصغير: الحجم صار حقلًا يُحرَّر فلا يُكرَّر تحت الاسم.
+    meta: p.brand ?? "",
     image: p.image ?? "",
+    size: p.size ?? "",
+    gender: p.gender ?? "",
+    longevity: p.longevity ?? "",
     prices: Object.fromEntries(
       Object.entries(p.branches).map(([id, stock]) => [id, stock?.price ?? null])
     ) as Record<string, number | null>,
   }));
 
-  return <PricesForm branches={branches} rows={rows} />;
+  return (
+    <PricesForm
+      branches={branches}
+      rows={rows}
+      sizes={SIZE_OPTIONS}
+      longevities={LONGEVITY_OPTIONS}
+    />
+  );
 }

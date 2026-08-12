@@ -24,15 +24,19 @@ const EXT: Record<string, string> = {
   "image/avif": "avif",
 };
 
-/** يضبط حقل `image` لعطرٍ بعينه، ويُدرجه بعد `tint` إن لم يكن له حقلٌ أصلًا */
+/** يضبط حقل `image` لعطرٍ بعينه، ويُدرجه بعد `tint` إن لم يكن له حقلٌ أصلًا.
+ *  الالتقاط بلا فاصل السطر: `$` في ملفٍ بنهايات CRLF لا يطابق بعد `,`
+ *  لأن `\r` بينهما، فينفلت الحقلُ الموجود ويفشل الإدراج صامتًا. */
 function setImage(src: string, id: string, url: string): string {
   const at = src.indexOf(`id: "${id}",`);
   if (at === -1) return src;
 
   const stop = src.indexOf("\n  },", at);
+  if (stop === -1) return src;
   const block = src.slice(at, stop);
+  const nl = src.includes("\r\n") ? "\r\n" : "\n";
 
-  const existing = block.match(/^ *image: "[^"]*",$/m);
+  const existing = block.match(/^ *image: "[^"\r\n]*",/m);
   if (existing) {
     const line = existing[0];
     const indent = line.match(/^ */)?.[0] ?? "    ";
@@ -44,13 +48,13 @@ function setImage(src: string, id: string, url: string): string {
   }
 
   // `tint` حقلٌ إلزاميّ في كل عطر، فهو مرساةٌ مضمونة للإدراج بعدها.
-  const tint = block.match(/^ *tint: .*,$/m);
+  const tint = block.match(/^ *tint: [^\r\n]*,/m);
   if (!tint) return src;
   const indent = tint[0].match(/^ */)?.[0] ?? "    ";
 
   return (
     src.slice(0, at) +
-    block.replace(tint[0], `${tint[0]}\n${indent}image: "${url}",`) +
+    block.replace(tint[0], `${tint[0]}${nl}${indent}image: "${url}",`) +
     src.slice(stop)
   );
 }

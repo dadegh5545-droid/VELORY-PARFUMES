@@ -437,11 +437,31 @@ export const SEASON_TR: Record<Season, Record<Locale, string>> = {
 // الحجم يُكتب في الكتالوج بالعربية، وهذه مقابلاته اللاتينية.
 // ما ليس في الجدول يُعرض كما هو — أفضل من إخفائه أو تشويهه.
 const SIZE_TR: Record<string, Record<SecondLocale, string>> = {
+  "12 مل": { en: "12 ml", fr: "12 ml" },
+  "25 مل": { en: "25 ml", fr: "25 ml" },
+  "50 مل": { en: "50 ml", fr: "50 ml" },
   "100 مل": { en: "100 ml", fr: "100 ml" },
+  "200 مل": { en: "200 ml", fr: "200 ml" },
+  "250 مل": { en: "250 ml", fr: "250 ml" },
   "500 مل": { en: "500 ml", fr: "500 ml" },
+  "1000 مل": { en: "1000 ml", fr: "1000 ml" },
+  "25 جم": { en: "25 g", fr: "25 g" },
+  "50 جم": { en: "50 g", fr: "50 g" },
   "100 جم": { en: "100 g", fr: "100 g" },
+  "200 جم": { en: "200 g", fr: "200 g" },
   "500 جم": { en: "500 g", fr: "500 g" },
+  "1000 جم": { en: "1000 g", fr: "1000 g" },
   "٢٥ جم · رول أون": { en: "25 g · roll-on", fr: "25 g · roll-on" },
+};
+
+// مددُ الثبات المعروضة في لوحة الإدخال — تُترجَم تلقائيًا فلا يكتبها
+// صاحبُ المحل ثلاثَ مرّات. وما كُتب بيدٍ خارجَها يُعرض كما هو.
+const LONGEVITY_TR: Record<string, Record<SecondLocale, string>> = {
+  "2 – 4 ساعات": { en: "2 – 4 hours", fr: "2 – 4 heures" },
+  "4 – 6 ساعات": { en: "4 – 6 hours", fr: "4 – 6 heures" },
+  "6 – 8 ساعات": { en: "6 – 8 hours", fr: "6 – 8 heures" },
+  "8 – 12 ساعة": { en: "8 – 12 hours", fr: "8 – 12 heures" },
+  "أكثر من 12 ساعة": { en: "12+ hours", fr: "Plus de 12 heures" },
 };
 
 // أسماء الدور كما هي مطبوعةٌ باللاتينية على العبوات نفسها — لا ترجمةً لها،
@@ -473,6 +493,13 @@ const BRAND_TR: Record<string, string> = {
 
 export const trSize = (size: string, locale: Locale) =>
   locale === "ar" ? size : SIZE_TR[size]?.[locale] ?? size;
+
+export const trLongevity = (longevity: string, locale: Locale) =>
+  locale === "ar" ? longevity : LONGEVITY_TR[longevity]?.[locale] ?? longevity;
+
+/** خياراتُ لوحة الإدخال — مصدرُها الجدولُ نفسه فلا يفترقان */
+export const LONGEVITY_OPTIONS = Object.keys(LONGEVITY_TR);
+export const SIZE_OPTIONS = Object.keys(SIZE_TR);
 
 export const trBrand = (brand: string, locale: Locale) =>
   locale === "ar" ? brand : BRAND_TR[brand] ?? brand;

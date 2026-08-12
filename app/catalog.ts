@@ -12,6 +12,7 @@ import {
   T,
   formatNumber,
   trBrand,
+  trLongevity,
   trSize,
 } from "./i18n";
 
@@ -962,10 +963,12 @@ export const perfumeNotes = (p: Perfume, locale: Locale) =>
     ? p.notes
     : p.tr?.[locale as SecondLocale]?.notes ?? p.notes;
 
+/** الثبات: المترجَمُ يدًا أولًا، وإلا فمقابلُ المدّة المعروفة، وإلا فالعربيّ كما كُتب */
 const perfumeLongevity = (p: Perfume, locale: Locale) =>
   locale === "ar"
     ? p.longevity
-    : p.tr?.[locale as SecondLocale]?.longevity ?? p.longevity;
+    : p.tr?.[locale as SecondLocale]?.longevity ??
+      (p.longevity && trLongevity(p.longevity, locale));
 
 export const countLabel = (n: number, locale: Locale) => T[locale].count(n);
 

@@ -5,16 +5,25 @@ import s from "./prices.module.css";
 
 type BranchInfo = { id: string; name: string; currency: string };
 
+/** الحقول النصّية التي تُحرَّر هنا — أسماؤها كما في نوع Perfume */
+const FIELDS = ["size", "gender", "longevity"] as const;
+type Field = (typeof FIELDS)[number];
+
+const GENDERS = ["رجالي", "نسائي", "للجنسين"];
+
 type Row = {
   id: string;
   name: string;
   latin: string;
   meta: string;
   image: string;
+  size: string;
+  gender: string;
+  longevity: string;
   prices: Record<string, number | null>;
 };
 
-/** ما يكتبه المستخدم نصًّا: "" يعني بلا سعر، وما عداه رقمٌ يُتحقَّق منه */
+/** ما يُكتب في الحقول نصًّا: "" يعني «غير محدَّد» فيختفي الحقل من المصدر */
 type Draft = Record<string, Record<string, string>>;
 
 const AR_DIGITS = "٠١٢٣٤٥٦٧٨٩";
@@ -36,7 +45,7 @@ const parse = (v: string): number | null | undefined => {
 
 const asText = (v: number | null) => (v === null ? "" : String(v));
 
-const initialDraft = (rows: Row[]): Draft =>
+const initialPrices = (rows: Row[]): Draft =>
   Object.fromEntries(
     rows.map((r) => [
       r.id,
@@ -46,16 +55,31 @@ const initialDraft = (rows: Row[]): Draft =>
     ])
   );
 
+const initialFields = (rows: Row[]): Draft =>
+  Object.fromEntries(
+    rows.map((r) => [
+      r.id,
+      { size: r.size, gender: r.gender, longevity: r.longevity },
+    ])
+  );
+
 export function PricesForm({
   branches,
   rows,
+  sizes,
+  longevities,
 }: {
   branches: BranchInfo[];
   rows: Row[];
+  sizes: string[];
+  longevities: string[];
 }) {
   // الأصل يأتي من الملف؛ والمسودّة ما تحت اليد. الفرق بينهما هو ما يُحفظ.
-  const [saved, setSaved] = useState<Draft>(() => initialDraft(rows));
-  const [draft, setDraft] = useState<Draft>(() => initialDraft(rows));
+  const [saved, setSaved] = useState<Draft>(() => initialPrices(rows));
+  const [draft, setDraft] = useState<Draft>(() => initialPrices(rows));
+  const [savedF, setSavedF] = useState<Draft>(() => initialFields(rows));
+  const [draftF, setDraftF] = useState<Draft>(() => initialFields(rows));
+
   const [onlyEmpty, setOnlyEmpty] = useState(false);
   const [query, setQuery] = useState("");
   const [status, setStatus] = useState<
@@ -70,9 +94,10 @@ export function PricesForm({
 
   // إن أُعيد تحميل الوحدة بعد كتابة الملف، يصير المحفوظُ هو الأصلَ الجديد.
   useEffect(() => {
-    const fresh = initialDraft(rows);
-    setSaved(fresh);
-    setDraft(fresh);
+    setSaved(initialPrices(rows));
+    setDraft(initialPrices(rows));
+    setSavedF(initialFields(rows));
+    setDraftF(initialFields(rows));
     setShots(Object.fromEntries(rows.map((r) => [r.id, r.image])));
   }, [rows]);
 
@@ -96,7 +121,10 @@ export function PricesForm({
       }
 
       // اسم الملف لا يتغيّر عند الاستبدال، فتلزم بصمةٌ تكسر ذاكرة المتصفّح.
-      setShots((m) => ({ ...m, [id]: `${data.url}?v=${file.size}-${file.lastModified}` }));
+      setShots((m) => ({
+        ...m,
+        [id]: `${data.url}?v=${file.size}-${file.lastModified}`,
+      }));
       setStatus({ kind: "done", text: "رُفعت الصورة وحُفظ مسارها" });
     } catch (err) {
       setStatus({ kind: "error", text: (err as Error).message });
@@ -105,7 +133,7 @@ export function PricesForm({
     }
   };
 
-  const edits = useMemo(() => {
+  const priceEdits = useMemo(() => {
     const out: { id: string; branch: string; value: number | null }[] = [];
     for (const r of rows) {
       for (const b of Object.keys(r.prices)) {
@@ -119,6 +147,20 @@ export function PricesForm({
     return out;
   }, [draft, saved, rows]);
 
+  const fieldEdits = useMemo(() => {
+    const out: { id: string; field: Field; value: string }[] = [];
+    for (const r of rows) {
+      for (const f of FIELDS) {
+        const now = (draftF[r.id]?.[f] ?? "").trim();
+        if (now === (savedF[r.id]?.[f] ?? "").trim()) continue;
+        out.push({ id: r.id, field: f, value: now });
+      }
+    }
+    return out;
+  }, [draftF, savedF, rows]);
+
+  const changes = priceEdits.length + fieldEdits.length;
+
   const invalid = useMemo(() => {
     const bad = new Set<string>();
     for (const r of rows) {
@@ -129,57 +171,89 @@ export function PricesForm({
     return bad;
   }, [draft, rows]);
 
-  const missing = useMemo(
-    () =>
-      rows.filter((r) =>
-        Object.keys(r.prices).some((b) => !normalize(saved[r.id]?.[b] ?? ""))
-      ).length,
-    [rows, saved]
+  /** ما ينقص كلَّ عطرٍ في المحفوظ — عليه يقوم العدّاد والفلتر */
+  const missingOf = useCallback(
+    (r: Row, from: Draft, fromF: Draft) => ({
+      price: Object.keys(r.prices).some((b) => !normalize(from[r.id]?.[b] ?? "")),
+      size: !(fromF[r.id]?.size ?? "").trim(),
+      gender: !(fromF[r.id]?.gender ?? "").trim(),
+      longevity: !(fromF[r.id]?.longevity ?? "").trim(),
+    }),
+    []
   );
+
+  const counts = useMemo(() => {
+    let price = 0;
+    let size = 0;
+    let gender = 0;
+    let longevity = 0;
+    for (const r of rows) {
+      const m = missingOf(r, saved, savedF);
+      if (m.price) price++;
+      if (m.size) size++;
+      if (m.gender) gender++;
+      if (m.longevity) longevity++;
+    }
+    return { price, size, gender, longevity };
+  }, [rows, saved, savedF, missingOf]);
 
   const shown = useMemo(() => {
     const q = query.trim();
     return rows.filter((r) => {
-      if (
-        onlyEmpty &&
-        !Object.keys(r.prices).some((b) => !normalize(draft[r.id]?.[b] ?? ""))
-      ) {
-        return false;
+      if (onlyEmpty) {
+        const m = missingOf(r, draft, draftF);
+        if (!m.price && !m.size && !m.gender && !m.longevity) return false;
       }
       if (!q) return true;
       return `${r.name} ${r.latin} ${r.meta}`.includes(q);
     });
-  }, [rows, draft, onlyEmpty, query]);
+  }, [rows, draft, draftF, onlyEmpty, query, missingOf]);
 
   const save = useCallback(async () => {
-    if (!edits.length || invalid.size) return;
+    if (!changes || invalid.size) return;
     setStatus({ kind: "saving" });
 
     const prices: Record<string, Record<string, number | null>> = {};
-    for (const e of edits) {
+    for (const e of priceEdits) {
       (prices[e.id] ??= {})[e.branch] = e.value;
+    }
+    const fields: Record<string, Record<string, string | null>> = {};
+    for (const e of fieldEdits) {
+      (fields[e.id] ??= {})[e.field] = e.value === "" ? null : e.value;
     }
 
     try {
-      const res = await fetch("/api/prices", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ prices }),
-      });
-      const data = await res.json().catch(() => ({}));
+      // كلُّ حفظٍ يغيّر catalog.ts فيعيد Next تجميعَ المسار، وطلبٌ يصل أثناء
+      // التجميع يُردّ بـ404. فتُعاد المحاولة قليلًا بدل أن يُتّهم الحفظُ بالفشل.
+      let res: Response | null = null;
+      let data: { error?: string } = {};
+      for (let attempt = 0; attempt < 4; attempt++) {
+        res = await fetch("/api/prices", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ prices, fields }),
+        });
+        data = await res.json().catch(() => ({}));
+        if (res.status !== 404) break;
+        await new Promise((r) => setTimeout(r, 700));
+      }
 
-      if (!res.ok) {
-        setStatus({ kind: "error", text: data.error ?? `تعذّر الحفظ (${res.status})` });
+      if (!res || !res.ok) {
+        setStatus({
+          kind: "error",
+          text: data.error ?? `تعذّر الحفظ (${res?.status ?? "لا ردّ"})`,
+        });
         return;
       }
 
-      const count = edits.length;
+      const count = changes;
       setSaved(draft);
-      setStatus({ kind: "done", text: `حُفظ ${count} سعرًا في catalog.ts` });
+      setSavedF(draftF);
+      setStatus({ kind: "done", text: `حُفظ ${count} تغييرًا في catalog.ts` });
     } catch (err) {
       setStatus({ kind: "error", text: (err as Error).message });
     }
-  }, [edits, invalid, draft]);
+  }, [changes, invalid, priceEdits, fieldEdits, draft, draftF]);
 
   // Ctrl+S عادةُ من يحرّر ملفًّا — فلتحفظ هنا كما تحفظ هناك.
   useEffect(() => {
@@ -193,22 +267,32 @@ export function PricesForm({
     return () => window.removeEventListener("keydown", onKey);
   }, [save]);
 
-  const set = (id: string, branch: string, value: string) => {
+  const setPrice = (id: string, branch: string, value: string) => {
     setDraft((d) => ({ ...d, [id]: { ...d[id], [branch]: value } }));
     setStatus({ kind: "idle" });
   };
+
+  const setField = (id: string, field: Field, value: string) => {
+    setDraftF((d) => ({ ...d, [id]: { ...d[id], [field]: value } }));
+    setStatus({ kind: "idle" });
+  };
+
+  const changedField = (id: string, field: Field) =>
+    (draftF[id]?.[field] ?? "").trim() !== (savedF[id]?.[field] ?? "").trim();
 
   return (
     // `admin-root` علامةٌ عامّةٌ تلتقطها admin.css لتخفي ترويسةَ المحل وتذييله
     <main className={`admin-root ${s.page}`}>
       <header className={s.head}>
-        <h1>أسعار الكتالوج</h1>
+        <h1>بيانات الكتالوج</h1>
         <p className={s.note}>
           ما يُحفظ هنا يُكتب في <code>app/catalog.ts</code> مباشرةً، ثم يُرفع مع
-          الكود. الحقل الفارغ يعني «السعر عند الطلب».
+          الكود. الحقل المتروك فارغًا لا يظهر للزبون أصلًا.
         </p>
         <p className={s.stat}>
-          {rows.length} منتجًا · <strong>{missing}</strong> بلا سعر
+          {rows.length} منتجًا · ناقصها: <strong>{counts.price}</strong> سعرًا ·{" "}
+          <strong>{counts.size}</strong> حجمًا · <strong>{counts.gender}</strong>{" "}
+          نوعًا · <strong>{counts.longevity}</strong> ثباتًا
         </p>
       </header>
 
@@ -226,88 +310,148 @@ export function PricesForm({
             checked={onlyEmpty}
             onChange={(e) => setOnlyEmpty(e.target.checked)}
           />
-          غير المسعَّرة فقط
+          الناقصة فقط
         </label>
       </div>
 
-      <table className={s.table}>
-        <thead>
-          <tr>
-            <th className={s.shotHead}>الصورة</th>
-            <th>العطر</th>
-            {branches.map((b) => (
-              <th key={b.id} className={s.priceHead}>
-                {b.name} <span className={s.currency}>{b.currency}</span>
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {shown.map((r) => (
-            <tr key={r.id}>
-              <td className={s.shotCell}>
-                <label className={s.shot} title="اضغط لاختيار صورةٍ بديلة">
-                  {shots[r.id] ? (
-                    /* صورةٌ من public في لوحةٍ محلّية — لا تمرّ بمحسّن next/image */
-                    /* eslint-disable-next-line @next/next/no-img-element */
-                    <img src={shots[r.id]} alt={r.name} />
-                  ) : (
-                    <span className={s.noShot}>لا صورة</span>
-                  )}
-                  {uploading === r.id && <span className={s.uploading}>يُرفع…</span>}
-                  <input
-                    type="file"
-                    accept="image/jpeg,image/png,image/webp,image/avif"
-                    disabled={uploading !== null}
-                    onChange={(e) => {
-                      const f = e.target.files?.[0];
-                      e.target.value = "";
-                      if (f) void upload(r.id, f);
-                    }}
-                  />
-                </label>
-              </td>
-              <th scope="row" className={s.nameCell}>
-                <span className={s.name}>{r.name}</span>
-                {r.meta && <span className={s.meta}>{r.meta}</span>}
-              </th>
-              {branches.map((b) => {
-                const sells = b.id in r.prices;
-                const key = `${r.id}:${b.id}`;
-                const changed = edits.some(
-                  (e) => e.id === r.id && e.branch === b.id
-                );
-                return (
-                  <td key={b.id} className={s.priceCell}>
-                    {sells ? (
-                      <input
-                        className={[
-                          s.input,
-                          invalid.has(key) ? s.bad : "",
-                          changed ? s.changed : "",
-                        ]
-                          .filter(Boolean)
-                          .join(" ")}
-                        inputMode="numeric"
-                        dir="ltr"
-                        value={draft[r.id]?.[b.id] ?? ""}
-                        onChange={(e) => set(r.id, b.id, e.target.value)}
-                        onFocus={(e) => e.target.select()}
-                        aria-label={`سعر ${r.name} في ${b.name}`}
-                        placeholder="—"
-                      />
-                    ) : (
-                      <span className={s.absent} title="غير معروضٍ في هذا الفرع">
-                        ·
-                      </span>
-                    )}
-                  </td>
-                );
-              })}
+      {/* قائمةُ الأحجام المعروفة اقتراحٌ لا قيد: يُكتب غيرها متى لزم */}
+      <datalist id="sizes">
+        {sizes.map((v) => (
+          <option key={v} value={v} />
+        ))}
+      </datalist>
+
+      <div className={s.scroll}>
+        <table className={s.table}>
+          <thead>
+            <tr>
+              <th className={s.shotHead}>الصورة</th>
+              <th>العطر</th>
+              <th className={s.sizeHead}>الحجم</th>
+              <th className={s.pickHead}>النوع</th>
+              <th className={s.pickHead}>الثبات</th>
+              {branches.map((b) => (
+                <th key={b.id} className={s.priceHead}>
+                  {b.name} <span className={s.currency}>{b.currency}</span>
+                </th>
+              ))}
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {shown.map((r) => (
+              <tr key={r.id}>
+                <td className={s.shotCell}>
+                  <label className={s.shot} title="اضغط لاختيار صورةٍ بديلة">
+                    {shots[r.id] ? (
+                      /* صورةٌ من public في لوحةٍ محلّية — لا تمرّ بمحسّن next/image */
+                      /* eslint-disable-next-line @next/next/no-img-element */
+                      <img src={shots[r.id]} alt={r.name} />
+                    ) : (
+                      <span className={s.noShot}>لا صورة</span>
+                    )}
+                    {uploading === r.id && (
+                      <span className={s.uploading}>يُرفع…</span>
+                    )}
+                    <input
+                      type="file"
+                      accept="image/jpeg,image/png,image/webp,image/avif"
+                      disabled={uploading !== null}
+                      onChange={(e) => {
+                        const f = e.target.files?.[0];
+                        e.target.value = "";
+                        if (f) void upload(r.id, f);
+                      }}
+                    />
+                  </label>
+                </td>
+
+                <th scope="row" className={s.nameCell}>
+                  <span className={s.name}>{r.name}</span>
+                  {r.meta && <span className={s.meta}>{r.meta}</span>}
+                </th>
+
+                <td>
+                  <input
+                    list="sizes"
+                    className={`${s.input} ${changedField(r.id, "size") ? s.changed : ""}`}
+                    value={draftF[r.id]?.size ?? ""}
+                    onChange={(e) => setField(r.id, "size", e.target.value)}
+                    onFocus={(e) => e.target.select()}
+                    aria-label={`حجم ${r.name}`}
+                    placeholder="—"
+                  />
+                </td>
+
+                <td>
+                  <select
+                    className={`${s.select} ${changedField(r.id, "gender") ? s.changed : ""}`}
+                    value={draftF[r.id]?.gender ?? ""}
+                    onChange={(e) => setField(r.id, "gender", e.target.value)}
+                    aria-label={`نوع ${r.name}`}
+                  >
+                    <option value="">—</option>
+                    {GENDERS.map((g) => (
+                      <option key={g} value={g}>
+                        {g}
+                      </option>
+                    ))}
+                  </select>
+                </td>
+
+                <td>
+                  <select
+                    className={`${s.select} ${changedField(r.id, "longevity") ? s.changed : ""}`}
+                    value={draftF[r.id]?.longevity ?? ""}
+                    onChange={(e) => setField(r.id, "longevity", e.target.value)}
+                    aria-label={`ثبات ${r.name}`}
+                  >
+                    <option value="">—</option>
+                    {longevities.map((v) => (
+                      <option key={v} value={v}>
+                        {v}
+                      </option>
+                    ))}
+                  </select>
+                </td>
+
+                {branches.map((b) => {
+                  const sells = b.id in r.prices;
+                  const key = `${r.id}:${b.id}`;
+                  const changed = priceEdits.some(
+                    (e) => e.id === r.id && e.branch === b.id
+                  );
+                  return (
+                    <td key={b.id} className={s.priceCell}>
+                      {sells ? (
+                        <input
+                          className={[
+                            s.input,
+                            invalid.has(key) ? s.bad : "",
+                            changed ? s.changed : "",
+                          ]
+                            .filter(Boolean)
+                            .join(" ")}
+                          inputMode="numeric"
+                          dir="ltr"
+                          value={draft[r.id]?.[b.id] ?? ""}
+                          onChange={(e) => setPrice(r.id, b.id, e.target.value)}
+                          onFocus={(e) => e.target.select()}
+                          aria-label={`سعر ${r.name} في ${b.name}`}
+                          placeholder="—"
+                        />
+                      ) : (
+                        <span className={s.absent} title="غير معروضٍ في هذا الفرع">
+                          ·
+                        </span>
+                      )}
+                    </td>
+                  );
+                })}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
 
       {shown.length === 0 && <p className={s.empty}>لا نتائج لهذا البحث.</p>}
 
@@ -315,8 +459,8 @@ export function PricesForm({
         <span className={s.barText}>
           {invalid.size > 0
             ? `${invalid.size} حقلًا فيه رقمٌ غير صالح`
-            : edits.length > 0
-              ? `${edits.length} تغييرًا غير محفوظ`
+            : changes > 0
+              ? `${changes} تغييرًا غير محفوظ`
               : status.kind === "done"
                 ? status.text
                 : "لا تغييرات"}
@@ -326,9 +470,7 @@ export function PricesForm({
           type="button"
           className={s.save}
           onClick={() => void save()}
-          disabled={
-            !edits.length || invalid.size > 0 || status.kind === "saving"
-          }
+          disabled={!changes || invalid.size > 0 || status.kind === "saving"}
         >
           {status.kind === "saving" ? "يُحفظ…" : "حفظ"}
         </button>

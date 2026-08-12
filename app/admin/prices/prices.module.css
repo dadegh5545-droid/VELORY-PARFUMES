@@ -93,9 +93,16 @@
   cursor: pointer;
 }
 
+/* الجدول صار ستّة أعمدة: يمرّ أفقيًّا في الشاشة الضيّقة بدل أن يهرس الحقول */
+.scroll {
+  max-width: 76rem;
+  margin: 0 auto;
+  overflow-x: auto;
+}
+
 .table {
   width: 100%;
-  max-width: 60rem;
+  min-width: 46rem;
   margin: 0 auto;
   border-collapse: collapse;
   background: var(--card);
@@ -130,7 +137,32 @@
 }
 
 .priceHead {
-  width: 9.5rem;
+  width: 9rem;
+}
+
+.sizeHead {
+  width: 8rem;
+}
+
+.pickHead {
+  width: 9rem;
+}
+
+.select {
+  width: 100%;
+  padding: 0.4rem 0.5rem;
+  border: 1px solid var(--edge);
+  border-radius: 6px;
+  background: #fff;
+  color: inherit;
+  font: inherit;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.select:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
 }
 
 .shotHead,

@@ -6,3 +6,11 @@ body:has(.admin-root) .header,
 body:has(.admin-root) .footer {
   display: none;
 }
+
+/* حوارُ الترحيب يسأل الزائرَ عن فرعه وهو يغطّي الشاشة (`inset: 0; z-index: 100`)،
+   ولوحةُ السلّة مثلُه. وصاحبُ المحل لا يُسأل عن فرعه وهو يحرّر الكتالوج:
+   في متصفّحٍ لم يختر فيه فرعًا بعدُ كان الحوارُ يبتلع كلَّ ضغطةٍ على «حفظ». */
+body:has(.admin-root) .welcome,
+body:has(.admin-root) .cart-veil {
+  display: none;
+}

@@ -438,6 +438,7 @@ export const SEASON_TR: Record<Season, Record<Locale, string>> = {
 // ما ليس في الجدول يُعرض كما هو — أفضل من إخفائه أو تشويهه.
 const SIZE_TR: Record<string, Record<SecondLocale, string>> = {
   "12 مل": { en: "12 ml", fr: "12 ml" },
+  "15 مل": { en: "15 ml", fr: "15 ml" },
   "25 مل": { en: "25 ml", fr: "25 ml" },
   "50 مل": { en: "50 ml", fr: "50 ml" },
   "100 مل": { en: "100 ml", fr: "100 ml" },

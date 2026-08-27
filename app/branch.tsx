@@ -2,6 +2,7 @@
 
 import {
   type Branch,
+  branchAddress,
   branchCity,
   branchName,
   branchScene,
@@ -25,8 +26,11 @@ function BranchInfo({ branch, locale }: { branch: Branch; locale: Locale }) {
     ? [branch.hours]
     : null;
 
+  // العنوانُ بلغة الزائر — متعدّدُ اللغات في مصدر البيانات.
+  const address = branchAddress(branch, locale);
+
   const rows = [
-    branch.address ? { k: t.address, v: branch.address } : null,
+    address ? { k: t.address, v: address } : null,
   ].filter(Boolean) as { k: string; v: string }[];
 
   if (

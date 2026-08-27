@@ -61,9 +61,12 @@ export type Branch = {
   /** لغات الفرع: العربية أوّلًا ثم لغاته اللاتينية.
    *  كلا الفرعين يخاطب بالثلاث — فمن قصده بلسانٍ وجد مجموعته به. */
   locales: Locale[];
-  /** اسم الفرع ومدينته وعملته في كلِّ لغةٍ لاتينية يخاطب بها */
+  /** اسم الفرع ومدينته وعملته وعنوانه في كلِّ لغةٍ لاتينية يخاطب بها */
   tr: Partial<
-    Record<SecondLocale, { name: string; city: string; currency?: string }>
+    Record<
+      SecondLocale,
+      { name: string; city: string; currency?: string; address?: string }
+    >
   >;
   tint: string;
   /** مشاهدُ بلد الفرع: أوّلُها خلف قسمه في الصفحة الأولى، وبقيّتُها
@@ -210,8 +213,12 @@ export const BRANCHES: Branch[] = [
     currency: "FCFA",
     locales: ["ar", "fr", "en"],
     tr: {
-      fr: { name: "Succursale du Tchad", city: "N’Djamena" },
-      en: { name: "Chad Branch", city: "N’Djamena" },
+      fr: {
+        name: "Succursale du Tchad",
+        city: "N’Djamena",
+        address: "N'Djaména, Tchad",
+      },
+      en: { name: "Chad Branch", city: "N’Djamena", address: "N'Djamena, Chad" },
     },
     tint: "rgba(60, 115, 165, 0.26)",
     scenes: CHAD_SCENES,
@@ -984,6 +991,12 @@ export const branchName = (b: Branch, locale: Locale) =>
 export const branchCity = (b: Branch, locale: Locale) =>
   locale === "ar" ? b.city : b.tr[locale as SecondLocale]?.city ?? b.city;
 
+/** عنوانُ الفرع النصّيّ بلغة الزائر — العربيُّ أصلًا، ثم المترجَم إن وُجد */
+export const branchAddress = (b: Branch, locale: Locale) =>
+  locale === "ar"
+    ? b.address
+    : b.tr[locale as SecondLocale]?.address ?? b.address;
+
 /** اسم الفرع في صفحةٍ قد تكون بلغةٍ لا يتكلّمها هذا الفرع.
  *  صار الفرعان يخاطبان بالثلاث، فلا يقع السقوط اليوم — ويبقى حارسًا
  *  لفرعٍ يُضاف غدًا بألسنةٍ أقلّ. والعربيةُ ملجؤه: هي أصلُ المحتوى. */
@@ -995,6 +1008,9 @@ export const branchNameIn = (b: Branch, locale: Locale) =>
 
 export const branchCityIn = (b: Branch, locale: Locale) =>
   branchCity(b, spoken(b, locale));
+
+export const branchAddressIn = (b: Branch, locale: Locale) =>
+  branchAddress(b, spoken(b, locale));
 
 const branchCurrency = (b: Branch, locale: Locale) =>
   locale === "ar"

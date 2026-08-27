@@ -2,7 +2,13 @@
 // (BRANCHES وCATALOG) فلا يُخترع فيها اسمٌ ولا رقمٌ ولا سعر. الحقلُ الذي
 // لا بياناتَ له يُحذف، لا يُملأ بتخمين.
 
-import { BRANCHES, CATALOG, type Branch, type Perfume } from "./catalog";
+import {
+  BRANCHES,
+  CATALOG,
+  branchCity,
+  type Branch,
+  type Perfume,
+} from "./catalog";
 import { SITE_NAME, SITE_URL, absoluteUrl } from "./site-config";
 
 /** رمزُ الدولة (ISO 3166-1) لكلِّ فرع — معرفةٌ من المدينة لا مخترعة */
@@ -61,7 +67,9 @@ export function LocalBusinessJsonLd() {
         url: SITE_URL,
         address: {
           "@type": "PostalAddress",
-          addressLocality: b.city,
+          // الاسمُ اللاتينيّ للمدينة في البيانات المنظَّمة (N'Djamena) —
+          // أوضحُ لمحرّكات البحث من الاسم العربي، ولا streetAddress لغياب الشارع.
+          addressLocality: branchCity(b, "en"),
           addressCountry: COUNTRY[b.id] ?? undefined,
         },
       };

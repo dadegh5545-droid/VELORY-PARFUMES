@@ -4,6 +4,7 @@ import Link from "next/link";
 import {
   ALL_SCENES,
   BRANCHES,
+  branchAddressIn,
   branchCityIn,
   branchNameIn,
   scenePlace,
@@ -28,10 +29,10 @@ function BranchContacts() {
           <p className="contact-city">{branchCityIn(b, locale)}</p>
 
           <dl className="contact-rows">
-            {b.address && (
+            {branchAddressIn(b, locale) && (
               <div>
                 <dt>{t.address}</dt>
-                <dd>{b.address}</dd>
+                <dd>{branchAddressIn(b, locale)}</dd>
               </div>
             )}
             {/* الدوامُ سطران بلغة الزائر — من الكتالوج لا مخترعًا */}

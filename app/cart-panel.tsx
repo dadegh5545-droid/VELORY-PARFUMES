@@ -13,6 +13,7 @@ import {
 import { T } from "./i18n";
 import { useCart, type CartItem } from "./cart";
 import { useActive } from "./prefs";
+import { SITE_URL } from "./site-config";
 import type { Locale } from "./i18n";
 
 /**
@@ -66,14 +67,15 @@ function orderBlock(branch: Branch, rows: CartItem[], locale: Locale) {
   });
 
   const { sum, priced, unpriced } = orderTotals(branch, rows);
-  const tail: string[] = [];
+  const pieces = rows.reduce((n, r) => n + r.qty, 0);
+  const tail: string[] = ["", t.orderItems(pieces)];
 
   if (priced > 0) {
-    tail.push("", `${t.orderTotal}: ${formatPrice(sum, branch, locale)}`);
+    tail.push(`${t.orderTotal}: ${formatPrice(sum, branch, locale)}`);
     if (unpriced > 0) tail.push(t.orderSomeOnRequest);
   } else {
     // لا صنفَ مسعَّرًا بعد: يُقال ذلك بدل أن يُكتب «المجموع: 0»
-    tail.push("", t.orderAllOnRequest);
+    tail.push(t.orderAllOnRequest);
   }
 
   return [
@@ -109,7 +111,11 @@ function orderText(branch: Branch, rows: CartItem[], locale: Locale) {
     `• ${t.orderAddress}:`,
   ].join("\n");
 
-  return [...blocks, ask].join("\n\n— — —\n\n");
+  // مصدرُ الطلب مرّةً واحدةً في الذيل: يعرف التاجرُ أنه من الموقع، ورابطُه
+  // في متناوله. لا يُكرَّر في الكتلة الفرنسية لأنه رابطٌ لا نصَّ يُترجَم.
+  const via = `${t.orderVia}: ${SITE_URL}`;
+
+  return [...blocks, ask, via].join("\n\n— — —\n\n");
 }
 
 /**
@@ -119,7 +125,7 @@ function orderText(branch: Branch, rows: CartItem[], locale: Locale) {
  * إلى الدوحة لا تنتقل عطورُه معه، وتبقى سلّتُه هناك كما تركها حتى يعود.
  */
 export function CartPanel() {
-  const { itemsOf, drop, clear, open, setOpen } = useCart();
+  const { itemsOf, add, drop, remove, clear, open, setOpen } = useCart();
   const { branch: activeId, locale } = useActive();
   const t = T[locale];
   const panelRef = useRef<HTMLDivElement>(null);
@@ -176,28 +182,52 @@ export function CartPanel() {
                 {rows.map((r) => {
                   const p = getPerfume(r.id);
                   if (!p) return null;
+                  const name = perfumeName(p, locale);
                   return (
                     <li key={`${r.branch}-${r.id}`}>
-                      <span className="cart-name">
-                        {perfumeName(p, locale)}
-                        {r.qty > 1 && (
-                          <span className="cart-qty" dir="ltr">
-                            ×{r.qty}
+                      <div className="cart-line">
+                        <span className="cart-name">{name}</span>
+                        {/* السعرُ في هذا الفرع بعملته — لا سعرَ مجرّدٌ للعطر */}
+                        <span className="cart-price">
+                          {priceIn(p, branch, locale)}
+                        </span>
+                      </div>
+
+                      <div className="cart-controls">
+                        {/* مِعدادُ الكمّية: أنقص · العدد · زد — كلٌّ بوصفٍ
+                            للقارئ الآلي يذكر اسمَ العطر، والعددُ يُعلَن حيًّا */}
+                        <div className="qty" role="group" aria-label={name}>
+                          <button
+                            type="button"
+                            className="qty-btn"
+                            onClick={() => drop(r.id, r.branch)}
+                            aria-label={`${t.qtyDecrease} — ${name}`}
+                          >
+                            −
+                          </button>
+                          <span className="qty-num" aria-live="polite" dir="ltr">
+                            {r.qty}
                           </span>
-                        )}
-                      </span>
-                      {/* السعرُ في هذا الفرع بعملته — لا سعرَ مجرّدٌ للعطر */}
-                      <span className="cart-price">
-                        {priceIn(p, branch, locale)}
-                      </span>
-                      <button
-                        type="button"
-                        className="cart-drop"
-                        onClick={() => drop(r.id, r.branch)}
-                        aria-label={`${t.remove} ${perfumeName(p, locale)}`}
-                      >
-                        −
-                      </button>
+                          <button
+                            type="button"
+                            className="qty-btn"
+                            onClick={() => add(r.id, r.branch)}
+                            aria-label={`${t.qtyIncrease} — ${name}`}
+                          >
+                            +
+                          </button>
+                        </div>
+
+                        {/* حذفُ السطر كلِّه — لا إنقاصًا واحدًا واحدًا */}
+                        <button
+                          type="button"
+                          className="cart-remove"
+                          onClick={() => remove(r.id, r.branch)}
+                          aria-label={`${t.removeItem} — ${name}`}
+                        >
+                          ✕
+                        </button>
+                      </div>
                     </li>
                   );
                 })}

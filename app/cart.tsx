@@ -13,6 +13,8 @@ type CartValue = {
   add: (id: string, branch: BranchId) => void;
   /** إنقاصُ واحدٍ من الكمّية، وحذفُ السطر عند بلوغها صفرًا */
   drop: (id: string, branch: BranchId) => void;
+  /** حذفُ السطر كلِّه مهما كانت كمّيتُه — لا إنقاصًا واحدًا واحدًا */
+  remove: (id: string, branch: BranchId) => void;
   /** تفريغُ سلّةِ فرعٍ بعينه — سلّةُ الفرع الآخر لا تُمَسّ */
   clear: (branch: BranchId) => void;
   /** سلّةُ فرعٍ بعينه: ما أضافه الزائر وهو فيه، لا ما أضافه في غيره */
@@ -27,6 +29,7 @@ const CartContext = createContext<CartValue>({
   items: [],
   add: () => {},
   drop: () => {},
+  remove: () => {},
   clear: () => {},
   itemsOf: () => [],
   countOf: () => 0,
@@ -97,6 +100,11 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       )
     );
 
+  // الحذفُ يُسقط السطرَ كلَّه دفعةً — لمن أراد إزالةَ عطرٍ بكمّيته كلِّها
+  // بلا نقرٍ متكرّر على «أنقص».
+  const remove = (id: string, branch: BranchId) =>
+    setItems((prev) => save(prev.filter((i) => !same(i, id, branch))));
+
   // التفريغُ يمسّ فرعًا واحدًا: زائرٌ يفرغ سلّة نجامينا لا يُفرغ سلّةَ
   // الدوحة معها — ولكلِّ فرعٍ سلّتُه القائمة بذاتها.
   const clear = (branch: BranchId) =>
@@ -109,7 +117,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
   return (
     <CartContext.Provider
-      value={{ items, add, drop, clear, itemsOf, countOf, open, setOpen }}
+      value={{ items, add, drop, remove, clear, itemsOf, countOf, open, setOpen }}
     >
       {children}
     </CartContext.Provider>

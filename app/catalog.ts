@@ -37,6 +37,20 @@ export type Scene = {
   credit: { by: string; license: string; source: string };
 };
 
+/** جدولُ دوامِ فرعٍ — سطرا عرضٍ بلغة الزائر، ومواصفةٌ منظَّمة لمحرّكات البحث. */
+export type OpeningHours = {
+  /** سطرا العرض بلغة الزائر: [أيامُ العمل ووقتُها، سطرُ الإغلاق]. */
+  lines: Record<Locale, [string, string]>;
+  /** المواصفةُ لـ schema.org: أيامُ العمل بالإنجليزية، ووقتاها بصيغة 24 ساعة،
+   *  والمنطقةُ الزمنية (IANA). أيامُ الإغلاق تُستنتج بغيابها عن القائمة. */
+  spec: {
+    dayOfWeek: string[];
+    opens: string;
+    closes: string;
+    timezone: string;
+  };
+};
+
 export type Branch = {
   id: BranchId;
   /** عنوان القسم في الصفحة الرئيسية */
@@ -47,9 +61,12 @@ export type Branch = {
   /** لغات الفرع: العربية أوّلًا ثم لغاته اللاتينية.
    *  كلا الفرعين يخاطب بالثلاث — فمن قصده بلسانٍ وجد مجموعته به. */
   locales: Locale[];
-  /** اسم الفرع ومدينته وعملته في كلِّ لغةٍ لاتينية يخاطب بها */
+  /** اسم الفرع ومدينته وعملته وعنوانه في كلِّ لغةٍ لاتينية يخاطب بها */
   tr: Partial<
-    Record<SecondLocale, { name: string; city: string; currency?: string }>
+    Record<
+      SecondLocale,
+      { name: string; city: string; currency?: string; address?: string }
+    >
   >;
   tint: string;
   /** مشاهدُ بلد الفرع: أوّلُها خلف قسمه في الصفحة الأولى، وبقيّتُها
@@ -61,6 +78,10 @@ export type Branch = {
   /** واتساب بصيغة دولية بلا + ولا مسافات، مثل: 97455512345 */
   whatsapp?: string;
   hours?: string;
+  /** جدولُ الدوام المنظَّم — يخدم العرضَ (سطران بلغة الزائر) والـ JSON-LD معًا.
+   *  سطرا العرض نصٌّ دقيقٌ لا يُشتقّ آليًّا كي يطابق ما يريده صاحبُ المحل حرفًا،
+   *  والمواصفةُ المنظَّمة تُقرأ منها بيانات openingHoursSpecification لمحرّكات البحث. */
+  openingHours?: OpeningHours;
   /** رابط المحل على خرائط جوجل */
   mapUrl?: string;
   /** معرّفُ عطرِ الواجهة — العطرُ الذي يقف في صدر الصفحة الأولى.
@@ -170,18 +191,21 @@ export const ALL_SCENES = CHAD_SCENES;
 // املأ العنوان والهاتف والدوام: كل حقلٍ يُملأ يظهر سطرًا في بطاقة المحل،
 // وما يبقى فارغًا لا يظهر أصلًا — فلا تُعرض على الزبون بيانات ناقصة.
 export const BRANCHES: Branch[] = [
-  {
-    id: "qatar",
-    name: "فرع قطر",
-    city: "الدوحة",
-    currency: "ر.ق",
-    locales: ["ar", "en", "fr"],
-    tr: {
-      en: { name: "Qatar Branch", city: "Doha", currency: "QAR" },
-      fr: { name: "Succursale du Qatar", city: "Doha", currency: "QAR" },
-    },
-    tint: "rgba(140, 35, 65, 0.26)",
-  },
+  // فرع قطر محجوبٌ حاليًّا حتى تصل بياناته (المنتجات ورقم الواتساب والعنوان).
+  // لإعادته: أزِل هذا التعليق فيعود قسمُه إلى الصفحة والترحيب من تلقاء نفسه.
+  // النوعُ BranchId ما زال يعرف "qatar" فلا شيء في الكتالوج ينكسر بغيابه.
+  // {
+  //   id: "qatar",
+  //   name: "فرع قطر",
+  //   city: "الدوحة",
+  //   currency: "ر.ق",
+  //   locales: ["ar", "en", "fr"],
+  //   tr: {
+  //     en: { name: "Qatar Branch", city: "Doha", currency: "QAR" },
+  //     fr: { name: "Succursale du Qatar", city: "Doha", currency: "QAR" },
+  //   },
+  //   tint: "rgba(140, 35, 65, 0.26)",
+  // },
   {
     id: "chad",
     name: "فرع تشاد",
@@ -189,19 +213,47 @@ export const BRANCHES: Branch[] = [
     currency: "FCFA",
     locales: ["ar", "fr", "en"],
     tr: {
-      fr: { name: "Succursale du Tchad", city: "N’Djamena" },
-      en: { name: "Chad Branch", city: "N’Djamena" },
+      fr: {
+        name: "Succursale du Tchad",
+        city: "N’Djamena",
+        address: "N'Djaména, Tchad",
+      },
+      en: { name: "Chad Branch", city: "N’Djamena", address: "N'Djamena, Chad" },
     },
     tint: "rgba(60, 115, 165, 0.26)",
     scenes: CHAD_SCENES,
+    // العنوانُ النصّيّ مدينةً وبلدًا فقط — لا شارعَ ولا حيَّ يُخترع.
+    address: "نجامينا، تشاد",
     // تواصلُ نجامينا وحدها: طلبُ فرعٍ يذهب إلى هاتف ذلك الفرع لا غيره.
     // قطرُ بلا رقمٍ بعد، فتبقى بطاقةُ محلّها مخفيّةً حتى يُملأ.
     phone: "+235 66 78 59 03",
     whatsapp: "23566785903",
+    // الدوامُ سطران بلغة الزائر (نصٌّ دقيقٌ كما أُملي)، ومواصفةٌ منظَّمةٌ
+    // لمحرّكات البحث: السبت–الخميس ٧ص–٧م، والجمعةُ مغلقة (تُستنتج بغيابها).
+    openingHours: {
+      lines: {
+        ar: ["السبت إلى الخميس: 7:00 صباحًا – 7:00 مساءً", "الجمعة: مغلق"],
+        en: ["Saturday–Thursday: 7:00 AM–7:00 PM", "Friday: Closed"],
+        fr: ["Samedi–jeudi : 7h00–19h00", "Vendredi : fermé"],
+      },
+      spec: {
+        dayOfWeek: [
+          "Saturday",
+          "Sunday",
+          "Monday",
+          "Tuesday",
+          "Wednesday",
+          "Thursday",
+        ],
+        opens: "07:00",
+        closes: "19:00",
+        timezone: "Africa/Ndjamena",
+      },
+    },
     // دبّوسُ المحلّ بإحداثيّاته لا باسمه: الاسمُ قد لا يكون مسجَّلًا في جوجل،
     // والإحداثيّةُ تصل إلى الباب. ولا `hl=` في الرابط — فرضُ لغةٍ على الخريطة
     // يفتحها بالعربية في يد زبونٍ فرنسيّ اللسان، وتركُها يتبع لغةَ جهازه.
-    mapUrl: "https://www.google.com/maps?q=12.1142871,15.0559209&z=17",
+    mapUrl: "https://www.google.com/maps?q=12.114278,15.055917",
     featured: "thaljee",
   },
 ];
@@ -223,6 +275,10 @@ export type Perfume = {
   longevity?: string;
   gender?: Gender;
   season?: Season;
+  /** تصنيفُ المنتج كما يُقرأ من العبوة: «عود»، «صندل»، «بخور»، «كولونيا»…
+   *  حقلٌ اختياريّ يبقى فارغًا حتى تُصنَّف المنتجات ببياناتٍ حقيقية — فلا
+   *  يُخترع تصنيف. متى مُلئ لعطرين فأكثر ظهر مرشِّحُ التصنيف في القسم. */
+  category?: string;
   tint: string;
   /** مسار صورة المنتج تحت public، مثل "/products/thaljee.jpg".
    *  ما لم تُملأ، تُرسم قارورةٌ بالـ CSS — فلا تنتظر الصفحةُ اكتمالَ التصوير. */
@@ -935,6 +991,12 @@ export const branchName = (b: Branch, locale: Locale) =>
 export const branchCity = (b: Branch, locale: Locale) =>
   locale === "ar" ? b.city : b.tr[locale as SecondLocale]?.city ?? b.city;
 
+/** عنوانُ الفرع النصّيّ بلغة الزائر — العربيُّ أصلًا، ثم المترجَم إن وُجد */
+export const branchAddress = (b: Branch, locale: Locale) =>
+  locale === "ar"
+    ? b.address
+    : b.tr[locale as SecondLocale]?.address ?? b.address;
+
 /** اسم الفرع في صفحةٍ قد تكون بلغةٍ لا يتكلّمها هذا الفرع.
  *  صار الفرعان يخاطبان بالثلاث، فلا يقع السقوط اليوم — ويبقى حارسًا
  *  لفرعٍ يُضاف غدًا بألسنةٍ أقلّ. والعربيةُ ملجؤه: هي أصلُ المحتوى. */
@@ -946,6 +1008,9 @@ export const branchNameIn = (b: Branch, locale: Locale) =>
 
 export const branchCityIn = (b: Branch, locale: Locale) =>
   branchCity(b, spoken(b, locale));
+
+export const branchAddressIn = (b: Branch, locale: Locale) =>
+  branchAddress(b, spoken(b, locale));
 
 const branchCurrency = (b: Branch, locale: Locale) =>
   locale === "ar"

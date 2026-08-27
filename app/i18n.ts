@@ -67,6 +67,21 @@ export type Dict = {
   /** وصفٌ للقارئ الآلي فوق أزرار التصفية */
   filterGroup: (branch: string) => string;
 
+  /* أدوات تصفّح المجموعة: بحثٌ وترتيبٌ ومرشِّحات وكشفُ المزيد */
+  searchLabel: string;
+  searchPlaceholder: string;
+  searchNoResults: string;
+  sortLabel: string;
+  sortDefault: string;
+  sortPriceAsc: string;
+  sortPriceDesc: string;
+  sortName: string;
+  filterCategory: string;
+  filterHouseAll: string;
+  filterSizeAll: string;
+  filterPriceMax: string;
+  showMore: string;
+
   head: string;
   heart: string;
   base: string;
@@ -83,6 +98,8 @@ export type Dict = {
 
   back: string;
   availability: string;
+  /** حالةُ التوفّر على بطاقة العرض — العطرُ المعروض في فرعٍ متوفّرٌ فيه */
+  inStock: string;
   soldNowhere: string;
   unavailable: string;
   alsoEyebrow: string;
@@ -101,6 +118,10 @@ export type Dict = {
   /** إتمامُ الطلب على واتساب الفرع — لا رقمَ عامًّا للدار */
   checkoutWhatsapp: string;
   remove: string;
+  /** أزرارُ ضبط الكمّية وحذفِ السطر داخل السلة */
+  qtyIncrease: string;
+  qtyDecrease: string;
+  removeItem: string;
   /** يظهر مكان زرّ الإتمام لفرعٍ لم يُملأ رقمُه بعد */
   branchNoContact: string;
   /** صدرُ رسالة الواتساب وسطرُ الفرع فيها */
@@ -115,6 +136,10 @@ export type Dict = {
   orderName: string;
   orderArea: string;
   orderAddress: string;
+  /** ملخّصُ عدد القطع في ذيل الطلب */
+  orderItems: (n: number) => string;
+  /** سطرٌ يُذيَّل به الطلبُ مرّةً واحدة: من أين جاء ورابطُه */
+  orderVia: string;
 
   heroEyebrow: string;
   /** العنوان مشطورٌ لأن نصفه الثاني يُبرز بخطٍّ ذهبي */
@@ -172,6 +197,20 @@ export const T: Record<Locale, Dict> = {
     filterAll: "الكل",
     filterGroup: (branch) => `تصفية عطور ${branch} حسب النوع`,
 
+    searchLabel: "ابحث في المجموعة",
+    searchPlaceholder: "ابحث باسم العطر أو الدار…",
+    searchNoResults: "لا عطرَ يطابق بحثك — جرّب كلمةً أعمّ أو أزِل مرشِّحًا.",
+    sortLabel: "ترتيب العطور",
+    sortDefault: "الترتيب الافتراضي",
+    sortPriceAsc: "السعر: من الأقل",
+    sortPriceDesc: "السعر: من الأعلى",
+    sortName: "الاسم: أبجديًّا",
+    filterCategory: "التصنيف",
+    filterHouseAll: "كل الدور",
+    filterSizeAll: "كل الأحجام",
+    filterPriceMax: "السعر حتى",
+    showMore: "عرض المزيد",
+
     head: "المقدّمة",
     heart: "القلب",
     base: "القاعدة",
@@ -188,6 +227,7 @@ export const T: Record<Locale, Dict> = {
 
     back: "العودة إلى المجموعة",
     availability: "التوفّر والأسعار",
+    inStock: "متوفّر",
     soldNowhere: "غير متوفّر حاليًا في أيٍّ من الفروع.",
     unavailable: "غير متوفّر",
     alsoEyebrow: "قد يعجبك أيضًا",
@@ -200,6 +240,9 @@ export const T: Record<Locale, Dict> = {
     cartClear: "إفراغ السلة",
     checkoutWhatsapp: "إتمام الطلب عبر واتساب",
     remove: "أنقص",
+    qtyIncrease: "زد واحدًا",
+    qtyDecrease: "أنقص واحدًا",
+    removeItem: "احذف من السلة",
     branchNoContact: "رقم هذا الفرع لم يُضَف بعد.",
     orderHello: "السلام عليكم، أودّ طلب هذه العطور من فالوري:",
     orderBranch: "الفرع",
@@ -210,6 +253,8 @@ export const T: Record<Locale, Dict> = {
     orderName: "الاسم",
     orderArea: "المنطقة",
     orderAddress: "عنوان التوصيل",
+    orderItems: (n) => `عدد القطع: ${n}`,
+    orderVia: "طُلب عبر موقع فالوري",
     navChange: "تغيير الفرع واللغة",
 
     heroEyebrow: "دار عطور",
@@ -255,6 +300,20 @@ export const T: Record<Locale, Dict> = {
     filterAll: "All",
     filterGroup: (branch) => `Filter ${branch} perfumes by type`,
 
+    searchLabel: "Search the collection",
+    searchPlaceholder: "Search by name or house…",
+    searchNoResults: "No perfume matches your search — try a broader word or clear a filter.",
+    sortLabel: "Sort perfumes",
+    sortDefault: "Default order",
+    sortPriceAsc: "Price: low to high",
+    sortPriceDesc: "Price: high to low",
+    sortName: "Name: A–Z",
+    filterCategory: "Category",
+    filterHouseAll: "All houses",
+    filterSizeAll: "All sizes",
+    filterPriceMax: "Price up to",
+    showMore: "Show more",
+
     head: "Top",
     heart: "Heart",
     base: "Base",
@@ -271,6 +330,7 @@ export const T: Record<Locale, Dict> = {
 
     back: "Back to the collection",
     availability: "Availability and prices",
+    inStock: "In stock",
     soldNowhere: "Not currently available at any branch.",
     unavailable: "Unavailable",
     alsoEyebrow: "You may also like",
@@ -283,6 +343,9 @@ export const T: Record<Locale, Dict> = {
     cartClear: "Empty cart",
     checkoutWhatsapp: "Complete order on WhatsApp",
     remove: "Remove one",
+    qtyIncrease: "Add one",
+    qtyDecrease: "Remove one",
+    removeItem: "Remove from cart",
     branchNoContact: "This branch has no number yet.",
     orderHello: "Hello, I would like to order these perfumes from VALORY:",
     orderBranch: "Branch",
@@ -293,6 +356,8 @@ export const T: Record<Locale, Dict> = {
     orderName: "Name",
     orderArea: "Area",
     orderAddress: "Delivery address",
+    orderItems: (n) => `Items: ${n}`,
+    orderVia: "Ordered via VALORY's website",
     navChange: "Change branch and language",
 
     heroEyebrow: "Perfume house",
@@ -345,6 +410,20 @@ export const T: Record<Locale, Dict> = {
     filterAll: "Tous",
     filterGroup: (branch) => `Filtrer les parfums de ${branch} par type`,
 
+    searchLabel: "Rechercher dans la collection",
+    searchPlaceholder: "Rechercher par nom ou maison…",
+    searchNoResults: "Aucun parfum ne correspond — essayez un terme plus large ou retirez un filtre.",
+    sortLabel: "Trier les parfums",
+    sortDefault: "Ordre par défaut",
+    sortPriceAsc: "Prix : croissant",
+    sortPriceDesc: "Prix : décroissant",
+    sortName: "Nom : A–Z",
+    filterCategory: "Catégorie",
+    filterHouseAll: "Toutes les maisons",
+    filterSizeAll: "Toutes les tailles",
+    filterPriceMax: "Prix jusqu'à",
+    showMore: "Voir plus",
+
     head: "Tête",
     heart: "Cœur",
     base: "Fond",
@@ -361,6 +440,7 @@ export const T: Record<Locale, Dict> = {
 
     back: "Retour à la collection",
     availability: "Disponibilité et prix",
+    inStock: "En stock",
     soldNowhere: "Actuellement indisponible dans nos succursales.",
     unavailable: "Indisponible",
     alsoEyebrow: "Vous aimerez aussi",
@@ -373,6 +453,9 @@ export const T: Record<Locale, Dict> = {
     cartClear: "Vider le panier",
     checkoutWhatsapp: "Finaliser la commande sur WhatsApp",
     remove: "Retirer un",
+    qtyIncrease: "Ajouter un",
+    qtyDecrease: "Retirer un",
+    removeItem: "Retirer du panier",
     branchNoContact: "Le numéro de cette succursale n'est pas encore renseigné.",
     orderHello: "Bonjour, je souhaite commander ces parfums chez VALORY :",
     // « Boutique » et non « Succursale » : le nom de la succursale le porte
@@ -385,6 +468,8 @@ export const T: Record<Locale, Dict> = {
     orderName: "Nom",
     orderArea: "Quartier",
     orderAddress: "Adresse de livraison",
+    orderItems: (n) => `Articles : ${n}`,
+    orderVia: "Commande via le site VALORY",
     navChange: "Changer de succursale et de langue",
 
     heroEyebrow: "Maison de parfums",

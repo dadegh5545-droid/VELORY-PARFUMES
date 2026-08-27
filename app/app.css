@@ -2882,3 +2882,314 @@ a {
     padding: 1.6rem 1.25rem;
   }
 }
+
+/* ══════════════════════════════════════════════════════════════════════════
+   إضافاتٌ لاحقة — تصفّحُ المجموعة، مِعدادُ السلة، الصفحاتُ التعريفية،
+   ورابطُ التخطّي. تتبع نظامَ الأسود والذهبي نفسَه: حدودٌ ذهبيةٌ خافتة،
+   ووميضُ --wash عند المرور، وخيطُ --ring للتركيز.
+   ══════════════════════════════════════════════════════════════════════════ */
+
+/* ── رابطُ تخطّي المحتوى: مخفيٌّ حتى يبلغه Tab ─────────────────────────── */
+.skip-link {
+  position: fixed;
+  top: 0.75rem;
+  inset-inline-start: 0.75rem;
+  z-index: 200;
+  padding: 0.6rem 1rem;
+  background: var(--gold);
+  color: var(--noir);
+  font-size: 0.92rem;
+  border-radius: 2px;
+  transform: translateY(-180%);
+  transition: transform var(--t-state) var(--ease);
+}
+.skip-link:focus {
+  transform: translateY(0);
+  outline: none;
+}
+
+/* ── أدواتُ المجموعة ──────────────────────────────────────────────────── */
+.collection-tools {
+  margin: 1.75rem 0 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+.tool-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: flex-end;
+}
+.tool {
+  display: inline-flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  min-width: 0;
+}
+.tool.search {
+  flex: 1 1 16rem;
+}
+.tool > span:not(.vh) {
+  font-size: 0.8rem;
+  color: var(--ivory-dim);
+}
+.tool input[type="search"],
+.tool select {
+  min-height: var(--ctl-h);
+  padding: var(--ctl-py) var(--ctl-px);
+  background: var(--noir-card);
+  border: 1px solid var(--ctl-line);
+  color: var(--ivory);
+  font-family: inherit;
+  font-size: var(--ctl-size);
+  border-radius: 2px;
+  transition: border-color var(--t-state) var(--ease);
+}
+.tool input[type="search"] {
+  width: 100%;
+}
+.tool input[type="search"]::placeholder {
+  /* لا --ivory-mute هنا: هو لونُ المعطَّل (3.71:1)، والحاجبُ نصٌّ يُقرأ.
+     --ivory-dim يبلغ 7.4:1 على --noir فيتجاوز AA. */
+  color: var(--ivory-dim);
+  opacity: 1;
+}
+.tool input[type="search"]:hover,
+.tool select:hover {
+  border-color: var(--gold-dim);
+}
+.tool input[type="search"]:focus-visible,
+.tool select:focus-visible {
+  outline: var(--ring);
+  outline-offset: var(--ring-gap);
+  border-color: var(--gold);
+}
+.tool select {
+  cursor: pointer;
+}
+.price-tool {
+  min-width: 14rem;
+}
+.price-tool input[type="range"] {
+  accent-color: var(--gold);
+  cursor: pointer;
+}
+.collection-count {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--gold);
+}
+.collection-empty {
+  margin: 2rem 0;
+  color: var(--ivory-dim);
+}
+.collection-more {
+  display: flex;
+  justify-content: center;
+  margin: 2rem 0 0.5rem;
+}
+
+/* ── السلة: مِعدادُ الكمّية وحذفُ السطر ──────────────────────────────── */
+.cart-rows li {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.6rem;
+}
+.cart-line {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+}
+.cart-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+.qty {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid var(--ctl-line);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.qty-btn {
+  width: 2.5rem;
+  min-height: 2.5rem;
+  background: none;
+  border: none;
+  color: var(--ivory);
+  font-size: 1.2rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: background-color var(--t-state) var(--ease),
+    color var(--t-state) var(--ease);
+}
+.qty-btn:hover {
+  background: var(--wash);
+  color: var(--gold);
+}
+.qty-btn:focus-visible {
+  outline: var(--ring);
+  outline-offset: -2px;
+}
+.qty-num {
+  min-width: 2.5rem;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+  unicode-bidi: isolate;
+}
+.cart-remove {
+  width: 2.5rem;
+  height: 2.5rem;
+  background: none;
+  border: 1px solid transparent;
+  color: var(--ivory-dim);
+  font-size: 0.95rem;
+  cursor: pointer;
+  border-radius: 2px;
+  transition: color var(--t-state) var(--ease),
+    border-color var(--t-state) var(--ease);
+}
+.cart-remove:hover {
+  color: var(--gold);
+  border-color: var(--gold-dim);
+}
+.cart-remove:focus-visible {
+  outline: var(--ring);
+  outline-offset: 2px;
+}
+
+/* ── حالةُ التوفّر في صفحة العطر ─────────────────────────────────────── */
+.in-stock {
+  font-size: 0.82rem;
+  color: var(--gold);
+  white-space: nowrap;
+}
+
+/* ── الصفحاتُ التعريفية ──────────────────────────────────────────────── */
+.info {
+  max-width: 46rem;
+}
+.info-head {
+  margin-bottom: 2rem;
+}
+.info-intro {
+  color: var(--ivory-dim);
+  font-size: 1.05rem;
+}
+.info-block {
+  margin: 2rem 0;
+}
+.info-block h2 {
+  color: var(--gold);
+  font-size: 1.25rem;
+  margin-bottom: 0.6rem;
+}
+.info-block p {
+  margin: 0 0 0.75rem;
+}
+.contact-cards {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+  margin: 1.5rem 0 2.5rem;
+}
+.contact-card {
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  padding: 1.4rem;
+  background: var(--noir-card);
+}
+.contact-card h3 {
+  color: var(--ivory);
+  margin-bottom: 0.2rem;
+}
+.contact-city {
+  color: var(--ivory-dim);
+  font-size: 0.9rem;
+  margin: 0 0 1rem;
+}
+.contact-links {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+}
+.credits-list {
+  list-style: none;
+  padding: 0;
+  margin: 1.5rem 0;
+  display: grid;
+  gap: 0.75rem;
+}
+.credits-list li {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 0.75rem;
+  align-items: baseline;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--line);
+}
+.credits-list a {
+  color: var(--gold);
+}
+.credits-by {
+  color: var(--ivory-dim);
+  font-size: 0.85rem;
+}
+
+/* ── روابطُ تذييل الصفحات التعريفية ──────────────────────────────────── */
+.footer-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem 1.4rem;
+  margin-bottom: 1.5rem;
+}
+.footer-nav a {
+  color: var(--ivory-dim);
+  font-size: 0.9rem;
+  transition: color var(--t-state) var(--ease);
+}
+.footer-nav a:hover,
+.footer-nav a:focus-visible {
+  color: var(--gold);
+}
+.footer-nav a:focus-visible {
+  outline: var(--ring);
+  outline-offset: var(--ring-gap);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skip-link {
+    transition: none;
+  }
+}
+
+/* ── الدوام: سطران يتراصّان، وصفوفُ بيانات بطاقة التواصل ─────────────── */
+.hours-line {
+  display: block;
+}
+.contact-rows {
+  margin: 0 0 1.1rem;
+  display: grid;
+  gap: 0.6rem;
+}
+.contact-rows > div {
+  display: grid;
+  gap: 0.15rem;
+}
+.contact-rows dt {
+  color: var(--gold);
+  font-size: 0.78rem;
+}
+.contact-rows dd {
+  margin: 0;
+  color: var(--ivory);
+}
+.contact-rows dd a {
+  color: var(--ivory);
+}

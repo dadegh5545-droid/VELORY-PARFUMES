@@ -30,6 +30,7 @@ export function Scene({
         src={scene.image}
         alt=""
         loading="lazy"
+        decoding="async"
         onError={() => setOk(false)}
       />
       <span className="scene-place">{scenePlace(scene, locale)}</span>

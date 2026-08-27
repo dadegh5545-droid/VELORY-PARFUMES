@@ -170,18 +170,21 @@ export const ALL_SCENES = CHAD_SCENES;
 // املأ العنوان والهاتف والدوام: كل حقلٍ يُملأ يظهر سطرًا في بطاقة المحل،
 // وما يبقى فارغًا لا يظهر أصلًا — فلا تُعرض على الزبون بيانات ناقصة.
 export const BRANCHES: Branch[] = [
-  {
-    id: "qatar",
-    name: "فرع قطر",
-    city: "الدوحة",
-    currency: "ر.ق",
-    locales: ["ar", "en", "fr"],
-    tr: {
-      en: { name: "Qatar Branch", city: "Doha", currency: "QAR" },
-      fr: { name: "Succursale du Qatar", city: "Doha", currency: "QAR" },
-    },
-    tint: "rgba(140, 35, 65, 0.26)",
-  },
+  // فرع قطر محجوبٌ حاليًّا حتى تصل بياناته (المنتجات ورقم الواتساب والعنوان).
+  // لإعادته: أزِل هذا التعليق فيعود قسمُه إلى الصفحة والترحيب من تلقاء نفسه.
+  // النوعُ BranchId ما زال يعرف "qatar" فلا شيء في الكتالوج ينكسر بغيابه.
+  // {
+  //   id: "qatar",
+  //   name: "فرع قطر",
+  //   city: "الدوحة",
+  //   currency: "ر.ق",
+  //   locales: ["ar", "en", "fr"],
+  //   tr: {
+  //     en: { name: "Qatar Branch", city: "Doha", currency: "QAR" },
+  //     fr: { name: "Succursale du Qatar", city: "Doha", currency: "QAR" },
+  //   },
+  //   tint: "rgba(140, 35, 65, 0.26)",
+  // },
   {
     id: "chad",
     name: "فرع تشاد",
@@ -223,6 +226,10 @@ export type Perfume = {
   longevity?: string;
   gender?: Gender;
   season?: Season;
+  /** تصنيفُ المنتج كما يُقرأ من العبوة: «عود»، «صندل»، «بخور»، «كولونيا»…
+   *  حقلٌ اختياريّ يبقى فارغًا حتى تُصنَّف المنتجات ببياناتٍ حقيقية — فلا
+   *  يُخترع تصنيف. متى مُلئ لعطرين فأكثر ظهر مرشِّحُ التصنيف في القسم. */
+  category?: string;
   tint: string;
   /** مسار صورة المنتج تحت public، مثل "/products/thaljee.jpg".
    *  ما لم تُملأ، تُرسم قارورةٌ بالـ CSS — فلا تنتظر الصفحةُ اكتمالَ التصوير. */

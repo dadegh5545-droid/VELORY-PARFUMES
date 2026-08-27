@@ -49,6 +49,7 @@ export function ChadHero({
               /* بطلُ أوّلِ شاشةٍ لا يُؤجَّل تحميلُه: التأجيلُ هنا يُظهر
                  الواجهةَ فارغةً في أوّل لحظةٍ يراها الزائر. */
               fetchPriority="high"
+              decoding="async"
             />
             <p className="hero-chad-name">
               {perfumeName(star, locale)}

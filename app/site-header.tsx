@@ -3,17 +3,16 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import {
-  ALL_SCENES,
   BRANCHES,
   branchCity,
   branchName,
   getBranch,
-  scenePlace,
   type BranchId,
 } from "./catalog";
 import { LOCALE_SHORT, T } from "./i18n";
 import { useCart } from "./cart";
 import { useActive, usePrefs } from "./prefs";
+import { INFO, INFO_LINKS } from "./info-content";
 
 /** هل نزل الزائر عن أعلى الصفحة؟ — عليه يتوقّف ظهور ستار الترويسة */
 function useScrolled() {
@@ -83,27 +82,22 @@ export function SiteFooter() {
 
   return (
     <footer className="footer" id="contact">
+      {/* روابطُ الصفحات التعريفية — عنوانُ كلِّ صفحةٍ بلغة الزائر من INFO */}
+      <nav className="footer-nav" aria-label={t.navHouse}>
+        {INFO_LINKS.map((l) => (
+          <Link key={l.key} href={l.path}>
+            {INFO[locale][l.key].title}
+          </Link>
+        ))}
+      </nav>
+
       <div className="footer-line">
         <span>© 2026 {t.rights}</span>
         <span>{BRANCHES.map((b) => branchCity(b, locale)).join(" · ")}</span>
       </div>
 
-      {/* إسنادُ صور المشاهد — شرطٌ في رخص المشاع الإبداعي لا مجاملة:
-          من صوّر المنظرَ يُذكر باسمه ورخصته، والرابط يُثبت المصدر. */}
-      <p className="footer-credits">
-        <span>{t.photosBy}</span>{" "}
-        {ALL_SCENES.map((s, i) => (
-          <span key={s.image}>
-            {i > 0 && " · "}
-            <a href={s.credit.source} target="_blank" rel="noreferrer">
-              {scenePlace(s, locale)}
-            </a>{" "}
-            <span className="footer-by">
-              {s.credit.by} ({s.credit.license})
-            </span>
-          </span>
-        ))}
-      </p>
+      {/* إسنادُ صور المشاهد انتقل إلى صفحة الحقوق /credits — يبقى هنا رابطُها
+          وحده، فلا يزدحم التذييلُ بقائمةٍ طويلةٍ من المصوّرين والرخص. */}
     </footer>
   );
 }

@@ -32,6 +32,7 @@ export function Bottle({
             src={perfume.image}
             alt={`قارورة عطر ${perfume.name}`}
             loading="lazy"
+            decoding="async"
           />
           {/* الانعكاس نسخةٌ مقلوبةٌ تتلاشى سريعًا — أثرُ سطحٍ صقيل،
               لا صورةٌ ثانية. مخفيٌّ عن القارئ الآلي لأنه لا يضيف خبرًا. */}
@@ -41,6 +42,7 @@ export function Bottle({
             alt=""
             aria-hidden="true"
             loading="lazy"
+            decoding="async"
           />
         </div>
       </div>

@@ -39,7 +39,7 @@ export function PerfumeView({ perfume }: { perfume: Perfume }) {
   // في 2026-08-07: العبوةُ وحدَها بطلةُ صفحتها، وما خلفها سوادٌ وإضاءةٌ
   // ذهبية من `.detail::after`. ومنظرُ البلد باقٍ في صدر قسم الفرع بالرئيسية.
   return (
-    <main className="section detail">
+    <main id="main" className="section detail">
       <Link href="/" className="back">
         {t.back}
       </Link>
@@ -96,6 +96,9 @@ export function PerfumeView({ perfume }: { perfume: Perfume }) {
                   <span>{branchNameIn(b, locale)}</span>
                   <small>{branchCityIn(b, locale)}</small>
                 </div>
+                {/* حالةُ التوفّر حقيقيةٌ لا مخترعة: ظهورُ العطر في فرعٍ
+                    يعني أنه معروضٌ متوفّرٌ فيه — والغائبُ لا صفَّ له أصلًا */}
+                <span className="in-stock">{t.inStock}</span>
                 <span className="price">{priceIn(perfume, b, locale)}</span>
                 <AddButton
                   id={perfume.id}

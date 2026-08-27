@@ -65,17 +65,33 @@ export function LocalBusinessJsonLd() {
           addressCountry: COUNTRY[b.id] ?? undefined,
         },
       };
-      if (b.address) {
-        (data.address as Record<string, unknown>).streetAddress = b.address;
-      }
+      // لا streetAddress: العنوانُ مدينةٌ وبلدٌ فقط (لا شارعَ حقيقيًّا)،
+      // وهو مُمثَّلٌ أصلًا بـ addressLocality وaddressCountry.
       if (b.phone) data.telephone = b.phone.replace(/\s/g, "");
-      if (b.hours) data.openingHours = b.hours;
       if (b.mapUrl) data.hasMap = b.mapUrl;
       if (geo) {
         data.geo = {
           "@type": "GeoCoordinates",
           latitude: geo.lat,
           longitude: geo.lng,
+        };
+      }
+      if (b.openingHours) {
+        const s = b.openingHours.spec;
+        // أيامُ العمل وحدها تُدرج؛ يومُ الإغلاق (الجمعة) يُستنتج بغيابه —
+        // وهو العرفُ في schema.org. الأوقاتُ بالتوقيت المحلّي للمنطقة أدناه.
+        data.openingHoursSpecification = {
+          "@type": "OpeningHoursSpecification",
+          dayOfWeek: s.dayOfWeek,
+          opens: s.opens,
+          closes: s.closes,
+        };
+        // لا حقلَ منطقةٍ زمنية في OpeningHoursSpecification، فتُدرَج
+        // كخاصّيةٍ إضافية صريحة على المحلّ.
+        data.additionalProperty = {
+          "@type": "PropertyValue",
+          name: "timezone",
+          value: s.timezone,
         };
       }
       return data;

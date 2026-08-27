@@ -27,6 +27,38 @@ function BranchContacts() {
           <h3>{branchNameIn(b, locale)}</h3>
           <p className="contact-city">{branchCityIn(b, locale)}</p>
 
+          <dl className="contact-rows">
+            {b.address && (
+              <div>
+                <dt>{t.address}</dt>
+                <dd>{b.address}</dd>
+              </div>
+            )}
+            {/* الدوامُ سطران بلغة الزائر — من الكتالوج لا مخترعًا */}
+            {b.openingHours && (
+              <div>
+                <dt>{t.hours}</dt>
+                <dd>
+                  {b.openingHours.lines[locale].map((line, i) => (
+                    <span key={i} className="hours-line">
+                      {line}
+                    </span>
+                  ))}
+                </dd>
+              </div>
+            )}
+            {b.phone && (
+              <div>
+                <dt>{t.phone}</dt>
+                <dd>
+                  <a href={`tel:${b.phone.replace(/\s/g, "")}`} dir="ltr">
+                    {b.phone}
+                  </a>
+                </dd>
+              </div>
+            )}
+          </dl>
+
           <div className="contact-links">
             {b.whatsapp && (
               <a
@@ -38,13 +70,9 @@ function BranchContacts() {
                 {t.whatsapp}
               </a>
             )}
-            {b.phone && (
-              <a href={`tel:${b.phone.replace(/\s/g, "")}`} dir="ltr">
-                {b.phone}
-              </a>
-            )}
+            {/* زرٌّ واضحٌ لفتح المحلّ في خرائط جوجل */}
             {b.mapUrl && (
-              <a href={b.mapUrl} target="_blank" rel="noreferrer">
+              <a className="btn" href={b.mapUrl} target="_blank" rel="noreferrer">
                 {t.mapLink}
               </a>
             )}
@@ -96,8 +124,6 @@ export function InfoView({ pageKey }: { pageKey: InfoKey }) {
         {page.intro && <p className="info-intro">{page.intro}</p>}
       </header>
 
-      {pageKey === "contact" && <BranchContacts />}
-
       {page.sections.map((sec, i) => (
         <section className="info-block" key={i}>
           {sec.heading && <h2>{sec.heading}</h2>}
@@ -106,6 +132,9 @@ export function InfoView({ pageKey }: { pageKey: InfoKey }) {
           ))}
         </section>
       ))}
+
+      {/* بطاقاتُ الفروع بعد قسم «قنواتُ كلِّ فرع» — كي يصدق «اختر فرعك أدناه» */}
+      {pageKey === "contact" && <BranchContacts />}
 
       {pageKey === "credits" && <SceneCredits />}
     </main>

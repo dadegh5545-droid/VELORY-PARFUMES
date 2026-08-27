@@ -18,12 +18,24 @@ import type { Locale } from "./i18n";
 function BranchInfo({ branch, locale }: { branch: Branch; locale: Locale }) {
   const t = T[locale];
 
+  // الدوامُ سطران بلغة الزائر — نصٌّ دقيقٌ من الكتالوج لا يُشتقّ آليًّا.
+  const hoursLines = branch.openingHours
+    ? branch.openingHours.lines[locale]
+    : branch.hours
+    ? [branch.hours]
+    : null;
+
   const rows = [
     branch.address ? { k: t.address, v: branch.address } : null,
-    branch.hours ? { k: t.hours, v: branch.hours } : null,
   ].filter(Boolean) as { k: string; v: string }[];
 
-  if (!rows.length && !branch.phone && !branch.whatsapp && !branch.mapUrl) {
+  if (
+    !rows.length &&
+    !hoursLines &&
+    !branch.phone &&
+    !branch.whatsapp &&
+    !branch.mapUrl
+  ) {
     return null;
   }
 
@@ -36,6 +48,19 @@ function BranchInfo({ branch, locale }: { branch: Branch; locale: Locale }) {
             <dd>{r.v}</dd>
           </div>
         ))}
+
+        {hoursLines && (
+          <div>
+            <dt>{t.hours}</dt>
+            <dd>
+              {hoursLines.map((line, i) => (
+                <span key={i} className="hours-line">
+                  {line}
+                </span>
+              ))}
+            </dd>
+          </div>
+        )}
 
         {branch.phone && (
           <div>
@@ -62,9 +87,10 @@ function BranchInfo({ branch, locale }: { branch: Branch; locale: Locale }) {
               {t.whatsapp}
             </a>
           )}
+          {/* زرٌّ واضحٌ لفتح المحلّ في خرائط جوجل — لا رابطًا خافتًا */}
           {branch.mapUrl && (
             <a
-              className="branch-map"
+              className="btn"
               href={branch.mapUrl}
               target="_blank"
               rel="noreferrer"

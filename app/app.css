@@ -3168,3 +3168,28 @@ a {
     transition: none;
   }
 }
+
+/* ── الدوام: سطران يتراصّان، وصفوفُ بيانات بطاقة التواصل ─────────────── */
+.hours-line {
+  display: block;
+}
+.contact-rows {
+  margin: 0 0 1.1rem;
+  display: grid;
+  gap: 0.6rem;
+}
+.contact-rows > div {
+  display: grid;
+  gap: 0.15rem;
+}
+.contact-rows dt {
+  color: var(--gold);
+  font-size: 0.78rem;
+}
+.contact-rows dd {
+  margin: 0;
+  color: var(--ivory);
+}
+.contact-rows dd a {
+  color: var(--ivory);
+}

@@ -7,6 +7,7 @@ import { Welcome } from "./welcome";
 import { SiteFooter, SiteHeader } from "./site-header";
 import { Analytics } from "./analytics";
 import { ToastProvider } from "./toast";
+import { QuickViewProvider } from "./quick-view";
 import { MobileCartBar } from "./mobile-cart-bar";
 import {
   LocalBusinessJsonLd,
@@ -84,13 +85,15 @@ export default function RootLayout({
           <HtmlLang />
           <CartProvider>
             <ToastProvider>
-              <SiteHeader />
-              {children}
-              <SiteFooter />
-              {/* اللوحةُ آخرَ الشجرة كي تعلو كلَّ شيءٍ بلا مزايدةٍ في z-index */}
-              <CartPanel />
-              {/* شريطُ السلة الثابت — للجوال وحده (CSS)، وفيه أيقونةُ واتساب */}
-              <MobileCartBar />
+              <QuickViewProvider>
+                <SiteHeader />
+                {children}
+                <SiteFooter />
+                {/* اللوحةُ آخرَ الشجرة كي تعلو كلَّ شيءٍ بلا مزايدةٍ في z-index */}
+                <CartPanel />
+                {/* شريطُ السلة الثابت — للجوال وحده (CSS)، وفيه أيقونةُ واتساب */}
+                <MobileCartBar />
+              </QuickViewProvider>
             </ToastProvider>
           </CartProvider>
           <Welcome />

@@ -16,6 +16,7 @@ import {
 import { GENDER_TR, T, trBrand, trSize, type Locale } from "./i18n";
 import { Bottle } from "./bottle";
 import { AddButton } from "./site-header";
+import { useQuickView } from "./quick-view";
 
 // كم عطرًا يظهر في الدفعة الواحدة — الشبكة تبدأ بهذا العدد، ويكشف زرُّ
 // «عرض المزيد» دفعةً مثلَه في كلِّ ضغطة، فلا تُحمَّل الصفحة بستّين بطاقةً دفعةً.
@@ -49,6 +50,7 @@ function uniq<T>(values: (T | undefined)[]): T[] {
 
 export function Collection({ branch, locale }: { branch: Branch; locale: Locale }) {
   const t = T[locale];
+  const { open: openQuick } = useQuickView();
   const all = perfumesOf(branch.id);
 
   // ما يظهر في المصفّيات مشتقٌّ من عطور الفرع وحدها: لا تُعرض دارٌ ولا
@@ -282,6 +284,21 @@ export function Collection({ branch, locale }: { branch: Branch; locale: Locale 
 
             return (
               <article className="card" key={p.id}>
+                {/* العرضُ السريع: زرٌّ فوق الصورة (سيبلٌ لا داخل الرابط، فلا
+                    يتداخل تفاعلان). يظهر عند المرور على الحاسوب، وأيقونةً
+                    دائمةً صغيرة على الجوال. */}
+                <button
+                  type="button"
+                  className="quick-view"
+                  onClick={() => openQuick(p)}
+                  aria-label={`${t.quickView} — ${perfumeName(p, locale)}`}
+                >
+                  <svg viewBox="0 0 24 24" width="17" height="17" aria-hidden="true" focusable="false">
+                    <path fill="none" stroke="currentColor" strokeWidth="1.6" d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12Z" />
+                    <circle cx="12" cy="12" r="3" fill="none" stroke="currentColor" strokeWidth="1.6" />
+                  </svg>
+                  <span>{t.quickView}</span>
+                </button>
                 <Link href={`/parfum/${p.id}`} className="card-link">
                   <Bottle perfume={p} />
                   <div className="card-body">

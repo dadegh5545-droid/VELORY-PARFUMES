@@ -3625,3 +3625,332 @@ body:has(.mobile-cart-bar) .floating-wa {
     transition: none;
   }
 }
+
+/* ══════════════════════════════════════════════════════════════════════════
+   المرحلة الثانية — العرضُ السريع ونموذجُ الطلب الخفيف (الأسود والذهبي).
+   ══════════════════════════════════════════════════════════════════════════ */
+
+/* ── زرُّ العرض السريع على البطاقة ─────────────────────────────────────── */
+.quick-view {
+  position: absolute;
+  top: 0.8rem;
+  left: 50%;
+  translate: -50%;
+  z-index: 4;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.45rem 0.85rem;
+  background: rgba(10, 9, 8, 0.82);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  border: 1px solid var(--gold-dim);
+  border-radius: 2rem;
+  color: var(--ivory);
+  font-family: inherit;
+  font-size: 0.78rem;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  opacity: 0;
+  transform: translateY(-6px);
+  pointer-events: none;
+  transition: opacity 0.3s var(--ease), transform 0.3s var(--ease),
+    border-color 0.3s var(--ease), color 0.3s var(--ease);
+}
+@media (hover: hover) {
+  .card:hover .quick-view {
+    opacity: 1;
+    transform: none;
+    pointer-events: auto;
+  }
+}
+.quick-view:hover,
+.quick-view:focus-visible {
+  border-color: var(--gold);
+  color: var(--gold);
+}
+.quick-view:focus-visible {
+  opacity: 1;
+  transform: none;
+  pointer-events: auto;
+  outline: var(--ring);
+  outline-offset: 2px;
+}
+/* على اللمس (بلا مرور): أيقونةٌ دائمةٌ صغيرة في ركن الصورة، بلا نص */
+@media (max-width: 720px) {
+  .quick-view {
+    opacity: 1;
+    transform: none;
+    pointer-events: auto;
+    left: auto;
+    translate: none;
+    inset-inline-end: 0.7rem;
+    top: 0.7rem;
+    width: 2.15rem;
+    height: 2.15rem;
+    padding: 0;
+    justify-content: center;
+    border-radius: 50%;
+    background: rgba(10, 9, 8, 0.72);
+  }
+  .quick-view span {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+}
+
+/* ── نافذةُ العرض السريع ───────────────────────────────────────────────── */
+.qv-veil {
+  position: fixed;
+  inset: 0;
+  z-index: 130;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  background: rgba(6, 5, 4, 0.78);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  animation: qv-fade 0.3s var(--ease);
+}
+.qv-modal {
+  position: relative;
+  width: min(760px, 100%);
+  max-height: 90vh;
+  overflow: auto;
+  background: var(--noir-card);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 2rem;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6);
+  animation: qv-rise 0.35s var(--ease);
+}
+.qv-close {
+  position: absolute;
+  top: 0.75rem;
+  inset-inline-end: 0.75rem;
+  width: 2.4rem;
+  height: 2.4rem;
+  background: none;
+  border: 1px solid transparent;
+  color: var(--ivory-dim);
+  font-size: 1rem;
+  border-radius: 2px;
+  cursor: pointer;
+  transition: color 0.3s var(--ease), border-color 0.3s var(--ease);
+}
+.qv-close:hover,
+.qv-close:focus-visible {
+  color: var(--gold);
+  border-color: var(--gold-dim);
+}
+.qv-close:focus-visible {
+  outline: var(--ring);
+  outline-offset: 2px;
+}
+.qv-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  gap: 2rem;
+  align-items: center;
+}
+.qv-bottle {
+  margin: 0;
+  border: 1px solid var(--line);
+}
+.qv-info h2 {
+  font-size: clamp(1.6rem, 3vw, 2.2rem);
+  margin-bottom: 0.3rem;
+}
+.qv-latin {
+  font-size: 1.05rem;
+  margin-bottom: 0.6rem;
+}
+.qv-desc {
+  color: var(--ivory-dim);
+  margin: 0.6rem 0 1rem;
+}
+.qv-info .in-stock {
+  display: inline-block;
+  margin-top: 0.4rem;
+}
+.qv-buy {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin: 1.1rem 0 1rem;
+  padding-top: 1.1rem;
+  border-top: 1px solid var(--line);
+}
+.qv-buy .price {
+  font-size: 1.6rem;
+  /* السعرُ لا ينقسم: «FCFA 1,200» في سطرٍ واحدٍ دائمًا */
+  white-space: nowrap;
+}
+.qv-details {
+  display: inline-block;
+  color: var(--gold);
+  border-bottom: 1px solid var(--gold-dim);
+  font-size: 0.9rem;
+  transition: border-color 0.3s var(--ease);
+}
+.qv-details:hover,
+.qv-details:focus-visible {
+  border-color: var(--gold);
+}
+@media (max-width: 640px) {
+  .qv-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  .qv-modal {
+    padding: 1.4rem;
+  }
+  .qv-bottle {
+    max-width: 62%;
+    margin-inline: auto;
+  }
+  /* لو ضاقت المساحة: السعرُ في سطرٍ (nowrap)، وزرُّ الإضافة بعرضٍ كاملٍ تحته */
+  .qv-buy {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.9rem;
+  }
+  .qv-buy .btn {
+    width: 100%;
+  }
+}
+@keyframes qv-fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes qv-rise {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: none; }
+}
+
+/* ── نموذجُ الطلب الخفيف ───────────────────────────────────────────────── */
+.cart-form {
+  display: flex;
+  flex-direction: column;
+}
+.cart-back {
+  align-self: flex-start;
+  background: none;
+  border: none;
+  color: var(--ivory-dim);
+  font-family: inherit;
+  font-size: 0.9rem;
+  cursor: pointer;
+  padding: 0.2rem 0;
+  margin-bottom: 0.5rem;
+  transition: color 0.3s var(--ease);
+}
+.cart-back:hover,
+.cart-back:focus-visible {
+  color: var(--gold);
+}
+.cart-form-fields {
+  display: grid;
+  gap: 0.9rem;
+  margin: 1.2rem 0 1.4rem;
+}
+.cart-form-fields label {
+  display: grid;
+  gap: 0.3rem;
+}
+.cart-form-fields label > span {
+  font-size: 0.82rem;
+  color: var(--ivory-dim);
+}
+.cart-form-fields input {
+  min-height: 2.75rem;
+  padding: 0.5rem 0.85rem;
+  background: var(--noir-soft);
+  border: 1px solid var(--ctl-line);
+  color: var(--ivory);
+  font-family: inherit;
+  font-size: 0.95rem;
+  border-radius: 2px;
+  transition: border-color 0.3s var(--ease);
+}
+.cart-form-fields input::placeholder {
+  color: var(--ivory-mute);
+}
+.cart-form-fields input:hover {
+  border-color: var(--gold-dim);
+}
+.cart-form-fields input:focus-visible {
+  outline: var(--ring);
+  outline-offset: var(--ring-gap);
+  border-color: var(--gold);
+}
+.map-row {
+  display: flex;
+  gap: 0.5rem;
+}
+.map-row input {
+  flex: 1;
+  min-width: 0;
+}
+.map-locate {
+  flex: 0 0 auto;
+  white-space: nowrap;
+  padding: 0 0.9rem;
+  min-height: 2.75rem;
+  background: none;
+  border: 1px solid var(--gold-dim);
+  color: var(--gold);
+  font-family: inherit;
+  font-size: 0.82rem;
+  border-radius: 2px;
+  cursor: pointer;
+  transition: border-color 0.3s var(--ease), background-color 0.3s var(--ease);
+}
+.map-locate:hover,
+.map-locate:focus-visible {
+  border-color: var(--gold);
+  background: var(--wash);
+}
+.map-locate:focus-visible {
+  outline: var(--ring);
+  outline-offset: 2px;
+}
+.map-locate:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+.cart-skip {
+  display: block;
+  text-align: center;
+  margin-top: 0.9rem;
+  color: var(--ivory-dim);
+  font-size: 0.9rem;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  transition: color 0.3s var(--ease);
+}
+.cart-skip:hover,
+.cart-skip:focus-visible {
+  color: var(--gold);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .qv-veil,
+  .qv-modal {
+    animation: none;
+  }
+  .quick-view,
+  .qv-details,
+  .cart-back,
+  .cart-skip,
+  .map-locate {
+    transition: none;
+  }
+}

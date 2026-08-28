@@ -144,6 +144,24 @@ export type Dict = {
   /** سطرٌ يُذيَّل به الطلبُ مرّةً واحدة: من أين جاء ورابطُه */
   orderVia: string;
 
+  /* العرضُ السريع ونموذجُ الطلب الخفيف (المرحلة الثانية) */
+  quickView: string;
+  fullDetails: string;
+  orderPhone: string;
+  /** تسميةُ سطر الموقع في رسالة واتساب */
+  orderMapLabel: string;
+  /** حقلُ رابط الموقع في النموذج */
+  orderMapField: string;
+  /** تلميحُ حقل المنطقة (placeholder) */
+  orderAreaPlaceholder: string;
+  shareLocation: string;
+  checkoutProceed: string;
+  checkoutFormTitle: string;
+  checkoutFormHint: string;
+  sendOrder: string;
+  skipToWhatsapp: string;
+  checkoutBack: string;
+
   heroEyebrow: string;
   /** العنوان مشطورٌ لأن نصفه الثاني يُبرز بخطٍّ ذهبي */
   heroTitle: { lead: string; em: string };
@@ -260,6 +278,19 @@ export const T: Record<Locale, Dict> = {
     orderAddress: "عنوان التوصيل",
     orderItems: (n) => `عدد القطع: ${n}`,
     orderVia: "طُلب عبر موقع فالوري",
+    quickView: "نظرة سريعة",
+    fullDetails: "التفاصيل الكاملة",
+    orderPhone: "الجوال",
+    orderMapLabel: "الموقع",
+    orderMapField: "رابط موقعك على الخريطة (اختياري)",
+    orderAreaPlaceholder: "اختر المنطقة",
+    shareLocation: "شارك موقعي",
+    checkoutProceed: "متابعة الطلب",
+    checkoutFormTitle: "بيانات التوصيل (اختيارية)",
+    checkoutFormHint: "املأ بياناتك ليصل الطلب كاملًا، أو تخطَّ إلى واتساب مباشرة.",
+    sendOrder: "إرسال الطلب عبر واتساب",
+    skipToWhatsapp: "الذهاب إلى واتساب مباشرة",
+    checkoutBack: "رجوع إلى السلة",
     navChange: "تغيير الفرع واللغة",
 
     heroEyebrow: "دار عطور",
@@ -365,6 +396,19 @@ export const T: Record<Locale, Dict> = {
     orderAddress: "Delivery address",
     orderItems: (n) => `Items: ${n}`,
     orderVia: "Ordered via VALORY's website",
+    quickView: "Quick view",
+    fullDetails: "Full details",
+    orderPhone: "Phone",
+    orderMapLabel: "Location",
+    orderMapField: "Your map location link (optional)",
+    orderAreaPlaceholder: "Choose your area",
+    shareLocation: "Share my location",
+    checkoutProceed: "Continue to order",
+    checkoutFormTitle: "Delivery details (optional)",
+    checkoutFormHint: "Fill in your details so the full order arrives, or skip straight to WhatsApp.",
+    sendOrder: "Send order on WhatsApp",
+    skipToWhatsapp: "Go to WhatsApp directly",
+    checkoutBack: "Back to cart",
     navChange: "Change branch and language",
 
     heroEyebrow: "Perfume house",
@@ -479,6 +523,19 @@ export const T: Record<Locale, Dict> = {
     orderAddress: "Adresse de livraison",
     orderItems: (n) => `Articles : ${n}`,
     orderVia: "Commande via le site VALORY",
+    quickView: "Aperçu",
+    fullDetails: "Détails complets",
+    orderPhone: "Téléphone",
+    orderMapLabel: "Localisation",
+    orderMapField: "Lien de votre localisation (facultatif)",
+    orderAreaPlaceholder: "Choisissez le quartier",
+    shareLocation: "Partager ma position",
+    checkoutProceed: "Continuer la commande",
+    checkoutFormTitle: "Coordonnées de livraison (facultatif)",
+    checkoutFormHint: "Renseignez vos coordonnées pour une commande complète, ou passez directement à WhatsApp.",
+    sendOrder: "Envoyer la commande sur WhatsApp",
+    skipToWhatsapp: "Aller directement à WhatsApp",
+    checkoutBack: "Retour au panier",
     navChange: "Changer de succursale et de langue",
 
     heroEyebrow: "Maison de parfums",

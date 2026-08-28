@@ -12,6 +12,7 @@ import {
 import { LOCALE_SHORT, T } from "./i18n";
 import { useCart } from "./cart";
 import { useActive, usePrefs } from "./prefs";
+import { useToast } from "./toast";
 import { INFO, INFO_LINKS } from "./info-content";
 
 /** هل نزل الزائر عن أعلى الصفحة؟ — عليه يتوقّف ظهور ستار الترويسة */
@@ -115,12 +116,17 @@ export function AddButton({
 }) {
   const { add } = useCart();
   const { locale } = useActive();
+  const { show } = useToast();
 
   return (
     <button
       type="button"
       className={variant === "btn" ? "btn" : "add"}
-      onClick={() => add(id, branch)}
+      // الإضافةُ يتبعها إشعارٌ فاخرٌ يؤكّد الفعل — طمأنينةٌ بلا فتحِ اللوحة.
+      onClick={() => {
+        add(id, branch);
+        show(T[locale].addedToCart);
+      }}
     >
       {label ?? T[locale].add}
     </button>

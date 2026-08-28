@@ -3193,3 +3193,435 @@ a {
 .contact-rows dd a {
   color: var(--ivory);
 }
+
+/* ══════════════════════════════════════════════════════════════════════════
+   المرحلة الأولى — تحديثٌ بصريٌّ أفخم (يبقى الأسود والذهبي هويةً).
+   قواعدُ لاحقة تعلو القواعدَ المصوغة أعلاه بالترتيب لا بالتخصيص، فالتراجعُ
+   حذفُ هذه الكتلة وحدها. لا صورةَ منتجٍ تُقصّ: object-fit يبقى contain.
+   ══════════════════════════════════════════════════════════════════════════ */
+
+/* ── 1 · وضوحٌ أعلى وفراغٌ أقل ─────────────────────────────────────────── */
+body {
+  font-weight: 400;
+}
+.section {
+  padding: 4.5rem 0;
+}
+.section-head {
+  padding-bottom: 1.75rem;
+  margin-bottom: 2.75rem;
+}
+.branch-info {
+  margin-bottom: 2rem;
+}
+.collection-tools {
+  margin-top: 1.25rem;
+}
+
+/* ── 2 · البطاقات: أقصر وأفخم، والسعرُ بارز، وزرُّ الإضافة ذهبيٌّ ممتلئ ── */
+.card {
+  padding: 1.75rem 1.5rem 1.5rem;
+}
+.bottle {
+  margin-bottom: 1.25rem;
+}
+.card h3 {
+  font-size: 1.42rem;
+}
+.card-foot {
+  padding-top: 1.1rem;
+  gap: 0.75rem;
+}
+.card-foot .price {
+  font-size: 1.5rem;
+  font-weight: 500;
+}
+.card-foot .add {
+  border-color: var(--gold);
+  background: var(--gold);
+  color: var(--noir);
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  transition: background-color 0.35s var(--ease), border-color 0.35s var(--ease),
+    color 0.35s var(--ease), transform 0.15s var(--ease);
+}
+.card-foot .add::after {
+  color: var(--noir);
+}
+.card-foot .add:hover,
+.card-foot .add:focus-visible {
+  background: var(--ivory);
+  border-color: var(--ivory);
+  color: var(--noir);
+}
+.card-foot .add:hover::after,
+.card-foot .add:focus-visible::after {
+  color: var(--noir);
+}
+.card-foot .add:active {
+  transform: translateY(1px) scale(0.99);
+}
+
+/* ── 3 · هيكلُ التحميل الأنيق للصور ────────────────────────────────────── */
+.bottle-skeleton {
+  position: absolute;
+  inset: 9%;
+  z-index: 1;
+  border-radius: 4px;
+  background: linear-gradient(
+    100deg,
+    rgba(198, 166, 100, 0.03) 20%,
+    rgba(198, 166, 100, 0.12) 40%,
+    rgba(198, 166, 100, 0.03) 60%
+  );
+  background-size: 220% 100%;
+  animation: bottle-shimmer 1.5s ease-in-out infinite;
+}
+@keyframes bottle-shimmer {
+  from {
+    background-position: 200% 0;
+  }
+  to {
+    background-position: -200% 0;
+  }
+}
+.bottle-photo[data-loaded="false"] {
+  opacity: 0;
+}
+.bottle-photo[data-loaded="true"] {
+  opacity: 1;
+}
+.bottle.has-photo .bottle-photo {
+  transition: transform 0.9s var(--ease), opacity 0.55s var(--ease);
+}
+
+/* ── 4 · سلايدرُ الواجهة (تلاشٍ ذهبيّ) ─────────────────────────────────── */
+.hero-carousel {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  width: 100%;
+}
+.hero-slide {
+  grid-area: 1 / 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  opacity: 0;
+  transform: scale(0.985);
+  transition: opacity 0.9s var(--ease), transform 0.9s var(--ease);
+  pointer-events: none;
+}
+.hero-slide.is-active {
+  opacity: 1;
+  transform: none;
+  pointer-events: auto;
+}
+.hero-carousel .hero-chad-photo,
+.hero-carousel .hero-chad-name {
+  animation: none;
+}
+.hero-dots {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-top: 1.1rem;
+}
+.hero-dot {
+  width: 0.5rem;
+  height: 0.5rem;
+  padding: 0;
+  border: 1px solid var(--gold-dim);
+  border-radius: 50%;
+  background: none;
+  cursor: pointer;
+  transition: width 0.4s var(--ease), background-color 0.4s var(--ease),
+    border-color 0.4s var(--ease);
+}
+.hero-dot.is-active {
+  width: 1.5rem;
+  border-radius: 1rem;
+  background: var(--gold);
+  border-color: var(--gold);
+}
+.hero-dot:focus-visible {
+  outline: var(--ring);
+  outline-offset: 3px;
+}
+
+/* ── 5 · إشعارُ الإضافة (Toast) ────────────────────────────────────────── */
+.toast-region {
+  position: fixed;
+  z-index: 120;
+  left: 50%;
+  bottom: 2rem;
+  transform: translateX(-50%);
+  display: flex;
+  justify-content: center;
+  width: max-content;
+  max-width: min(92vw, 26rem);
+  pointer-events: none;
+}
+.toast {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.8rem 1.25rem;
+  background: var(--noir-card);
+  border: 1px solid var(--gold-dim);
+  border-radius: 3px;
+  color: var(--ivory);
+  font-size: 0.95rem;
+  box-shadow: 0 12px 34px rgba(0, 0, 0, 0.55);
+  opacity: 0;
+  transform: translateY(14px);
+  transition: opacity 0.35s var(--ease), transform 0.35s var(--ease);
+}
+.toast.is-shown {
+  opacity: 1;
+  transform: none;
+}
+.toast-check {
+  display: grid;
+  place-items: center;
+  width: 1.4rem;
+  height: 1.4rem;
+  border-radius: 50%;
+  background: var(--gold);
+  color: var(--noir);
+  font-size: 0.82rem;
+}
+
+/* ── 6 · زرُّ واتساب العائم (جوال) ─────────────────────────────────────── */
+.floating-wa {
+  position: fixed;
+  z-index: 90;
+  bottom: 1.25rem;
+  inset-inline-end: 1.25rem;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 3.4rem;
+  height: 3.4rem;
+  border-radius: 50%;
+  background: var(--noir-card);
+  border: 1px solid var(--gold-dim);
+  color: var(--gold);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+  transition: transform 0.3s var(--ease), border-color 0.3s var(--ease);
+}
+.floating-wa:hover,
+.floating-wa:focus-visible {
+  transform: translateY(-2px);
+  border-color: var(--gold);
+}
+.floating-wa:focus-visible {
+  outline: var(--ring);
+  outline-offset: 3px;
+}
+
+/* ── 7 · شريطُ السلة الثابت (جوال) ─────────────────────────────────────── */
+.mobile-cart-bar {
+  position: fixed;
+  z-index: 85;
+  inset-inline: 0;
+  bottom: 0;
+  display: none;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.7rem 1rem calc(0.7rem + env(safe-area-inset-bottom, 0px));
+  background: rgba(10, 9, 8, 0.96);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  border-top: 1px solid var(--line);
+}
+.mcb-summary {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  min-height: 48px;
+  background: none;
+  border: none;
+  color: var(--ivory);
+  font-family: inherit;
+  font-size: 0.95rem;
+  text-align: start;
+  cursor: pointer;
+}
+.mcb-count {
+  display: grid;
+  place-items: center;
+  min-width: 1.7rem;
+  height: 1.7rem;
+  padding: 0 0.4rem;
+  border-radius: 1rem;
+  background: var(--gold);
+  color: var(--noir);
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+.mcb-total {
+  font-family: var(--font-display), Georgia, serif;
+  color: var(--gold);
+  font-size: 1.05rem;
+}
+.mcb-checkout {
+  min-height: 48px;
+  padding-inline: 1.4rem;
+  background: var(--gold);
+  border-color: var(--gold);
+  color: var(--noir);
+  font-weight: 500;
+}
+.mcb-checkout::before {
+  background: var(--ivory);
+}
+
+/* ── 8 · Mobile-First: عمودان، وترويسةٌ مرتّبة، وأزرارٌ ≥48px ──────────── */
+@media (max-width: 720px) {
+  .floating-wa {
+    display: inline-flex;
+  }
+  .mobile-cart-bar {
+    display: flex;
+  }
+  .toast-region {
+    bottom: 5.5rem;
+  }
+  .grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .card {
+    padding: 1.1rem 0.95rem 1.15rem;
+  }
+  .card h3 {
+    font-size: 1.12rem;
+    line-height: 1.3;
+  }
+  .card .latin {
+    font-size: 0.82rem;
+  }
+  .card-foot .price {
+    font-size: 1.18rem;
+  }
+  .card-foot .add {
+    min-height: 48px;
+  }
+  .header {
+    padding: 1.25rem 0;
+  }
+  .nav {
+    gap: 1.1rem;
+  }
+  .cart,
+  .switcher {
+    min-height: 44px;
+  }
+  .footer {
+    padding-bottom: 5.5rem;
+  }
+}
+
+@media (max-width: 560px) {
+  .nav a:nth-of-type(2),
+  .nav a:nth-of-type(3) {
+    display: none;
+  }
+}
+
+body:has(.mobile-cart-bar) .floating-wa {
+  bottom: 5.5rem;
+}
+
+/* ── 9 · احترامُ سكون الحركة لكلِّ ما أُضيف ────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .hero-slide {
+    transition: opacity 0.01ms;
+    transform: none;
+  }
+  .bottle-skeleton {
+    animation: none;
+  }
+  .toast {
+    transition: opacity 0.01ms;
+    transform: none;
+  }
+  .hero-dot,
+  .floating-wa,
+  .card-foot .add {
+    transition: none;
+  }
+}
+
+/* ── 10 · وضوحُ النصوص: رفعُ التباين وإكبارٌ خفيف ─────────────────────────
+   الرماديُّ الخافتُ يصعُب على السواد، فيُرفَع لونُ النص الثانوي كلِّه (يبقى
+   مميَّزًا عن النص الأساسي، لكن يُقرأ بيسر) ويُكبَّر قليلًا. */
+:root {
+  --ivory-dim: #bdb3a4;
+}
+.hero-chad-text {
+  font-size: clamp(1rem, 1.6vw, 1.12rem);
+  color: var(--ivory-dim);
+}
+.notes {
+  font-size: 0.92rem;
+}
+.latin {
+  color: #c1a468;
+}
+.section-head p {
+  font-size: 1.02rem;
+}
+
+/* ── 11 · لمسات أخيرة: واتساب داخل الشريط، وتكبيرُ صور العطر ────────────── */
+
+/* أيقونةُ واتساب الدائرية داخل شريط السلة (تقع يسارًا بحكم flex في RTL)،
+   بدل الزرّ العائم الذي كان يغطّي البطاقات. */
+.mcb-wa {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--noir-card);
+  border: 1px solid var(--gold-dim);
+  color: var(--gold);
+  transition: border-color 0.3s var(--ease);
+}
+.mcb-wa:hover,
+.mcb-wa:focus-visible {
+  border-color: var(--gold);
+}
+.mcb-wa:focus-visible {
+  outline: var(--ring);
+  outline-offset: 2px;
+}
+
+/* صورةُ عطر السلايدر أكبرُ حضورًا — contain يبقى (بلا قص)، وكلُّ الشرائح
+   متساويةُ الارتفاع فلا قفزة في أبعاد السلايدر. */
+.hero-chad-photo {
+  height: clamp(210px, 27vh, 300px);
+}
+@media (max-width: 720px) {
+  .hero-chad-photo {
+    height: clamp(185px, 40vw, 260px);
+  }
+}
+
+/* صورُ عطور البطاقات أكبرُ ~10% مع بقاء object-fit: contain (بلا قص). */
+.bottle-photo {
+  width: 94%;
+  max-height: 82%;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mcb-wa {
+    transition: none;
+  }
+}

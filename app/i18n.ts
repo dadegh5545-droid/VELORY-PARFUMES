@@ -117,6 +117,9 @@ export type Dict = {
   cartClear: string;
   /** إتمامُ الطلب على واتساب الفرع — لا رقمَ عامًّا للدار */
   checkoutWhatsapp: string;
+  /** إشعارُ تأكيد الإضافة (Toast)، وزرُّ الإتمام المختصر في شريط الجوال */
+  addedToCart: string;
+  checkoutShort: string;
   remove: string;
   /** أزرارُ ضبط الكمّية وحذفِ السطر داخل السلة */
   qtyIncrease: string;
@@ -239,6 +242,8 @@ export const T: Record<Locale, Dict> = {
     cartEmpty: "سلّتك فارغة — اختر عطرًا من مجموعة الفرع.",
     cartClear: "إفراغ السلة",
     checkoutWhatsapp: "إتمام الطلب عبر واتساب",
+    addedToCart: "تمت الإضافة إلى سلتك",
+    checkoutShort: "إتمام الطلب",
     remove: "أنقص",
     qtyIncrease: "زد واحدًا",
     qtyDecrease: "أنقص واحدًا",
@@ -342,6 +347,8 @@ export const T: Record<Locale, Dict> = {
     cartEmpty: "Your cart is empty — pick a perfume from the branch collection.",
     cartClear: "Empty cart",
     checkoutWhatsapp: "Complete order on WhatsApp",
+    addedToCart: "Added to your cart",
+    checkoutShort: "Checkout",
     remove: "Remove one",
     qtyIncrease: "Add one",
     qtyDecrease: "Remove one",
@@ -452,6 +459,8 @@ export const T: Record<Locale, Dict> = {
     cartEmpty: "Votre panier est vide — choisissez un parfum de la collection.",
     cartClear: "Vider le panier",
     checkoutWhatsapp: "Finaliser la commande sur WhatsApp",
+    addedToCart: "Ajouté à votre panier",
+    checkoutShort: "Commander",
     remove: "Retirer un",
     qtyIncrease: "Ajouter un",
     qtyDecrease: "Retirer un",

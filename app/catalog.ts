@@ -750,10 +750,8 @@ export const CATALOG: Perfume[] = [
   },
   {
     id: "oud-chips-bag",
-    name: "عود خام — كيس",
-    latin: "Oud Chips",
-    // وصفٌ لا علامةٌ تجارية، فيُترجم
-    tr: { fr: { name: "Copeaux d'oud brut — sachet" } },
+    name: "ظفر دولار",
+    latin: "Dhafar Dollar",
     tint: "rgba(150, 105, 60, 0.28)",
     image: "/products/oud-chips-bag.jpg",
     branches: { chad: { price: 15000 } },

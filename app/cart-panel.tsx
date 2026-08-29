@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   branchNameIn,
   formatPrice,
@@ -87,6 +87,42 @@ function orderBlock(branch: Branch, rows: CartItem[], locale: Locale) {
   ].join("\n");
 }
 
+/** بياناتُ التوصيل التي يملؤها الزبون في النموذج الخفيف — كلُّها اختيارية */
+export type OrderDetails = {
+  name: string;
+  phone: string;
+  area: string;
+  address: string;
+  map: string;
+};
+
+/**
+ * كتلةُ بيانات التوصيل في الرسالة.
+ *
+ * إن مُلئ النموذجُ صارت البياناتُ سطورًا جاهزة، وإلا بقيت حقولًا فارغةً
+ * يكتبها الزبون في واتساب نفسِه — فالنموذجُ خفيفٌ واختياريّ لا شرطَ للطلب.
+ * ما لم يُملأ حقلٌ لا يُدرج سطرُه، ولو خلا النموذجُ كلُّه عاد إلى الفراغات.
+ */
+function askBlock(locale: Locale, details?: OrderDetails) {
+  const t = T[locale];
+  const blank = [
+    t.orderAsk,
+    `• ${t.orderName}:`,
+    `• ${t.orderArea}:`,
+    `• ${t.orderAddress}:`,
+  ].join("\n");
+
+  if (!details) return blank;
+
+  const lines = [t.orderAsk];
+  if (details.name) lines.push(`• ${t.orderName}: ${details.name}`);
+  if (details.phone) lines.push(`• ${t.orderPhone}: ${details.phone}`);
+  if (details.area) lines.push(`• ${t.orderArea}: ${details.area}`);
+  if (details.address) lines.push(`• ${t.orderAddress}: ${details.address}`);
+  if (details.map) lines.push(`• ${t.orderMapLabel}: ${details.map}`);
+  return lines.length > 1 ? lines.join("\n") : blank;
+}
+
 /**
  * نصُّ الطلب كما يصل تاجرَ الفرع على واتساب.
  *
@@ -96,20 +132,20 @@ function orderBlock(branch: Branch, rows: CartItem[], locale: Locale) {
  * وتُذيَّل بنسخةٍ فرنسية حين لا تكون الفرنسيةُ لغةَ الزائر: نجامينا
  * لسانُها فرنسي، فمن يستلم الطلبَ أو يناوله زميلَه يقرؤه بلا ترجمة.
  *
- * وتنتهي بطلبِ بيانات التوصيل داخل واتساب — لا حسابَ يُنشأ ولا نموذجَ
- * يُملأ في الموقع: الزبونُ يكتب اسمَه ومنطقتَه وعنوانَه في المحادثة نفسِها.
+ * وبيانات التوصيل: تُملأ في النموذج الخفيف فتصل جاهزة، أو تُترك فراغاتٍ
+ * يكتبها الزبون في المحادثة إن اختار «الذهاب إلى واتساب مباشرة».
  */
-function orderText(branch: Branch, rows: CartItem[], locale: Locale) {
+function orderText(
+  branch: Branch,
+  rows: CartItem[],
+  locale: Locale,
+  details?: OrderDetails
+) {
   const t = T[locale];
   const blocks = [orderBlock(branch, rows, locale)];
   if (locale !== "fr") blocks.push(orderBlock(branch, rows, "fr"));
 
-  const ask = [
-    t.orderAsk,
-    `• ${t.orderName}:`,
-    `• ${t.orderArea}:`,
-    `• ${t.orderAddress}:`,
-  ].join("\n");
+  const ask = askBlock(locale, details);
 
   // مصدرُ الطلب مرّةً واحدةً في الذيل: يعرف التاجرُ أنه من الموقع، ورابطُه
   // في متناوله. لا يُكرَّر في الكتلة الفرنسية لأنه رابطٌ لا نصَّ يُترجَم.
@@ -117,6 +153,17 @@ function orderText(branch: Branch, rows: CartItem[], locale: Locale) {
 
   return [...blocks, ask, via].join("\n\n— — —\n\n");
 }
+
+/** رابطُ واتساب الفرع محمّلًا بنصّ الطلب */
+const waLink = (
+  branch: Branch,
+  rows: CartItem[],
+  locale: Locale,
+  details?: OrderDetails
+) =>
+  `https://wa.me/${branch.whatsapp}?text=${encodeURIComponent(
+    orderText(branch, rows, locale, details)
+  )}`;
 
 /**
  * لوحةُ السلة — تنزلق من جهة البداية وتُغلق بـ Escape أو بالنقر خارجها.
@@ -130,6 +177,17 @@ export function CartPanel() {
   const t = T[locale];
   const panelRef = useRef<HTMLDivElement>(null);
 
+  // خطوةُ اللوحة: عرضُ السلة أو نموذجُ بيانات التوصيل الخفيف.
+  const [mode, setMode] = useState<"cart" | "form">("cart");
+  const [form, setForm] = useState<OrderDetails>({
+    name: "",
+    phone: "",
+    area: "",
+    address: "",
+    map: "",
+  });
+  const [locating, setLocating] = useState(false);
+
   // Escape يغلق، والتركيز ينتقل إلى اللوحة عند فتحها فيبلغها قارئُ الشاشة
   useEffect(() => {
     if (!open) return;
@@ -140,6 +198,33 @@ export function CartPanel() {
     panelRef.current?.focus();
     return () => window.removeEventListener("keydown", onKey);
   }, [open, setOpen]);
+
+  // إغلاقُ اللوحة يعيدها إلى خطوة السلة ويصفّر النموذج، فيبدأ فارغًا دائمًا
+  // في الفتحة التالية — لا تبقى بياناتُ زبونٍ سابق.
+  useEffect(() => {
+    if (!open) {
+      setMode("cart");
+      setForm({ name: "", phone: "", area: "", address: "", map: "" });
+    }
+  }, [open]);
+
+  // «شارك موقعي»: يملأ حقلَ الخريطة برابط جوجل من إحداثيّات الجهاز، إن أذِن.
+  const shareLocation = () => {
+    if (typeof navigator === "undefined" || !navigator.geolocation) return;
+    setLocating(true);
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        const { latitude, longitude } = pos.coords;
+        setForm((f) => ({
+          ...f,
+          map: `https://maps.google.com/?q=${latitude},${longitude}`,
+        }));
+        setLocating(false);
+      },
+      () => setLocating(false),
+      { enableHighAccuracy: true, timeout: 8000 }
+    );
+  };
 
   if (!open) return null;
 
@@ -173,6 +258,100 @@ export function CartPanel() {
 
         {!branch || rows.length === 0 ? (
           <p className="cart-empty">{t.cartEmpty}</p>
+        ) : mode === "form" && branch.whatsapp ? (
+          /* نموذجُ التوصيل الخفيف — كلُّ حقولِه اختيارية، ومنه زرّان:
+             إرسالُ الطلب كاملًا، أو الذهابُ إلى واتساب مباشرةً بلا بيانات. */
+          <section className="cart-group cart-form">
+            <button
+              type="button"
+              className="cart-back"
+              onClick={() => setMode("cart")}
+            >
+              ← {t.checkoutBack}
+            </button>
+            <h3>{t.checkoutFormTitle}</h3>
+            <p className="cart-note">{t.checkoutFormHint}</p>
+
+            <div className="cart-form-fields">
+              <label>
+                <span>{t.orderName}</span>
+                <input
+                  type="text"
+                  value={form.name}
+                  onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
+                  autoComplete="name"
+                />
+              </label>
+              <label>
+                <span>{t.orderPhone}</span>
+                <input
+                  type="tel"
+                  dir="ltr"
+                  value={form.phone}
+                  onChange={(e) => setForm((f) => ({ ...f, phone: e.target.value }))}
+                  autoComplete="tel"
+                />
+              </label>
+              <label>
+                <span>{t.orderArea}</span>
+                <input
+                  type="text"
+                  value={form.area}
+                  onChange={(e) => setForm((f) => ({ ...f, area: e.target.value }))}
+                  placeholder={t.orderAreaPlaceholder}
+                />
+              </label>
+              <label>
+                <span>{t.orderAddress}</span>
+                <input
+                  type="text"
+                  value={form.address}
+                  onChange={(e) =>
+                    setForm((f) => ({ ...f, address: e.target.value }))
+                  }
+                  autoComplete="street-address"
+                />
+              </label>
+              <label className="cart-form-map">
+                <span>{t.orderMapField}</span>
+                <div className="map-row">
+                  <input
+                    type="url"
+                    dir="ltr"
+                    inputMode="url"
+                    value={form.map}
+                    onChange={(e) => setForm((f) => ({ ...f, map: e.target.value }))}
+                    placeholder="https://maps.google.com/…"
+                  />
+                  <button
+                    type="button"
+                    className="map-locate"
+                    onClick={shareLocation}
+                    disabled={locating}
+                  >
+                    {t.shareLocation}
+                  </button>
+                </div>
+              </label>
+            </div>
+
+            <a
+              className="btn cart-send"
+              href={waLink(branch, rows, locale, form)}
+              target="_blank"
+              rel="noreferrer"
+            >
+              {t.sendOrder}
+            </a>
+            <a
+              className="cart-skip"
+              href={waLink(branch, rows, locale)}
+              target="_blank"
+              rel="noreferrer"
+            >
+              {t.skipToWhatsapp}
+            </a>
+          </section>
         ) : (
           <>
             <section className="cart-group">
@@ -251,19 +430,16 @@ export function CartPanel() {
                 );
               })()}
 
-              {/* زرُّ الإتمام لا يظهر لفرعٍ بلا رقم: زرٌّ لا يفعل شيئًا
-                  أسوأ من غيابه، والرقمُ يُملأ في `catalog.ts`. */}
+              {/* المتابعةُ إلى نموذج التوصيل الخفيف — لا يظهر لفرعٍ بلا رقم:
+                  زرٌّ لا يفعل شيئًا أسوأ من غيابه، والرقمُ يُملأ في `catalog.ts`. */}
               {branch.whatsapp ? (
-                <a
+                <button
+                  type="button"
                   className="btn cart-send"
-                  href={`https://wa.me/${branch.whatsapp}?text=${encodeURIComponent(
-                    orderText(branch, rows, locale)
-                  )}`}
-                  target="_blank"
-                  rel="noreferrer"
+                  onClick={() => setMode("form")}
                 >
-                  {t.checkoutWhatsapp}
-                </a>
+                  {t.checkoutProceed}
+                </button>
               ) : (
                 <p className="cart-note">{t.branchNoContact}</p>
               )}

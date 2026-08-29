@@ -88,6 +88,10 @@ export type Branch = {
    *  غيّرِ المعرّفَ هنا فيتغيّر بطلُ الواجهة، ولا موضعَ آخرَ يُمسّ.
    *  ولا يُعرض إلا إن كان معروضًا في هذا الفرع وله صورة. */
   featured?: string;
+  /** معرّفاتُ عطورِ سلايدر الواجهة — ٣ إلى ٥ عطورٍ حقيقية من الفرع.
+   *  ما لم يُملأ يسقط السلايدر إلى عطر `featured` وحده. ولا يُعرض معرّفٌ
+   *  إلا إن كان معروضًا في هذا الفرع وله صورة. */
+  slides?: string[];
 };
 
 // مشاهدُ تشاد — مواضعُ حقيقيةٌ بأسمائها، لا صورَ صحراءَ بلا نسب.
@@ -255,6 +259,8 @@ export const BRANCHES: Branch[] = [
     // يفتحها بالعربية في يد زبونٍ فرنسيّ اللسان، وتركُها يتبع لغةَ جهازه.
     mapUrl: "https://www.google.com/maps?q=12.114278,15.055917",
     featured: "thaljee",
+    // سلايدرُ الواجهة: خمسةُ عطورٍ حقيقية من رفوف نجامينا، بصورها الأصلية.
+    slides: ["thaljee", "baccarat-rouge", "moon-paris", "black-opum", "oud-collection"],
   },
 ];
 
@@ -744,10 +750,8 @@ export const CATALOG: Perfume[] = [
   },
   {
     id: "oud-chips-bag",
-    name: "عود خام — كيس",
-    latin: "Oud Chips",
-    // وصفٌ لا علامةٌ تجارية، فيُترجم
-    tr: { fr: { name: "Copeaux d'oud brut — sachet" } },
+    name: "ظفر دولار",
+    latin: "Dhafar Dollar",
     tint: "rgba(150, 105, 60, 0.28)",
     image: "/products/oud-chips-bag.jpg",
     branches: { chad: { price: 15000 } },
@@ -963,6 +967,24 @@ export const featuredOf = (b: Branch): Perfume | undefined => {
   if (!b.featured) return undefined;
   const p = getPerfume(b.featured);
   return p && p.image && p.branches[b.id] ? p : undefined;
+};
+
+/**
+ * عطورُ سلايدر الواجهة — بالشروط نفسِها: معروضٌ في الفرع وله صورة.
+ * ما لم تُضبط `slides` سقط إلى عطر الواجهة وحده، فلا يخلو السلايدر أبدًا
+ * ما دام للفرع بطلٌ واحدٌ صالح. ولا يُعرض عطرٌ حُذف من الفرع أو بلا صورة.
+ */
+export const slidesOf = (b: Branch): Perfume[] => {
+  const ids = b.slides && b.slides.length ? b.slides : b.featured ? [b.featured] : [];
+  const seen: Record<string, boolean> = {};
+  const out: Perfume[] = [];
+  for (const id of ids) {
+    if (seen[id]) continue;
+    seen[id] = true;
+    const p = getPerfume(id);
+    if (p && p.image && p.branches[b.id]) out.push(p);
+  }
+  return out;
 };
 
 /** عطور فرعٍ بعينه — تقرأ منها شبكة القسم */

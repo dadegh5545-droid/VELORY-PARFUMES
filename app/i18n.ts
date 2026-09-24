@@ -123,6 +123,8 @@ export type Dict = {
   navCart: string;
   /** يفتح الترحيب من جديد لتغيير الفرع أو اللغة */
   navChange: string;
+  /** زرُّ القائمة على الجوال */
+  navMenu: string;
 
   /* لوحة السلة */
   cartEmpty: string;
@@ -195,6 +197,9 @@ export type Dict = {
     featured: string;
     /** ثلاثُ وعودٍ قصيرة أسفل الواجهة — لا رابعَ لها في التخطيط */
     strip: [string, string, string];
+    /** سهما سلايدر الواجهة */
+    prev: string;
+    next: string;
   };
 
   quote: [string, string];
@@ -311,6 +316,7 @@ export const T: Record<Locale, Dict> = {
     skipToWhatsapp: "الذهاب إلى واتساب مباشرة",
     checkoutBack: "رجوع إلى السلة",
     navChange: "تغيير الفرع واللغة",
+    navMenu: "القائمة",
 
     heroEyebrow: "دار عطور",
     heroTitle: { lead: "فنُّ", em: "العِطر" },
@@ -324,6 +330,8 @@ export const T: Record<Locale, Dict> = {
       shop: "تسوّق المجموعة",
       featured: "اكتشف العطر المميّز",
       strip: ["عطورٌ أصلية", "توصيل داخل تشاد", "طلبٌ سريع عبر واتساب"],
+      prev: "العطر السابق",
+      next: "العطر التالي",
     },
 
     quote: ["العِطرُ ليس زينة.", "إنه ذاكرةٌ تُلبَس."],
@@ -435,6 +443,7 @@ export const T: Record<Locale, Dict> = {
     skipToWhatsapp: "Go to WhatsApp directly",
     checkoutBack: "Back to cart",
     navChange: "Change branch and language",
+    navMenu: "Menu",
 
     heroEyebrow: "Perfume house",
     heroTitle: { lead: "The Art of", em: "Perfume" },
@@ -452,6 +461,8 @@ export const T: Record<Locale, Dict> = {
         "Delivery within Chad",
         "Fast ordering on WhatsApp",
       ],
+      prev: "Previous perfume",
+      next: "Next perfume",
     },
 
     quote: ["Perfume is no ornament.", "It is a memory you wear."],
@@ -568,6 +579,7 @@ export const T: Record<Locale, Dict> = {
     skipToWhatsapp: "Aller directement à WhatsApp",
     checkoutBack: "Retour au panier",
     navChange: "Changer de succursale et de langue",
+    navMenu: "Menu",
 
     heroEyebrow: "Maison de parfums",
     heroTitle: { lead: "L'Art du", em: "Parfum" },
@@ -585,6 +597,8 @@ export const T: Record<Locale, Dict> = {
         "Livraison au Tchad",
         "Commande rapide sur WhatsApp",
       ],
+      prev: "Parfum précédent",
+      next: "Parfum suivant",
     },
 
     quote: ["Le parfum n'est pas un ornement.", "C'est une mémoire que l'on porte."],

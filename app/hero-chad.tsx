@@ -128,6 +128,33 @@ export function ChadHero({ branch, locale }: { branch: Branch; locale: Locale })
             </div>
 
             {n > 1 && (
+              <>
+                {/* سهمان: النقاطُ وحدها تنقل، لكنها تطلب إصابةَ هدفٍ صغير.
+                    السهمُ فعلٌ واحدٌ واضح، ويخدم لوحةَ المفاتيح والفأرة. */}
+                <button
+                  type="button"
+                  className="hero-arrow hero-arrow-prev"
+                  onClick={() => go(index - 1)}
+                  aria-label={h.prev}
+                >
+                  <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false">
+                    <path fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" d="m14 6-6 6 6 6" />
+                  </svg>
+                </button>
+                <button
+                  type="button"
+                  className="hero-arrow hero-arrow-next"
+                  onClick={() => go(index + 1)}
+                  aria-label={h.next}
+                >
+                  <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false">
+                    <path fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" d="m10 6 6 6-6 6" />
+                  </svg>
+                </button>
+              </>
+            )}
+
+            {n > 1 && (
               <div className="hero-dots" role="tablist" aria-label={h.title}>
                 {slides.map((p, idx) => (
                   <button

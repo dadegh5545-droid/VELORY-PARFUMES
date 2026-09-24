@@ -92,6 +92,11 @@ export type Dict = {
   filterHouseAll: string;
   filterSizeAll: string;
   filterPriceMax: string;
+  /* لوحُ التصفية: زرُّه وأفعالُه */
+  filtersOpen: string;
+  filtersClear: string;
+  filtersApply: (n: number) => string;
+  filtersRemove: string;
   showMore: string;
 
   head: string;
@@ -254,6 +259,10 @@ export const T: Record<Locale, Dict> = {
     filterHouseAll: "كل الدور",
     filterSizeAll: "كل الأحجام",
     filterPriceMax: "السعر حتى",
+    filtersOpen: "تصفية",
+    filtersClear: "مسح الكل",
+    filtersApply: (n) => `عرض ${n} عطرًا`,
+    filtersRemove: "أزِل هذا المرشِّح",
     showMore: "عرض المزيد",
 
     head: "المقدّمة",
@@ -381,6 +390,10 @@ export const T: Record<Locale, Dict> = {
     filterHouseAll: "All houses",
     filterSizeAll: "All sizes",
     filterPriceMax: "Price up to",
+    filtersOpen: "Filter",
+    filtersClear: "Clear all",
+    filtersApply: (n) => `Show ${n} perfumes`,
+    filtersRemove: "Remove this filter",
     showMore: "Show more",
 
     head: "Top",
@@ -515,6 +528,10 @@ export const T: Record<Locale, Dict> = {
     filterHouseAll: "Toutes les maisons",
     filterSizeAll: "Toutes les tailles",
     filterPriceMax: "Prix jusqu'à",
+    filtersOpen: "Filtrer",
+    filtersClear: "Tout effacer",
+    filtersApply: (n) => `Voir ${n} parfums`,
+    filtersRemove: "Retirer ce filtre",
     showMore: "Voir plus",
 
     head: "Tête",

@@ -4280,3 +4280,264 @@ body:has(.mobile-cart-bar) .floating-wa {
 .hero-chad-strip {
   margin-top: clamp(0.7rem, 1.8vh, 2rem);
 }
+
+
+/* ── زرُّ واتساب العائم ────────────────────────────────────────────────
+   في جهة البداية (يسارًا في العربية) كي لا يزاحم شريطَ السلة في جهة
+   النهاية، وفوق شريط الإيماءات في أجهزة آبل عبر safe-area. */
+.wa-fab {
+  position: fixed;
+  z-index: 45;
+  /* يسارٌ ماديّ لا منطقيّ: inset-inline-start في العربية هو اليمين،
+     وهناك يقف شريطُ السلة — فيُثبَّت الزرُّ يسارًا في اللغتين. */
+  left: 1rem;
+  inset-block-end: calc(1rem + env(safe-area-inset-bottom, 0px));
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 3.25rem;
+  height: 3.25rem;
+  border-radius: 50%;
+  background: var(--noir-card, #14110f);
+  border: 1px solid var(--gold-dim);
+  color: var(--gold);
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.5);
+  transition: border-color 0.3s var(--ease), color 0.3s var(--ease),
+    transform 0.3s var(--ease);
+}
+
+.wa-fab:hover,
+.wa-fab:focus-visible {
+  border-color: var(--gold);
+  transform: translateY(-2px);
+}
+
+.wa-fab:focus-visible {
+  outline: var(--ring);
+  outline-offset: 3px;
+}
+
+/* على الجوال يرتفع فوق شريط السلة الثابت فلا يختفي تحته */
+@media (max-width: 720px) {
+  .wa-fab {
+    inset-block-end: calc(4.9rem + env(safe-area-inset-bottom, 0px));
+    width: 3rem;
+    height: 3rem;
+  }
+}
+
+/* أيقونةُ واتساب في شريط السلة تُحذف: صار الزرُّ العائم يغني عنها،
+   ووجودُهما معًا بابان إلى محادثةٍ واحدة في شاشةٍ واحدة. */
+.mcb-wa {
+  display: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wa-fab {
+    transition: none;
+  }
+  .wa-fab:hover {
+    transform: none;
+  }
+}
+
+
+/* ── لوحُ التصفية ──────────────────────────────────────────────────────
+   كان صفٌّ ثانٍ من القوائم دائمَ الحضور فوق الشبكة يدفع العطورَ لأسفل.
+   صار زرًّا واحدًا في صفّ البحث يفتح صفحةً جانبيةً على الحاسوب وسفليةً
+   على الجوال، وما هو مفعَّلٌ يظهر رقائقَ تُرفع الواحدةُ منها بضغطة. */
+
+.filter-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.filter-btn.has-active {
+  border-color: var(--gold);
+  color: var(--gold);
+}
+
+.filter-badge {
+  display: inline-grid;
+  place-items: center;
+  min-width: 1.15rem;
+  height: 1.15rem;
+  padding: 0 0.3rem;
+  background: var(--gold);
+  color: #16120a;
+  border-radius: 1rem;
+  font-size: 0.7rem;
+  line-height: 1;
+}
+
+.filter-veil {
+  position: fixed;
+  inset: 0;
+  z-index: 70;
+  background: rgba(5, 4, 4, 0.6);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s var(--ease), visibility 0.3s var(--ease);
+}
+
+.filter-veil.is-open {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* الحاسوب: صفحةٌ جانبيةٌ تنزلق من جهة البداية */
+.filter-sheet {
+  position: fixed;
+  z-index: 71;
+  inset-block: 0;
+  inset-inline-start: 0;
+  width: min(23rem, 92vw);
+  display: flex;
+  flex-direction: column;
+  background: var(--noir);
+  border-inline-end: 1px solid var(--line);
+  transform: translateX(-100%);
+  visibility: hidden;
+  transition: transform 0.34s var(--ease), visibility 0.34s var(--ease);
+}
+
+[dir="rtl"] .filter-sheet {
+  transform: translateX(100%);
+}
+
+.filter-sheet.is-open {
+  transform: none;
+  visibility: visible;
+}
+
+.filter-sheet-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.15rem 1.25rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.filter-sheet-head h3 {
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+.filter-close {
+  width: 2.25rem;
+  height: 2.25rem;
+  background: none;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  color: var(--ivory);
+  font-size: 1.3rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.filter-close:hover,
+.filter-close:focus-visible {
+  border-color: var(--gold);
+  color: var(--gold);
+}
+
+/* المرشِّحاتُ عمودًا واحدًا داخل اللوح — كانت صفًّا أفقيًّا مزدحمًا */
+.filter-sheet-body {
+  flex: 1;
+  overflow-y: auto;
+  display: grid;
+  align-content: start;
+  gap: 1.1rem;
+  padding: 1.25rem;
+}
+
+.filter-sheet-body .tool,
+.filter-sheet-body .tool select,
+.filter-sheet-body .tool input {
+  width: 100%;
+}
+
+/* التسمياتُ المخفيّةُ بصريًّا تعود ظاهرةً هنا: القائمةُ وحدها في عمودٍ
+   لا يُعرف ما تصفّيه بلا عنوان. */
+.filter-sheet-body .tool > .vh {
+  position: static;
+  width: auto;
+  height: auto;
+  margin-bottom: 0.35rem;
+  clip-path: none;
+  color: var(--gold-dim);
+  font-size: 0.78rem;
+  letter-spacing: 0.06em;
+}
+
+.filter-sheet-foot {
+  display: flex;
+  gap: 0.75rem;
+  padding: 1rem 1.25rem calc(1rem + env(safe-area-inset-bottom, 0px));
+  border-top: 1px solid var(--line);
+}
+
+.filter-sheet-foot .btn {
+  flex: 1;
+  justify-content: center;
+}
+
+/* الجوال: صفحةٌ سفليةٌ تنزلق من القاع */
+@media (max-width: 720px) {
+  .filter-sheet,
+  [dir="rtl"] .filter-sheet {
+    inset: auto 0 0 0;
+    width: auto;
+    max-height: 82vh;
+    border-inline-end: 0;
+    border-top: 1px solid var(--line);
+    border-radius: 1rem 1rem 0 0;
+    transform: translateY(100%);
+  }
+
+  .filter-sheet.is-open {
+    transform: none;
+  }
+}
+
+/* الرقائق: ما هو مفعَّلٌ الآن، ظاهرًا فوق الشبكة بلا فتح اللوح */
+.filter-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0.9rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.filter-chips button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.3rem 0.7rem;
+  background: rgba(198, 166, 100, 0.08);
+  border: 1px solid rgba(198, 166, 100, 0.3);
+  border-radius: 2rem;
+  color: var(--ivory);
+  font-family: inherit;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: border-color var(--t-state) var(--ease);
+}
+
+.filter-chips button:hover,
+.filter-chips button:focus-visible {
+  border-color: var(--gold);
+  color: var(--gold);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .filter-sheet,
+  .filter-veil {
+    transition: none;
+  }
+}

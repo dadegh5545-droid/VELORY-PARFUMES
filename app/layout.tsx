@@ -9,6 +9,7 @@ import { Analytics } from "./analytics";
 import { ToastProvider } from "./toast";
 import { QuickViewProvider } from "./quick-view";
 import { MobileCartBar } from "./mobile-cart-bar";
+import { WhatsAppFab } from "./whatsapp-fab";
 import {
   LocalBusinessJsonLd,
   OrganizationJsonLd,
@@ -83,8 +84,10 @@ export default function RootLayout({
                 <SiteFooter />
                 {/* اللوحةُ آخرَ الشجرة كي تعلو كلَّ شيءٍ بلا مزايدةٍ في z-index */}
                 <CartPanel />
-                {/* شريطُ السلة الثابت — للجوال وحده (CSS)، وفيه أيقونةُ واتساب */}
+                {/* شريطُ السلة الثابت — للجوال وحده (CSS) */}
                 <MobileCartBar />
+                {/* واتساب الفرع على كلِّ صفحة — لا في شريط السلة وحده */}
+                <WhatsAppFab />
               </QuickViewProvider>
             </ToastProvider>
           </CartProvider>

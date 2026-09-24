@@ -6,12 +6,15 @@ import {
   type Branch,
   type Gender,
   type Perfume,
+  type Size,
+  compareSize,
   countLabel,
   metaLine,
   perfumeName,
   perfumeNotes,
   perfumesOf,
   priceIn,
+  sizeKey,
 } from "./catalog";
 import { GENDER_TR, T, trBrand, trSize, type Locale } from "./i18n";
 import { Bottle } from "./bottle";
@@ -56,7 +59,15 @@ export function Collection({ branch, locale }: { branch: Branch; locale: Locale 
   // ما يظهر في المصفّيات مشتقٌّ من عطور الفرع وحدها: لا تُعرض دارٌ ولا
   // حجمٌ ولا نوعٌ لا وجودَ له بينها، فلا يصطدم الزائرُ بمرشِّحٍ لا يردّ شيئًا.
   const brands = useMemo(() => uniq(all.map((p) => p.brand)), [all]);
-  const sizes = useMemo(() => uniq(all.map((p) => p.size)), [all]);
+  // الأحجامُ تُدمج بمفتاحها لا بنصّها — «1 كجم» و«1000 جم» حجمٌ واحدٌ فخيارٌ
+  // واحد — وتُرتَّب عدديًّا، فلا يسبق «1000 مل» «100 مل» كترتيبِ النصّ.
+  const sizes = useMemo(() => {
+    const seen = new Map<string, Size>();
+    for (const p of all) {
+      if (p.size && !seen.has(sizeKey(p.size))) seen.set(sizeKey(p.size), p.size);
+    }
+    return Array.from(seen.values()).sort(compareSize);
+  }, [all]);
   const genders = useMemo(
     () => uniq(all.map((p) => p.gender)) as Gender[],
     [all]
@@ -92,7 +103,7 @@ export function Collection({ branch, locale }: { branch: Branch; locale: Locale 
     const q = norm(query.trim());
     let list = all.filter((p) => {
       if (brand && p.brand !== brand) return false;
-      if (size && p.size !== size) return false;
+      if (size && (!p.size || sizeKey(p.size) !== size)) return false;
       if (category && p.category !== category) return false;
       if (gender && p.gender !== gender) return false;
       if (hasPriceRange && cap < maxPrice) {
@@ -222,7 +233,7 @@ export function Collection({ branch, locale }: { branch: Branch; locale: Locale 
                   <select value={size} onChange={(e) => setSize(e.target.value)}>
                     <option value="">{t.filterSizeAll}</option>
                     {sizes.map((s) => (
-                      <option key={s} value={s}>
+                      <option key={sizeKey(s)} value={sizeKey(s)}>
                         {trSize(s, locale)}
                       </option>
                     ))}

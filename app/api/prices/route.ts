@@ -7,7 +7,14 @@
 import { readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { NextResponse } from "next/server";
-import { BRANCHES, CATALOG, type BranchId, type Gender } from "../../catalog";
+import {
+  BRANCHES,
+  CATALOG,
+  type BranchId,
+  type Gender,
+  type Size,
+  type SizeUnit,
+} from "../../catalog";
 
 export const dynamic = "force-dynamic";
 
@@ -84,35 +91,76 @@ function setText(
   const nl = newlineOf(src);
   // الالتقاط بلا فاصل السطر ولا CR: من التقط `\r` ثم حذف `\r\n` + السطر
   // أكل فاصلَ ما قبله وأبقى فاصلَ ما بعده، فخلط CRLF بـ LF في ملفٍ واحد.
-  const existing = block.text.match(
-    new RegExp(`^ *${field}: "[^"\\r\\n]*",`, "m")
-  );
+  const existing = block.text.match(new RegExp(fieldPattern(field), "m"));
 
   let next: string;
   if (existing) {
     const line = existing[0];
     const indent = line.match(/^ */)?.[0] ?? "    ";
-    next =
-      value === null
-        ? // يُحذف السطر ومعه الفاصلُ الذي قبله، فلا يبقى سطرٌ فارغ
-          block.text.replace(new RegExp(`\\r?\\n${escapeRe(line)}`), "")
-        : block.text.replace(line, `${indent}${field}: "${value}",`);
+    if (value === null) {
+      // يُحذف السطر ومعه الفاصلُ الذي قبله، فلا يبقى سطرٌ فارغ
+      next = block.text.replace(new RegExp(`\\r?\\n${escapeRe(line)}`), "");
+    } else {
+      const written = fieldLine(field, value, indent);
+      if (!written) return src;
+      next = block.text.replace(line, written);
+    }
   } else {
     if (value === null) return src;
     // `tint` حقلٌ إلزاميّ في كل عطر، فهو مرساةٌ مضمونةٌ للإدراج قبلها.
     const tint = block.text.match(/^ *tint: [^\r\n]*,/m);
     if (!tint) return src;
     const indent = tint[0].match(/^ */)?.[0] ?? "    ";
-    next = block.text.replace(
-      tint[0],
-      `${indent}${field}: "${value}",${nl}${tint[0]}`
-    );
+    const written = fieldLine(field, value, indent);
+    if (!written) return src;
+    next = block.text.replace(tint[0], `${written}${nl}${tint[0]}`);
   }
 
   return src.slice(0, block.at) + next + src.slice(block.end);
 }
 
 const escapeRe = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+// ــــــــ الحجم: كائنٌ في المصدر، ونصٌّ في يد المحرِّر ــــــــ
+// الحجمُ صار `{ value, unit }` في الكتالوج، فلا يطابقه نمطُ `"نصّ"`.
+// واللوحةُ تبقى كما هي: يكتب صاحبُ المحل «100 مل» فيُحوَّل هنا.
+
+const SIZE_UNITS: Record<string, { unit: SizeUnit; mul: number }> = {
+  "مل": { unit: "ml", mul: 1 },
+  ml: { unit: "ml", mul: 1 },
+  "جم": { unit: "g", mul: 1 },
+  g: { unit: "g", mul: 1 },
+  "كجم": { unit: "g", mul: 1000 }, // 1 كجم = 1000 جم — فيُدمج مع نظيره
+  kg: { unit: "g", mul: 1000 },
+};
+
+/** «100 مل» أو «1 كجم» → حجمٌ منظَّم، أو null إن لم يُفهم */
+function parseSize(raw: string): Size | null {
+  const m = raw
+    .replace(/[٠-٩]/g, (d) => String("٠١٢٣٤٥٦٧٨٩".indexOf(d)))
+    .trim()
+    .match(/^(\d+(?:\.\d+)?)\s*(مل|كجم|جم|ml|kg|g)$/i);
+  if (!m) return null;
+  const u = SIZE_UNITS[m[2].toLowerCase()];
+  if (!u) return null;
+  const value = Number(m[1]) * u.mul;
+  return Number.isFinite(value) && value > 0 ? { value, unit: u.unit } : null;
+}
+
+/** نمطُ السطر في المصدر — الحجمُ كائنٌ بأقواسٍ معقوفة، وما سواه نصّ */
+const fieldPattern = (field: TextField) =>
+  field === "size"
+    ? `^ *size: \\{[^}\\r\\n]*\\},`
+    : `^ *${field}: "[^"\\r\\n]*",`;
+
+/** السطرُ كما يُكتب في المصدر — أو null إن لم يُفهم الحجم فلا يُكتب تخمين */
+const fieldLine = (field: TextField, value: string, indent: string) => {
+  if (field !== "size") return `${indent}${field}: "${value}",`;
+  const size = parseSize(value);
+  return size
+    ? `${indent}size: { value: ${size.value}, unit: "${size.unit}" },`
+    : null;
+};
 
 /** نصٌّ يُكتب داخل مزدوجتين في ملف TypeScript: لا مزدوجة ولا شرطة مائلة ولا سطر جديد */
 const cleanText = (v: string) => v.replace(/["\\\r\n]/g, "").trim();
@@ -223,6 +271,14 @@ export async function POST(request: Request) {
         if (field === "gender" && !GENDERS.includes(value as Gender)) {
           return NextResponse.json(
             { error: `${perfume.name}: نوعٌ غير معروف (${value})` },
+            { status: 400 }
+          );
+        }
+        // الحجمُ رقمٌ ووحدة: ما لا يُفهم يُرفض هنا صراحةً بدل أن يسقط
+        // صامتًا عند الكتابة فيظنّ المحرِّرُ أنه حُفظ.
+        if (field === "size" && !parseSize(value)) {
+          return NextResponse.json(
+            { error: `${perfume.name}: حجمٌ غير مفهوم (${value}) — اكتبه مثل «100 مل» أو «250 جم»` },
             { status: 400 }
           );
         }

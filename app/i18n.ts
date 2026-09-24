@@ -4,7 +4,7 @@
 // العربية أصلُ المحتوى: ما لم يُترجم في الكتالوج يعود إليها بدل أن يظهر فارغًا،
 // فلا تنكسر البطاقة لأن حقلًا لم يُملأ بعد.
 
-import type { Gender, Season } from "./catalog";
+import type { Gender, Season, Size, SizeUnit } from "./catalog";
 
 export type Locale = "ar" | "en" | "fr";
 
@@ -593,25 +593,16 @@ export const SEASON_TR: Record<Season, Record<Locale, string>> = {
   "لكل الفصول": { ar: "لكل الفصول", en: "All seasons", fr: "Toutes saisons" },
 };
 
-// الحجم يُكتب في الكتالوج بالعربية، وهذه مقابلاته اللاتينية.
-// ما ليس في الجدول يُعرض كما هو — أفضل من إخفائه أو تشويهه.
-const SIZE_TR: Record<string, Record<SecondLocale, string>> = {
-  "12 مل": { en: "12 ml", fr: "12 ml" },
-  "15 مل": { en: "15 ml", fr: "15 ml" },
-  "25 مل": { en: "25 ml", fr: "25 ml" },
-  "50 مل": { en: "50 ml", fr: "50 ml" },
-  "100 مل": { en: "100 ml", fr: "100 ml" },
-  "200 مل": { en: "200 ml", fr: "200 ml" },
-  "250 مل": { en: "250 ml", fr: "250 ml" },
-  "500 مل": { en: "500 ml", fr: "500 ml" },
-  "1000 مل": { en: "1000 ml", fr: "1000 ml" },
-  "25 جم": { en: "25 g", fr: "25 g" },
-  "50 جم": { en: "50 g", fr: "50 g" },
-  "100 جم": { en: "100 g", fr: "100 g" },
-  "200 جم": { en: "200 g", fr: "200 g" },
-  "500 جم": { en: "500 g", fr: "500 g" },
-  "1000 جم": { en: "1000 g", fr: "1000 g" },
-  "٢٥ جم · رول أون": { en: "25 g · roll-on", fr: "25 g · roll-on" },
+// وحدةُ الكيل بلغة الزائر. الحجمُ صار رقمًا ووحدةً في الكتالوج، فيُشتقّ
+// عرضُه من الرقم ولا يحتاج كلُّ حجمٍ جديدٍ سطرًا في جدول ترجمة كما كان.
+const UNIT_TR: Record<SizeUnit, Record<Locale, string>> = {
+  ml: { ar: "مل", en: "ml", fr: "ml" },
+  g: { ar: "جم", en: "g", fr: "g" },
+};
+
+// هيئةُ العبوة — قائمةٌ قصيرةٌ تُترجَم، وما ليس فيها يُعرض كما كُتب.
+const FORM_TR: Record<string, Record<SecondLocale, string>> = {
+  "رول أون": { en: "roll-on", fr: "roll-on" },
 };
 
 // مددُ الثبات المعروضة في لوحة الإدخال — تُترجَم تلقائيًا فلا يكتبها
@@ -632,9 +623,9 @@ const BRAND_TR: Record<string, string> = {
   الشندغة: "Al Shindagha",
   الكوثر: "Al Kausar",
   "كندل للعطور": "Kindal Perfume",
-  "هريرة ٧": "Harera 7",
+  "هريرة 7": "Harera 7",
   "بيرفكت تريدنغ": "Perfect Trading",
-  "زارا ٧": "Zara 7",
+  "زارا 7": "Zara 7",
   "أستانا ميلانو": "Astana Milano",
   "زمزم للعطور": "Zamzam Perfumes",
   "عطورات العنود": "Al Anoud Perfumes",
@@ -651,15 +642,30 @@ const BRAND_TR: Record<string, string> = {
   فايزة: "Faiza",
 };
 
-export const trSize = (size: string, locale: Locale) =>
-  locale === "ar" ? size : SIZE_TR[size]?.[locale] ?? size;
+/** عرضُ الحجم بلغة الزائر: «100 مل» / «100 ml».
+ *  الأرقامُ غربيةٌ في اللغات الثلاث — كالأسعار والهواتف في الصفحة نفسها،
+ *  فلا يقرأ الزبونُ سعرًا بـ«1,200» وحجمًا بـ«١٠٠» في سطرٍ واحد.
+ *  وبلا فاصلِ آلافٍ: «1000 مل» لا «1,000 مل». */
+export const trSize = (size: Size, locale: Locale) =>
+  `${size.value} ${UNIT_TR[size.unit][locale]}`;
+
+/** هيئةُ العبوة بلغة الزائر — «رول أون» / «roll-on» */
+export const trForm = (form: string, locale: Locale) =>
+  locale === "ar" ? form : FORM_TR[form]?.[locale as SecondLocale] ?? form;
 
 export const trLongevity = (longevity: string, locale: Locale) =>
   locale === "ar" ? longevity : LONGEVITY_TR[longevity]?.[locale] ?? longevity;
 
 /** خياراتُ لوحة الإدخال — مصدرُها الجدولُ نفسه فلا يفترقان */
 export const LONGEVITY_OPTIONS = Object.keys(LONGEVITY_TR);
-export const SIZE_OPTIONS = Object.keys(SIZE_TR);
+
+/** أحجامُ لوحة الإدخال — تُكتب رقمًا ووحدةً كما في نموذج البيانات */
+export const SIZE_OPTIONS: Size[] = [
+  ...[12, 15, 25, 50, 100, 200, 250, 500, 1000].map(
+    (value): Size => ({ value, unit: "ml" })
+  ),
+  ...[25, 50, 100, 200, 500, 1000].map((value): Size => ({ value, unit: "g" })),
+];
 
 export const trBrand = (brand: string, locale: Locale) =>
   locale === "ar" ? brand : BRAND_TR[brand] ?? brand;

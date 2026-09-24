@@ -202,6 +202,12 @@ export type Dict = {
   /** صدرُ سطر إسناد صور المشاهد في التذييل */
   photosBy: string;
 
+  /* صفحةُ 404 — رابطٌ مكسورٌ يُردّ بلغة الزائر لا بالعربية وحدها */
+  notFoundTitle: string;
+  notFoundText: string;
+  notFoundCta: string;
+  notFoundHome: string;
+
   /* شاشة الترحيب */
   welcomeGreeting: string;
   welcomeTagline: string;
@@ -321,6 +327,12 @@ export const T: Record<Locale, Dict> = {
     quote: ["العِطرُ ليس زينة.", "إنه ذاكرةٌ تُلبَس."],
     quoteCite: "فالوري — دار عطور",
     photosBy: "صور المشاهد من ويكيميديا كومنز:",
+
+    notFoundTitle: "هذه الصفحة غير موجودة",
+    notFoundText:
+      "الرابطُ الذي فتحتَه لا يقابله شيءٌ عندنا — لعلّ العطرَ غُيِّر اسمُه أو الصفحةَ نُقلت.",
+    notFoundCta: "تصفّح المجموعة",
+    notFoundHome: "الصفحة الأولى",
 
     welcomeGreeting: "أهلًا بك",
     welcomeTagline: "دارُ عطورٍ بفرعَين — اختر فرعك لنعرض لك مجموعته وأسعاره.",
@@ -442,6 +454,12 @@ export const T: Record<Locale, Dict> = {
     quote: ["Perfume is no ornament.", "It is a memory you wear."],
     quoteCite: "VALORY — Perfume house",
     photosBy: "Scene photography from Wikimedia Commons:",
+
+    notFoundTitle: "This page doesn't exist",
+    notFoundText:
+      "The link you opened matches nothing here — the perfume may have been renamed, or the page moved.",
+    notFoundCta: "Browse the collection",
+    notFoundHome: "Home",
 
     welcomeGreeting: "Welcome",
     welcomeTagline:
@@ -568,6 +586,12 @@ export const T: Record<Locale, Dict> = {
     quote: ["Le parfum n'est pas un ornement.", "C'est une mémoire que l'on porte."],
     quoteCite: "VALORY — Maison de parfums",
     photosBy: "Photographies des paysages via Wikimedia Commons :",
+
+    notFoundTitle: "Cette page n'existe pas",
+    notFoundText:
+      "Le lien que vous avez ouvert ne correspond à rien chez nous — le parfum a peut-être été renommé, ou la page déplacée.",
+    notFoundCta: "Parcourir la collection",
+    notFoundHome: "Accueil",
 
     welcomeGreeting: "Bienvenue",
     welcomeTagline:

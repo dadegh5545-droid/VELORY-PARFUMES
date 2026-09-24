@@ -36,6 +36,30 @@ const PrefsContext = createContext<PrefsValue>({
 
 const STORAGE_KEY = "valory.prefs";
 
+/** معامِلُ اللغة في الرابط — عليه تُبنى وسومُ hreflang في app/page-meta.ts */
+const LANG_PARAM = "lang";
+
+/** لغةُ المحتوى الأصل — رابطُها مجرَّدٌ بلا معامِل */
+const DEFAULT_LOCALE: Locale = "ar";
+
+/**
+ * يزامن `?lang=` مع اللغة المختارة، في الصفحة نفسِها بلا إعادة تحميل.
+ *
+ * `replaceState` لا `push`: تبديلُ اللغة ليس انتقالًا إلى صفحةٍ أخرى، فلا
+ * يُثقَل تاريخُ المتصفّح بخطوةٍ يرجع إليها زرُّ الرجوع. والزائرُ يبقى في
+ * موضعه من الصفحة — لا يُقذف إلى أوّلها كما لو أُعيد التحميل.
+ */
+function syncLangParam(locale: Locale) {
+  try {
+    const url = new URL(window.location.href);
+    if (locale === DEFAULT_LOCALE) url.searchParams.delete(LANG_PARAM);
+    else url.searchParams.set(LANG_PARAM, locale);
+    window.history.replaceState(null, "", url.toString());
+  } catch {
+    // لا تاريخَ في بيئةٍ غريبة — الاختيارُ محفوظٌ أصلًا، ولا شيء ينكسر.
+  }
+}
+
 const isBranchId = (v: unknown): v is BranchId =>
   BRANCHES.some((b) => b.id === v);
 
@@ -60,13 +84,28 @@ export function PrefsProvider({ children }: { children: React.ReactNode }) {
 
   // القراءة بعد التركيب: localStorage غير موجود على الخادم، والبدء بالفراغ
   // يجعل HTML الخادم والمتصفح متطابقين فلا يقع hydration mismatch.
+  //
+  // و`?lang=` يعلو على المحفوظ: هو ما تشير إليه وسومُ hreflang وما يُشارَك
+  // في رابط. فمن فُتح له الرابطُ الفرنسيّ رأى الفرنسيةَ ولو كان قد اختار
+  // العربيةَ في زيارةٍ سابقة — وإلا كان الوسمُ وعدًا لا يفي به الموقع.
   useEffect(() => {
+    let saved: Prefs | null = null;
     try {
-      const saved = window.localStorage.getItem(STORAGE_KEY);
-      if (saved) setPrefs(parse(saved));
+      const raw = window.localStorage.getItem(STORAGE_KEY);
+      if (raw) saved = parse(raw);
     } catch {
       // تخزين معطّل (تصفّح خاص) — يُسأل الزائر في كل زيارة، ولا شيء ينكسر.
     }
+
+    const asked = new URLSearchParams(window.location.search).get(LANG_PARAM);
+    if (isLocale(asked)) {
+      // الفرعُ من المحفوظ إن صحّ، وإلا فالافتراض — واللغةُ من الرابط.
+      const branch = saved?.branch ?? FALLBACK.branch;
+      const b = BRANCHES.find((x) => x.id === branch);
+      if (b?.locales.includes(asked)) saved = { branch, locale: asked };
+    }
+
+    if (saved) setPrefs(saved);
     setReady(true);
   }, []);
 
@@ -78,6 +117,7 @@ export function PrefsProvider({ children }: { children: React.ReactNode }) {
     } catch {
       // الاختيار يبقى في الذاكرة لهذه الجلسة.
     }
+    syncLangParam(p.locale);
   }, []);
 
   const reopen = useCallback(() => setReopened(true), []);

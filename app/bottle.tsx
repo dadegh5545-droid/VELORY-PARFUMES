@@ -56,16 +56,6 @@ export function Bottle({
             onLoad={() => setLoaded(true)}
             onError={() => setLoaded(true)}
           />
-          {/* الانعكاس نسخةٌ مقلوبةٌ تتلاشى سريعًا — أثرُ سطحٍ صقيل،
-              لا صورةٌ ثانية. مخفيٌّ عن القارئ الآلي لأنه لا يضيف خبرًا. */}
-          <img
-            className="bottle-reflection"
-            src={perfume.image}
-            alt=""
-            aria-hidden="true"
-            loading="lazy"
-            decoding="async"
-          />
         </div>
       </div>
     );

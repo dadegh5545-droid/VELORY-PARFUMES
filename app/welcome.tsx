@@ -1,5 +1,7 @@
 "use client";
 
+import { SITE_NAME } from "./site-config";
+
 import { useCallback, useEffect, useRef, useState } from "react";
 import { BRANCHES, branchCity, branchName } from "./catalog";
 import { DIR, LOCALE_NAME, T, type Locale } from "./i18n";
@@ -100,7 +102,7 @@ export function Welcome() {
       className="welcome"
       role="dialog"
       aria-modal="true"
-      aria-label="VALORY PARFUMES"
+      aria-label={SITE_NAME}
       lang={locale ?? "ar"}
       dir={locale ? DIR[locale] : "rtl"}
       onKeyDown={onKeyDown}
@@ -126,7 +128,7 @@ export function Welcome() {
           <img
             className="welcome-logo"
             src="/valory-logo.png"
-            alt="VALORY PARFUMES"
+            alt={SITE_NAME}
             onError={() => setLogoOk(false)}
           />
         ) : (
@@ -142,7 +144,7 @@ export function Welcome() {
                 اختيار اللغة بضغطةٍ واحدة. */}
             <div className="welcome-intro">
               <p lang="ar" dir="rtl">
-                مرحبًا بكم في <b>VALORY PARFUMES</b>
+                مرحبًا بكم في <b>{SITE_NAME}</b>
               </p>
               <p lang="ar" dir="rtl">
                 وجهتكم لعطورٍ تحكي أناقتكم، وتترك أثرًا لا يُنسى{" "}

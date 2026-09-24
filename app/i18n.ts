@@ -203,6 +203,8 @@ export type Dict = {
   photosBy: string;
 
   /* صفحةُ 404 — رابطٌ مكسورٌ يُردّ بلغة الزائر لا بالعربية وحدها */
+  /** وصفُ صورة العبوة لقارئ الشاشة، بلغة الزائر */
+  bottleAlt: (name: string) => string;
   notFoundTitle: string;
   notFoundText: string;
   notFoundCta: string;
@@ -328,6 +330,7 @@ export const T: Record<Locale, Dict> = {
     quoteCite: "فالوري — دار عطور",
     photosBy: "صور المشاهد من ويكيميديا كومنز:",
 
+    bottleAlt: (n) => `قارورة عطر ${n}`,
     notFoundTitle: "هذه الصفحة غير موجودة",
     notFoundText:
       "الرابطُ الذي فتحتَه لا يقابله شيءٌ عندنا — لعلّ العطرَ غُيِّر اسمُه أو الصفحةَ نُقلت.",
@@ -455,6 +458,7 @@ export const T: Record<Locale, Dict> = {
     quoteCite: "VALORY — Perfume house",
     photosBy: "Scene photography from Wikimedia Commons:",
 
+    bottleAlt: (n) => `Bottle of ${n} perfume`,
     notFoundTitle: "This page doesn't exist",
     notFoundText:
       "The link you opened matches nothing here — the perfume may have been renamed, or the page moved.",
@@ -587,6 +591,7 @@ export const T: Record<Locale, Dict> = {
     quoteCite: "VALORY — Maison de parfums",
     photosBy: "Photographies des paysages via Wikimedia Commons :",
 
+    bottleAlt: (n) => `Flacon du parfum ${n}`,
     notFoundTitle: "Cette page n'existe pas",
     notFoundText:
       "Le lien que vous avez ouvert ne correspond à rien chez nous — le parfum a peut-être été renommé, ou la page déplacée.",

@@ -14,6 +14,8 @@
   --noir-card: #14120f;
   --ivory: #f2ede4;
   --ivory-dim: #a49c8f;
+  /* إزاحةُ المرساة تحت الترويسة الثابتة (ارتفاعُها 108px) — بهامشٍ يسير */
+  --anchor-offset: 7.5rem;
   --gold: #c6a664;
   --gold-dim: #8c7440;
   --line: rgba(198, 166, 100, 0.18);
@@ -505,7 +507,7 @@ a {
 .branch {
   position: relative;
   isolation: isolate;
-  scroll-margin-top: 6rem;
+  scroll-margin-top: var(--anchor-offset);
 }
 
 /* القسمان متتاليان، فيلزم ما يفصل فرعًا عن فرع */
@@ -3953,4 +3955,13 @@ body:has(.mobile-cart-bar) .floating-wa {
   .map-locate {
     transition: none;
   }
+}
+
+/* مراسي التنقّل تحت ترويسةٍ ثابتة ــــــــــــــــــــــــــــــــــــــــ
+   الترويسة `position: fixed`، فالقفزُ إلى مرساةٍ يضع صدرَها تحتها فيُقرأ
+   العنوانُ مقصوصًا. `.branch` كان له هذا الهامشُ وحدَه، فلحق به القسمان
+   الآخران اللذان تقصدهما الترويسة: #maison و#contact. */
+.quote,
+.footer {
+  scroll-margin-top: var(--anchor-offset);
 }

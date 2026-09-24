@@ -45,7 +45,7 @@ export function PerfumeView({ perfume }: { perfume: Perfume }) {
       </Link>
 
       <div className="detail-grid">
-        <Bottle perfume={perfume} className="detail-bottle" />
+        <Bottle perfume={perfume} className="detail-bottle" priority />
 
         <div className="detail-info">
           <h1>{perfumeName(perfume, locale)}</h1>

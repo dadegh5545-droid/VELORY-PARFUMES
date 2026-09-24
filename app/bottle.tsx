@@ -19,9 +19,14 @@ import { useActive } from "./prefs";
 export function Bottle({
   perfume,
   className = "",
+  priority = false,
 }: {
   perfume: Perfume;
   className?: string;
+  /** صورةُ صدر الصفحة: تُحمَّل فورًا لا بتأجيل.
+   *  صورةُ صفحة العطر هي عنصرُ LCP، وكانت `loading="lazy"` فيؤخّرها
+   *  المتصفّحُ خلف غيرها — 7.2 ثانية في قياس Lighthouse. */
+  priority?: boolean;
 }) {
   const { locale } = useActive();
   const classes = ["bottle", className].filter(Boolean).join(" ");
@@ -50,9 +55,10 @@ export function Bottle({
             // بلغة الزائر لا بالعربية وحدها: كان «قارورة عطر …» يُقرأ
             // عربيًّا على زبونٍ فرنسيِّ اللسان في صفحةٍ فرنسية.
             alt={T[locale].bottleAlt(perfumeName(perfume, locale))}
-            loading="lazy"
-            decoding="async"
-            data-loaded={loaded ? "true" : "false"}
+            loading={priority ? "eager" : "lazy"}
+            fetchPriority={priority ? "high" : undefined}
+            decoding={priority ? "sync" : "async"}
+            data-loaded={priority || loaded ? "true" : "false"}
             onLoad={() => setLoaded(true)}
             onError={() => setLoaded(true)}
           />

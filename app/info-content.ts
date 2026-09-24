@@ -35,19 +35,19 @@ export const INFO: Record<Locale, Record<InfoKey, InfoContent>> = {
     about: {
       title: "عن فالوري",
       intro:
-        "فالوري دارُ عطورٍ فاخرة — خلاصاتٌ نادرة تُمزج يدويًا في دفعاتٍ صغيرة.",
+        "فالوري — متجرُ عطورٍ مختارة في نجامينا، نجمع لك أفضلَ العطور الشرقية والعالمية بأسعار الفرع.",
       sections: [
         {
-          heading: "دارٌ بفرعين",
+          heading: "متجرٌ في نجامينا",
           body: [
-            "لفالوري فرعان: نجامينا في تشاد، والدوحة في قطر. لكلِّ فرعٍ مجموعتُه وأسعارُه بعملة بلده.",
-            "فرعُ نجامينا مفتوحٌ الآن بمجموعته الكاملة، وفرعُ الدوحة قيد التحضير ويُضاف حين تكتمل بياناتُه.",
+            "متجرُ فالوري في نجامينا بتشاد، وأسعارُه بالفرنك الأفريقي (FCFA).",
+            "مجموعتُنا كاملةً معروضةٌ على الموقع، ويصلك الطلبُ عبر واتساب أو من المحلّ مباشرةً.",
           ],
         },
         {
-          heading: "حرفةٌ لا سلعة",
+          heading: "اختيارٌ لا خلط",
           body: [
-            "نختار الخلاصات ونمزجها بعناية، ونعرض ما نثق بأصالته. وما لا نعرفه عن منتجٍ نتركه فارغًا بدل أن نملأه بتخمين.",
+            "نختار ما نعرضه من دُورِ عطورٍ شرقيةٍ وعالمية. وما لا نعرفه عن منتجٍ نتركه فارغًا بدل أن نملأه بتخمين.",
           ],
         },
       ],
@@ -156,8 +156,8 @@ export const INFO: Record<Locale, Record<InfoKey, InfoContent>> = {
           ],
         },
         {
-          heading: "ما الفروع المتاحة؟",
-          body: ["فرعُ نجامينا (تشاد) مفتوحٌ الآن، وفرعُ الدوحة (قطر) قيد التحضير."],
+          heading: "أين متجركم؟",
+          body: ["متجرُ فالوري في نجامينا بتشاد، وهو المتجرُ الوحيد حاليًّا."],
         },
         {
           heading: "بأيّ لغةٍ أتصفّح؟",
@@ -187,19 +187,19 @@ export const INFO: Record<Locale, Record<InfoKey, InfoContent>> = {
     about: {
       title: "About VALORY",
       intro:
-        "VALORY is a fine perfume house — rare extracts, blended by hand in small batches.",
+        "VALORY is a curated perfume store in N'Djamena — we bring together the finest Oriental and international fragrances at branch prices.",
       sections: [
         {
-          heading: "A house with two branches",
+          heading: "A store in N'Djamena",
           body: [
-            "VALORY has two branches: N'Djamena in Chad, and Doha in Qatar. Each has its own collection and its own prices in its country's currency.",
-            "The N'Djamena branch is open now with its full collection; the Doha branch is being prepared and will be added once its data is complete.",
+            "The VALORY store is in N'Djamena, Chad, and its prices are in Central African francs (FCFA).",
+            "Our full collection is shown on this site; your order reaches us on WhatsApp, or you can buy at the store itself.",
           ],
         },
         {
-          heading: "A craft, not a commodity",
+          heading: "Selected, not blended",
           body: [
-            "We select and blend extracts with care and offer only what we trust to be authentic. What we don't know about a product we leave blank rather than fill with a guess.",
+            "We choose what we offer from Oriental and international perfume houses. What we don't know about a product we leave blank rather than fill with a guess.",
           ],
         },
       ],
@@ -305,8 +305,8 @@ export const INFO: Record<Locale, Record<InfoKey, InfoContent>> = {
           ],
         },
         {
-          heading: "Which branches are available?",
-          body: ["The N'Djamena (Chad) branch is open now; the Doha (Qatar) branch is being prepared."],
+          heading: "Where is your store?",
+          body: ["The VALORY store is in N'Djamena, Chad — our only store at present."],
         },
         {
           heading: "In which language can I browse?",
@@ -334,19 +334,19 @@ export const INFO: Record<Locale, Record<InfoKey, InfoContent>> = {
     about: {
       title: "À propos de VALORY",
       intro:
-        "VALORY est une maison de parfums d'exception — des extraits rares, assemblés à la main en petits lots.",
+        "VALORY est une parfumerie sélective à N'Djamena — nous réunissons pour vous les meilleurs parfums orientaux et internationaux aux prix de la succursale.",
       sections: [
         {
-          heading: "Une maison à deux succursales",
+          heading: "Une boutique à N'Djamena",
           body: [
-            "VALORY a deux succursales : N'Djamena au Tchad et Doha au Qatar. Chacune a sa collection et ses prix, dans la monnaie de son pays.",
-            "La succursale de N'Djamena est ouverte avec sa collection complète ; celle de Doha est en préparation et sera ajoutée une fois ses données réunies.",
+            "La boutique VALORY se trouve à N'Djamena, au Tchad, et ses prix sont en francs CFA (FCFA).",
+            "Notre collection complète est présentée sur ce site ; votre commande nous parvient sur WhatsApp, ou vous achetez directement en boutique.",
           ],
         },
         {
-          heading: "Un métier, pas une marchandise",
+          heading: "Une sélection, pas un assemblage",
           body: [
-            "Nous choisissons et assemblons les extraits avec soin et ne proposons que ce dont nous garantissons l'authenticité. Ce que nous ignorons d'un produit, nous le laissons vide plutôt que de le deviner.",
+            "Nous choisissons ce que nous proposons auprès de maisons de parfums orientales et internationales. Ce que nous ignorons d'un produit, nous le laissons vide plutôt que de le deviner.",
           ],
         },
       ],
@@ -455,8 +455,8 @@ export const INFO: Record<Locale, Record<InfoKey, InfoContent>> = {
           ],
         },
         {
-          heading: "Quelles succursales sont disponibles ?",
-          body: ["La succursale de N'Djamena (Tchad) est ouverte ; celle de Doha (Qatar) est en préparation."],
+          heading: "Où se trouve votre boutique ?",
+          body: ["La boutique VALORY se trouve à N'Djamena, au Tchad — notre seule boutique à ce jour."],
         },
         {
           heading: "Dans quelle langue naviguer ?",

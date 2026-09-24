@@ -14,6 +14,7 @@ import { useCart } from "./cart";
 import { useActive, usePrefs } from "./prefs";
 import { useToast } from "./toast";
 import { INFO, INFO_LINKS } from "./info-content";
+import { BRAND_MARK, SITE_NAME } from "./site-config";
 
 /** هل نزل الزائر عن أعلى الصفحة؟ — عليه يتوقّف ظهور ستار الترويسة */
 function useScrolled() {
@@ -41,8 +42,9 @@ export function SiteHeader() {
     <header className={solid ? "header header-solid" : "header"}>
       {/* اسم الدار يبقى باللاتينية — وهو العرف في العلامات الفاخرة.
           وسطران كما هو في شعارها المرسوم: الاسمُ فوق والصفةُ تحته. */}
-      <Link href="/" className="wordmark">
-        VALORY<span>Parfumes</span>
+      <Link href="/" className="wordmark" aria-label={SITE_NAME}>
+        {BRAND_MARK.lead}
+        <span>{BRAND_MARK.tail}</span>
       </Link>
 
       <nav className="nav">
@@ -93,7 +95,10 @@ export function SiteFooter() {
       </nav>
 
       <div className="footer-line">
-        <span>© 2026 {t.rights}</span>
+        {/* اسمُ الدار من ثابتٍ واحد (SITE_NAME) لا من جدول اللغات: كان
+            التذييلُ ينطق «فالوري بارفوم» بالعربية و«VALORY PARFUMES»
+            باللاتينية، فيختلف عن الترويسة ذاتِها في الصفحة الواحدة. */}
+        <span>© 2026 {SITE_NAME}</span>
         <span>{BRANCHES.map((b) => branchCity(b, locale)).join(" · ")}</span>
       </div>
 

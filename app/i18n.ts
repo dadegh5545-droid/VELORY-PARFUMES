@@ -11,6 +11,10 @@ export type Locale = "ar" | "en" | "fr";
 /** اللغة الثانية لكل فرع — العربية مشتركة بين الفرعين */
 export type SecondLocale = Exclude<Locale, "ar">;
 
+/** لغاتُ الموقع كلُّها — العربيةُ أوّلًا لأنها لغةُ المحتوى الأصل.
+ *  منها تُبنى وسومُ hreflang وخريطةُ الموقع، فلا تُعدّ اللغاتُ يدًا مرّتين. */
+export const LOCALES: Locale[] = ["ar", "fr", "en"];
+
 export const isLocale = (v: unknown): v is Locale =>
   v === "ar" || v === "en" || v === "fr";
 
@@ -18,6 +22,14 @@ export const DIR: Record<Locale, "rtl" | "ltr"> = {
   ar: "rtl",
   en: "ltr",
   fr: "ltr",
+};
+
+/** رمزُ اللغة في Open Graph (لغة_بلد) — غيرُ رمز hreflang المجرّد.
+ *  كان الموقعُ ينطق `ar_AR` في اللغات الثلاث، فتُقرأ الصفحةُ الفرنسيةُ عربيةً. */
+export const OG_LOCALE: Record<Locale, string> = {
+  ar: "ar_AR",
+  fr: "fr_FR",
+  en: "en_US",
 };
 
 /** الاسم الكامل للغة — بلغتها هي، كما هو العرف في مبدّلات اللغة */
@@ -187,7 +199,6 @@ export type Dict = {
 
   quote: [string, string];
   quoteCite: string;
-  rights: string;
   /** صدرُ سطر إسناد صور المشاهد في التذييل */
   photosBy: string;
 
@@ -296,7 +307,7 @@ export const T: Record<Locale, Dict> = {
     heroEyebrow: "دار عطور",
     heroTitle: { lead: "فنُّ", em: "العِطر" },
     heroText:
-      "خلاصاتٌ نادرة، تُمزج يدويًا في دفعاتٍ صغيرة. لكلِّ فرعٍ مجموعتُه وأسعارُه بعملة بلده.",
+      "متجرُ عطورٍ مختارة في نجامينا — نجمع لك أفضلَ العطور الشرقية والعالمية بأسعار الفرع.",
     heroCta: "تصفّح المجموعة",
 
     heroChad: {
@@ -309,7 +320,6 @@ export const T: Record<Locale, Dict> = {
 
     quote: ["العِطرُ ليس زينة.", "إنه ذاكرةٌ تُلبَس."],
     quoteCite: "فالوري — دار عطور",
-    rights: "فالوري بارفوم",
     photosBy: "صور المشاهد من ويكيميديا كومنز:",
 
     welcomeGreeting: "أهلًا بك",
@@ -414,7 +424,7 @@ export const T: Record<Locale, Dict> = {
     heroEyebrow: "Perfume house",
     heroTitle: { lead: "The Art of", em: "Perfume" },
     heroText:
-      "Rare extracts, blended by hand in small batches. Each branch has its own collection and its own prices.",
+      "A curated perfume store in N’Djamena — we bring together the finest Oriental and international fragrances at branch prices.",
     heroCta: "Browse the collection",
 
     heroChad: {
@@ -431,7 +441,6 @@ export const T: Record<Locale, Dict> = {
 
     quote: ["Perfume is no ornament.", "It is a memory you wear."],
     quoteCite: "VALORY — Perfume house",
-    rights: "VALORY PARFUMES",
     photosBy: "Scene photography from Wikimedia Commons:",
 
     welcomeGreeting: "Welcome",
@@ -541,7 +550,7 @@ export const T: Record<Locale, Dict> = {
     heroEyebrow: "Maison de parfums",
     heroTitle: { lead: "L'Art du", em: "Parfum" },
     heroText:
-      "Des extraits rares, assemblés à la main en petits lots. Chaque succursale a sa collection et ses prix.",
+      "Une parfumerie sélective à N’Djamena — nous réunissons pour vous les meilleurs parfums orientaux et internationaux aux prix de la succursale.",
     heroCta: "Parcourir la collection",
 
     heroChad: {
@@ -558,7 +567,6 @@ export const T: Record<Locale, Dict> = {
 
     quote: ["Le parfum n'est pas un ornement.", "C'est une mémoire que l'on porte."],
     quoteCite: "VALORY — Maison de parfums",
-    rights: "VALORY PARFUMES",
     photosBy: "Photographies des paysages via Wikimedia Commons :",
 
     welcomeGreeting: "Bienvenue",

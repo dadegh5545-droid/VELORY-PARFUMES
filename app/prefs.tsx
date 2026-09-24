@@ -136,13 +136,33 @@ export const usePrefs = () => useContext(PrefsContext);
 /** الاختيار الفعلي للعرض — الافتراضُ قبل أن يختار الزائر */
 export const useActive = (): Prefs => usePrefs().prefs ?? FALLBACK;
 
-/** يزامن lang و dir على <html> — الصفحة كلّها بلغةٍ واحدة بعد الاختيار */
+/** يزامن lang وdir على <html>، وcanonical مع لغة الصفحة المعروضة.
+ *
+ *  الصفحاتُ ثابتةٌ (مولَّدةٌ وقتَ البناء)، فالـHTML المخدوم واحدٌ لكلِّ
+ *  سلاسل الاستعلام — وcanonical المطبوعُ فيه يشير إلى الرابط المجرّد.
+ *  فلو تُرك، لقالت نسخةُ `?lang=fr` إنّ أصلَها النسخةُ العربية، وهي
+ *  تناقض وسمَ hreflang الذي يعدّها نسخةً قائمةً بذاتها. فيُحدَّث هنا
+ *  ليشير كلُّ رابطٍ إلى نفسِه. */
 export function HtmlLang() {
   const { locale } = useActive();
 
   useEffect(() => {
     document.documentElement.lang = locale;
     document.documentElement.dir = DIR[locale];
+
+    const link = document.querySelector<HTMLLinkElement>('link[rel="canonical"]');
+    if (!link) return;
+    try {
+      const here = new URL(window.location.href);
+      const canon = new URL(link.href);
+      canon.search = "";
+      if (locale !== DEFAULT_LOCALE) canon.searchParams.set(LANG_PARAM, locale);
+      // المسارُ من canonical المطبوع (هو الصحيحُ للصفحة)، والاستعلامُ من اللغة
+      canon.pathname = here.pathname;
+      link.href = canon.toString();
+    } catch {
+      // رابطٌ غيرُ قابلٍ للتحليل — يبقى canonical كما طُبع، ولا شيء ينكسر.
+    }
   }, [locale]);
 
   return null;

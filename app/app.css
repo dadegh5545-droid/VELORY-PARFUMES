@@ -3663,7 +3663,6 @@ body:has(.mobile-cart-bar) .floating-wa {
   position: absolute;
   top: 0.55rem;
   inset-inline-end: 0.55rem;
-  left: auto;
   translate: none;
   z-index: 4;
   display: inline-flex;
@@ -4539,5 +4538,222 @@ body:has(.mobile-cart-bar) .floating-wa {
   .filter-sheet,
   .filter-veil {
     transition: none;
+  }
+}
+
+
+/* ══ المرحلة ١ · إصلاحاتُ الجوال ══════════════════════════════════════ */
+
+/* ── الواجهة على الجوال: تدفّقٌ عموديٌّ عاديّ ─────────────────────────────
+   على الحاسوب يوزّع الغلافُ ارتفاعًا محدَّدًا بين عناصره فتأخذ الصورةُ ما
+   فضل — وهو ما يُجلسها في الشاشة الأولى. وعلى الجوال لا يسع ذلك الارتفاعُ
+   محتواه، والمسرحُ موسَّطٌ (justify-content: center) فيفيض من طرفيه معًا:
+   فتركب الصورةُ على سطر «اكتشف مجموعةً مختارة…» فوقها، ويركب اسمُ العطر
+   على النقاط، وتختفي «نسيم» تحت «تسوّق المجموعة».
+
+   فيُلغى التقسيمُ هنا: لا ارتفاعَ محدَّدًا ولا مرونةَ تقاسم، ويأخذ كلُّ
+   عنصرٍ مقاسَه بالترتيب — عنوانٌ، فنصٌّ، فصورةٌ، فاسمٌ ودار، فنقاطٌ، فأزرار.
+   الحاسوبُ واللوحيُّ لا يُمسّان. */
+@media (max-width: 720px) {
+  .hero-chad {
+    min-height: 0;
+    padding-block: calc(var(--header-h) + 1rem) 2rem;
+  }
+
+  .hero-chad-inner {
+    height: auto;
+    min-height: 0;
+    justify-content: flex-start;
+  }
+
+  .hero-chad-stage {
+    flex: 0 0 auto;
+    min-height: 0;
+    margin-bottom: 1rem;
+  }
+
+  /* سقفٌ يُبقي الصورةَ بطلةً دون أن تبتلع الشاشة */
+  .hero-chad-photo {
+    height: auto;
+    max-height: 38svh;
+    width: auto;
+    max-width: 100%;
+  }
+
+  /* الزرّان في سطرٍ واحد: سطران كانا يأخذان 125px من ارتفاعٍ ضيّق */
+  .hero-chad-actions {
+    flex-wrap: nowrap;
+    width: 100%;
+    gap: 0.6rem;
+  }
+
+  .hero-chad-actions .btn {
+    flex: 1 1 0;
+    min-width: 0;
+    padding-inline: 0.6rem;
+    font-size: 0.82rem;
+    white-space: nowrap;
+  }
+
+  .hero-chad-strip {
+    gap: 0.35rem 1.1rem;
+    font-size: 0.86rem;
+  }
+}
+
+/* ── زرُّ واتساب العائم: لا يغطّي محتوًى ولا ينازع لوحًا مفتوحًا ─────────── */
+
+/* 48px على الجوال — أرضيةُ اللمس، وأصغرُ من 52px فلا يزاحم البطاقات */
+@media (max-width: 720px) {
+  .wa-fab {
+    width: 3rem;
+    height: 3rem;
+  }
+
+  .wa-fab svg {
+    width: 22px;
+    height: 22px;
+  }
+}
+
+/* يُخفى وقتَ فتح قائمة الجوال أو لوح التصفية: زرٌّ عائمٌ فوق لوحٍ مفتوح
+   يسرق اللمسةَ ويشوّش التركيز. `:has` يقرأ الحالةَ من DOM بلا جافاسكربت. */
+body:has(.nav-open) .wa-fab,
+body:has(.filter-sheet.is-open) .wa-fab {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+/* الشبكةُ والتذييلُ يتركان تحتهما فرجةً بقدر الزرّ: بدونها يقع فوق آخر
+   بطاقةٍ في الصفّ الأخير ويغطّي زرَّ «أضف» فيها. */
+@media (max-width: 720px) {
+  .branch .grid {
+    margin-bottom: 4.5rem;
+  }
+}
+
+/* ── بطاقة الجوال: السعرُ وزرُّ الإضافة في سطرٍ واحد ────────────────────
+   عمودًا كانا يأخذان سطرين من بطاقةٍ عرضُها 148px، فيطول ذيلُها بلا داعٍ. */
+@media (max-width: 720px) {
+  .card-foot {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+  }
+
+  .card-foot .price {
+    font-size: 0.86rem;
+    white-space: nowrap;
+  }
+
+  .card-foot .add {
+    flex: 0 0 auto;
+    padding-inline: 0.7rem;
+    font-size: 0.78rem;
+  }
+}
+
+/* ── التذييل: عمودان، وفرجةٌ فوق شريط السلة اللاصق ─────────────────────
+   كان سطرًا واحدًا بـflex، وكان قاعُه يختفي تحت شريط السلة على الجوال. */
+.footer {
+  padding-block: 5rem 3rem;
+  padding-inline: 0;
+}
+
+.footer-line {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: center;
+  gap: 0.5rem 2rem;
+}
+
+/* العمودُ الثاني يحاذي جهةَ النهاية فيتقابل الطرفان */
+.footer-line > :last-child {
+  justify-self: end;
+  text-align: end;
+}
+
+@media (max-width: 720px) {
+  .footer {
+    /* ارتفاعُ شريط السلة + الزرُّ العائم + فرجةُ الجهاز السفلية */
+    padding-block-end: calc(7.5rem + env(safe-area-inset-bottom, 0px));
+  }
+
+  .footer-line {
+    grid-template-columns: 1fr;
+    justify-items: center;
+    text-align: center;
+  }
+
+  .footer-line > :last-child {
+    justify-self: center;
+    text-align: center;
+  }
+}
+
+/* ── رابطُ التخطّي: للوحة المفاتيح وحدها ───────────────────────────────
+   كان `:focus` يكشفه للفأرة أيضًا — نقرةٌ على موضعه تُظهره لمن لا يحتاجه. */
+.skip-link:focus {
+  transform: translateY(-180%);
+}
+
+.skip-link:focus-visible {
+  transform: translateY(0);
+  outline: 2px solid var(--noir);
+  outline-offset: -4px;
+}
+
+/* ── السلايدر: الصورةُ تتقلّص، لا الصندوقُ يفيض ─────────────────────────
+   كان المسرحُ يوزّع ارتفاعًا محدَّدًا ويوسّط محتواه، والسلايدرُ فيه عنصرُ
+   مرونةٍ يقبل الانكماشَ دون مقاس محتواه — فيفيض من طرفيه. وباسمٍ من سطرين
+   (كما في الفرنسية والإنجليزية) يركب الاسمُ على النقاط تحته.
+
+   الحلُّ أن يكون القابلُ للتقلّص هو الصورةَ نفسَها: السلايدرُ يأخذ ما فضل،
+   وشرائحُه تملأ ارتفاعَه، والصورةُ عنصرُ مرونةٍ داخلها بـobject-fit تحفظ
+   نسبتَها. فينزل الاسمُ دائمًا أسفلَ الصورة، والنقاطُ أسفلَه. */
+.hero-chad-stage {
+  justify-content: flex-start;
+}
+
+.hero-carousel {
+  flex: 1 1 auto;
+  min-height: 0;
+  /* الشرائحُ تملأ ارتفاعَ السلايدر بدل أن تتوسّطه بمقاس محتواها */
+  place-items: stretch;
+}
+
+.hero-slide {
+  min-height: 0;
+  /* الصورةُ أعلى والاسمُ تحتها، والفراغُ فوقهما لا بينهما */
+  justify-content: flex-end;
+}
+
+.hero-chad-photo {
+  flex: 0 1 auto;
+  height: auto;
+  min-height: 0;
+  max-height: 100%;
+}
+
+/* الاسمُ لا يتقلّص: نصٌّ يُقرأ، وانكماشُه يقصّ الحروف */
+.hero-chad-name {
+  flex: 0 0 auto;
+}
+
+/* ── الجوال: تدفّقٌ عاديّ، فلا تقاسمَ ولا تقلّص ───────────────────────── */
+@media (max-width: 720px) {
+  .hero-carousel {
+    flex: 0 0 auto;
+    place-items: center;
+  }
+
+  .hero-slide {
+    height: auto;
+  }
+
+  .hero-chad-photo {
+    max-height: 38svh;
   }
 }

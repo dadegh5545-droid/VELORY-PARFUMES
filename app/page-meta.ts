@@ -32,11 +32,15 @@ export const absoluteLocaleUrl = (path: string, locale: Locale) =>
   absoluteUrl(localeUrl(path, locale));
 
 /** جدولُ hreflang لصفحةٍ: نسخةٌ لكلِّ لغة، وx-default إلى العربية.
- *  يُخبر محرّكَ البحث أنّ الصفحاتِ الثلاثَ ترجماتٌ لا نسخٌ مكرّرة. */
+ *  يُخبر محرّكَ البحث أنّ الصفحاتِ الثلاثَ ترجماتٌ لا نسخٌ مكرّرة.
+ *
+ *  روابطُ مطلقةٌ لا نسبية: النسبيُّ يُحلّ في Next على metadataBase بوصفه
+ *  مسارًا، فتسقط منه سلسلةُ الاستعلام حين يكون المسارُ «/» وحده —
+ *  فتخرج لغاتُ الصفحة الأولى الثلاثُ تشير إلى رابطٍ واحد. */
 const languagesOf = (path: string) => {
   const map: Record<string, string> = {};
-  for (const l of LOCALES) map[l] = localeUrl(path, l);
-  map["x-default"] = path;
+  for (const l of LOCALES) map[l] = absoluteLocaleUrl(path, l);
+  map["x-default"] = absoluteUrl(path);
   return map;
 };
 
@@ -51,6 +55,9 @@ type PageMetaInput = {
   image?: string;
   /** العنوانُ الكاملُ في بطاقة المشاركة — للصفحة الأولى وحدها إذ لا قالبَ لها */
   absoluteTitle?: string;
+  /** تتولّى الصفحةُ وسومَ hreflang بنفسها فلا يُصدرها Next — للصفحة
+   *  الأولى وحدها، ومعها التفصيل في app/home-hreflang.tsx. */
+  ownHreflang?: boolean;
 };
 
 /**
@@ -65,6 +72,7 @@ export function pageMetadata({
   description,
   image,
   absoluteTitle,
+  ownHreflang,
 }: PageMetaInput): Metadata {
   const shareTitle = absoluteTitle ?? `${title} | ${SITE_NAME_AR}`;
   const images = [
@@ -77,7 +85,7 @@ export function pageMetadata({
     alternates: {
       // كلُّ صفحةٍ تشير إلى نفسها — لا إلى الجذر كما كان.
       canonical: path,
-      languages: languagesOf(path),
+      ...(ownHreflang ? {} : { languages: languagesOf(path) }),
     },
     openGraph: {
       type: "website",
@@ -109,4 +117,5 @@ export const homeMetadata = (): Metadata =>
     title: SITE_TITLE,
     description: SITE_DESCRIPTION,
     absoluteTitle: SITE_TITLE,
+    ownHreflang: true,
   });

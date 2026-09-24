@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { CATALOG, branchesOf, getPerfume } from "../../catalog";
 import { ProductJsonLd } from "../../structured-data";
+import { pageMetadata } from "../../page-meta";
 import { PerfumeView } from "./view";
 
 type Props = { params: { id: string } };
@@ -21,34 +22,20 @@ export function generateMetadata({ params }: Props): Metadata {
     .map((b) => b.city)
     .join(" و");
 
+  // «في نجامينا» لا «بـنجامينا»: الباءُ تلتصق بالاسم فتُقرأ كلمةً واحدة.
   const description =
     perfume.description ??
     (where
-      ? `${perfume.name} — متوفّر في متجر فالوري بـ${where}.`
+      ? `${perfume.name} — متوفّر في متجر فالوري في ${where}.`
       : `${perfume.name} — من مجموعة فالوري للعطور.`);
 
-  const path = `/parfum/${perfume.id}`;
-
-  return {
+  return pageMetadata({
+    path: `/parfum/${perfume.id}`,
     title: perfume.name,
     description,
-    // كلُّ صفحةٍ تشير إلى نفسها canonical فلا تُحسب نسخًا مكرّرة.
-    alternates: { canonical: path },
-    openGraph: {
-      type: "website",
-      title: `${perfume.name} | فالوري`,
-      description,
-      url: path,
-      // صورةُ العبوة إن وُجدت — تُحلّ إلى رابطٍ مطلقٍ عبر metadataBase.
-      images: perfume.image ? [{ url: perfume.image }] : undefined,
-    },
-    twitter: {
-      card: "summary_large_image",
-      title: `${perfume.name} | فالوري`,
-      description,
-      images: perfume.image ? [perfume.image] : undefined,
-    },
-  };
+    // صورةُ العبوة إن وُجدت، وإلا فصورةُ المشاركة الافتراضية.
+    image: perfume.image,
+  });
 }
 
 export default function PerfumePage({ params }: Props) {

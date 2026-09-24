@@ -108,6 +108,37 @@ function BranchInfo({ branch, locale }: { branch: Branch; locale: Locale }) {
   );
 }
 
+/** شريطُ سطرٍ واحد فوق الشبكة: المدينةُ والدوامُ وواتساب.
+ *
+ *  كتلةُ العنوان والدوام والهاتف كاملةً كانت تقف بين صدر القسم والشبكة،
+ *  فتدفع العطورَ — وهي المقصودة — تحت الطيّة. صارت أسفلَ الشبكة، وبقي
+ *  هنا سطرٌ واحدٌ يجيب «أين ومتى وكيف أطلب» بلا إزاحةِ المحتوى. */
+function BranchStrip({ branch, locale }: { branch: Branch; locale: Locale }) {
+  const t = T[locale];
+  // أوّلُ سطري الدوام وحده: الثاني يومُ الإغلاق، وموضعُه الكتلةُ أسفل.
+  const hours = branch.openingHours?.lines[locale][0] ?? branch.hours;
+
+  const bits = [branchCity(branch, locale), hours].filter(Boolean);
+  if (!bits.length && !branch.whatsapp) return null;
+
+  return (
+    <p className="branch-strip">
+      {bits.map((bit, i) => (
+        <span key={i}>{bit}</span>
+      ))}
+      {branch.whatsapp && (
+        <a
+          href={`https://wa.me/${branch.whatsapp}`}
+          target="_blank"
+          rel="noreferrer"
+        >
+          {t.whatsapp}
+        </a>
+      )}
+    </p>
+  );
+}
+
 export function BranchSection({ branch }: { branch: Branch }) {
   // اللغة اختيارُ الزائر في الترحيب، لا اختيارُ كل قسمٍ على حدة.
   const { locale } = useActive();
@@ -135,11 +166,15 @@ export function BranchSection({ branch }: { branch: Branch }) {
         </p>
       </div>
 
-      <BranchInfo branch={branch} locale={locale} />
+      <BranchStrip branch={branch} locale={locale} />
 
       {/* البحثُ والترتيبُ والتصفيةُ وكشفُ المزيد كلُّها في المجموعة —
           فرعٌ بلا عطورٍ لا شبكةَ له ولا أدوات. */}
       {perfumes.length > 0 && <Collection branch={branch} locale={locale} />}
+
+      {/* بياناتُ المحلّ كاملةً بعد العطور: من بلغ آخرَ الشبكة هو من يسأل
+          عن العنوان والدوام والهاتف. */}
+      <BranchInfo branch={branch} locale={locale} />
     </section>
   );
 }

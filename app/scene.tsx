@@ -28,7 +28,11 @@ export function Scene({
       <img
         className="scene-photo"
         src={scene.image}
+        // خلفيةٌ لا خبرَ فيها: اسمُ الموضع مكتوبٌ نصًّا في `scene-place`
+        // تحتها، فوصفُها يكرّره على قارئ الشاشة. و`alt=""` وحدها تُبقي
+        // الصورةَ في شجرة الوصول عنصرًا بلا اسم، وaria-hidden تُخرجها.
         alt=""
+        aria-hidden="true"
         loading="lazy"
         decoding="async"
         onError={() => setOk(false)}

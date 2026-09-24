@@ -1,17 +1,21 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { createPortal } from "react-dom";
 import Link from "next/link";
 import {
   type Branch,
   type Gender,
   type Perfume,
+  type Size,
+  compareSize,
   countLabel,
   metaLine,
   perfumeName,
   perfumeNotes,
   perfumesOf,
   priceIn,
+  sizeKey,
 } from "./catalog";
 import { GENDER_TR, T, trBrand, trSize, type Locale } from "./i18n";
 import { Bottle } from "./bottle";
@@ -56,7 +60,15 @@ export function Collection({ branch, locale }: { branch: Branch; locale: Locale 
   // ما يظهر في المصفّيات مشتقٌّ من عطور الفرع وحدها: لا تُعرض دارٌ ولا
   // حجمٌ ولا نوعٌ لا وجودَ له بينها، فلا يصطدم الزائرُ بمرشِّحٍ لا يردّ شيئًا.
   const brands = useMemo(() => uniq(all.map((p) => p.brand)), [all]);
-  const sizes = useMemo(() => uniq(all.map((p) => p.size)), [all]);
+  // الأحجامُ تُدمج بمفتاحها لا بنصّها — «1 كجم» و«1000 جم» حجمٌ واحدٌ فخيارٌ
+  // واحد — وتُرتَّب عدديًّا، فلا يسبق «1000 مل» «100 مل» كترتيبِ النصّ.
+  const sizes = useMemo(() => {
+    const seen = new Map<string, Size>();
+    for (const p of all) {
+      if (p.size && !seen.has(sizeKey(p.size))) seen.set(sizeKey(p.size), p.size);
+    }
+    return Array.from(seen.values()).sort(compareSize);
+  }, [all]);
   const genders = useMemo(
     () => uniq(all.map((p) => p.gender)) as Gender[],
     [all]
@@ -84,6 +96,11 @@ export function Collection({ branch, locale }: { branch: Branch; locale: Locale 
   const [cap, setCap] = useState(maxPrice);
   const [sort, setSort] = useState<Sort>("default");
   const [shown, setShown] = useState(PAGE);
+  // لوحُ التصفية — يُفتح بزرٍّ بدل صفٍّ ثانٍ دائمِ الحضور فوق الشبكة
+  const [drawer, setDrawer] = useState(false);
+  // البوّابةُ تحتاج document — لا تُبنى إلا بعد التركيب في المتصفّح
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
 
   // منزلقُ السعر يبدأ عند أقصى سعرٍ (لا حجب) — ويُعاد ضبطُه إن تبدّل المدى.
   useEffect(() => setCap(maxPrice), [maxPrice]);
@@ -92,7 +109,7 @@ export function Collection({ branch, locale }: { branch: Branch; locale: Locale 
     const q = norm(query.trim());
     let list = all.filter((p) => {
       if (brand && p.brand !== brand) return false;
-      if (size && p.size !== size) return false;
+      if (size && (!p.size || sizeKey(p.size) !== size)) return false;
       if (category && p.category !== category) return false;
       if (gender && p.gender !== gender) return false;
       if (hasPriceRange && cap < maxPrice) {
@@ -145,6 +162,46 @@ export function Collection({ branch, locale }: { branch: Branch; locale: Locale 
   useEffect(() => setShown(PAGE), [query, brand, size, category, gender, cap, sort]);
 
   const visible = filtered.slice(0, shown);
+
+  /* ما يُصفّى به فعلًا في هذا الفرع — دونه لا زرَّ تصفيةٍ ولا لوح */
+  const hasFacets =
+    brands.length > 1 ||
+    sizes.length > 1 ||
+    categories.length > 1 ||
+    genders.length > 1 ||
+    hasPriceRange;
+
+  /* رقائقُ المفعَّل: كلُّ واحدةٍ تحمل تسميتَها وطريقةَ رفعها. منها يُحسب
+     عددُ المفعَّل على الزرّ، فلا يُعدّ في موضعين ويفترقان. */
+  const chips = useMemo(() => {
+    const out: { key: string; label: string; clear: () => void }[] = [];
+    if (brand) out.push({ key: "brand", label: trBrand(brand, locale), clear: () => setBrand("") });
+    if (category) out.push({ key: "category", label: category, clear: () => setCategory("") });
+    if (size) {
+      const s = sizes.find((x) => sizeKey(x) === size);
+      if (s) out.push({ key: "size", label: trSize(s, locale), clear: () => setSize("") });
+    }
+    if (gender) out.push({ key: "gender", label: GENDER_TR[gender][locale], clear: () => setGender(null) });
+    if (hasPriceRange && cap < maxPrice) {
+      out.push({
+        key: "cap",
+        label: `${t.filterPriceMax}: ${priceCap(cap, branch, locale)}`,
+        clear: () => setCap(maxPrice),
+      });
+    }
+    return out;
+  }, [brand, category, size, gender, cap, maxPrice, hasPriceRange, sizes, locale, branch, t]);
+
+  const activeCount = chips.length;
+
+  const clearFilters = () => {
+    setBrand("");
+    setCategory("");
+    setSize("");
+    setGender(null);
+    setCap(maxPrice);
+  };
+
   const hasFilters =
     brands.length > 1 ||
     sizes.length > 1 ||
@@ -177,96 +234,166 @@ export function Collection({ branch, locale }: { branch: Branch; locale: Locale 
                 <option value="name">{t.sortName}</option>
               </select>
             </label>
+
+            {hasFacets && (
+              <button
+                type="button"
+                className={activeCount ? "tool filter-btn has-active" : "tool filter-btn"}
+                onClick={() => setDrawer(true)}
+                aria-expanded={drawer}
+              >
+                {t.filtersOpen}
+                {activeCount > 0 && <span className="filter-badge">{activeCount}</span>}
+              </button>
+            )}
           </div>
 
-          {(brands.length > 1 ||
-            sizes.length > 1 ||
-            categories.length > 1 ||
-            genders.length > 1 ||
-            hasPriceRange) && (
-            <div className="tool-row">
-              {categories.length > 1 && (
-                <label className="tool">
-                  <span className="vh">{t.filterCategory}</span>
-                  <select
-                    value={category}
-                    onChange={(e) => setCategory(e.target.value)}
+          {/* لوحُ التصفية: صفحةٌ جانبيةٌ على الحاسوب وسفليةٌ على الجوال.
+              كان صفًّا ثانيًا دائمَ الحضور يدفع الشبكةَ لأسفل بصفٍّ من
+              القوائم قلَّ من يمسّه. */}
+          {hasFacets &&
+            mounted &&
+            createPortal(
+              <>
+              <div
+                className={drawer ? "filter-veil is-open" : "filter-veil"}
+                onClick={() => setDrawer(false)}
+                aria-hidden="true"
+              />
+              <div
+                className={drawer ? "filter-sheet is-open" : "filter-sheet"}
+                role="dialog"
+                aria-label={t.filtersOpen}
+                aria-modal={drawer || undefined}
+              >
+                <div className="filter-sheet-head">
+                  <h3>{t.filtersOpen}</h3>
+                  <button
+                    type="button"
+                    className="filter-close"
+                    onClick={() => setDrawer(false)}
+                    aria-label={t.close}
                   >
-                    <option value="">{t.filterCategory}</option>
-                    {categories.map((c) => (
-                      <option key={c} value={c}>
-                        {c}
-                      </option>
-                    ))}
-                  </select>
-                </label>
-              )}
+                    ×
+                  </button>
+                </div>
 
-              {brands.length > 1 && (
-                <label className="tool">
-                  <span className="vh">{t.house}</span>
-                  <select value={brand} onChange={(e) => setBrand(e.target.value)}>
-                    <option value="">{t.filterHouseAll}</option>
-                    {brands.map((b) => (
-                      <option key={b} value={b}>
-                        {trBrand(b, locale)}
-                      </option>
-                    ))}
-                  </select>
-                </label>
-              )}
+                <div className="filter-sheet-body">
+                  {categories.length > 1 && (
+                    <label className="tool">
+                      <span className="vh">{t.filterCategory}</span>
+                      <select
+                        value={category}
+                        onChange={(e) => setCategory(e.target.value)}
+                      >
+                        <option value="">{t.filterCategory}</option>
+                        {categories.map((c) => (
+                          <option key={c} value={c}>
+                            {c}
+                          </option>
+                        ))}
+                      </select>
+                    </label>
+                  )}
 
-              {sizes.length > 1 && (
-                <label className="tool">
-                  <span className="vh">{t.size}</span>
-                  <select value={size} onChange={(e) => setSize(e.target.value)}>
-                    <option value="">{t.filterSizeAll}</option>
-                    {sizes.map((s) => (
-                      <option key={s} value={s}>
-                        {trSize(s, locale)}
-                      </option>
-                    ))}
-                  </select>
-                </label>
-              )}
+                  {brands.length > 1 && (
+                    <label className="tool">
+                      <span className="vh">{t.house}</span>
+                      <select value={brand} onChange={(e) => setBrand(e.target.value)}>
+                        <option value="">{t.filterHouseAll}</option>
+                        {brands.map((b) => (
+                          <option key={b} value={b}>
+                            {trBrand(b, locale)}
+                          </option>
+                        ))}
+                      </select>
+                    </label>
+                  )}
 
-              {/* النوعُ يظهر حين يُعرف نوعان مختلفان بين عطور الفرع فأكثر —
-                  وإلا فمرشِّحٌ بخيارٍ واحدٍ لا معنى له */}
-              {genders.length > 1 && (
-                <label className="tool">
-                  <span className="vh">{t.gender}</span>
-                  <select
-                    value={gender ?? ""}
-                    onChange={(e) =>
-                      setGender((e.target.value || null) as Gender | null)
-                    }
+                  {sizes.length > 1 && (
+                    <label className="tool">
+                      <span className="vh">{t.size}</span>
+                      <select value={size} onChange={(e) => setSize(e.target.value)}>
+                        <option value="">{t.filterSizeAll}</option>
+                        {sizes.map((s) => (
+                          <option key={sizeKey(s)} value={sizeKey(s)}>
+                            {trSize(s, locale)}
+                          </option>
+                        ))}
+                      </select>
+                    </label>
+                  )}
+
+                  {/* النوعُ يظهر حين يُعرف نوعان مختلفان بين عطور الفرع فأكثر —
+                      وإلا فمرشِّحٌ بخيارٍ واحدٍ لا معنى له */}
+                  {genders.length > 1 && (
+                    <label className="tool">
+                      <span className="vh">{t.gender}</span>
+                      <select
+                        value={gender ?? ""}
+                        onChange={(e) =>
+                          setGender((e.target.value || null) as Gender | null)
+                        }
+                      >
+                        <option value="">{t.filterAll}</option>
+                        {genders.map((g) => (
+                          <option key={g} value={g}>
+                            {GENDER_TR[g][locale]}
+                          </option>
+                        ))}
+                      </select>
+                    </label>
+                  )}
+
+                  {hasPriceRange && (
+                    <label className="tool price-tool">
+                      <span>
+                        {t.filterPriceMax}: {priceCap(cap, branch, locale)}
+                      </span>
+                      <input
+                        type="range"
+                        min={minPrice}
+                        max={maxPrice}
+                        step={priceStep(minPrice, maxPrice)}
+                        value={cap}
+                        onChange={(e) => setCap(Number(e.target.value))}
+                      />
+                    </label>
+                  )}
+                </div>
+
+                <div className="filter-sheet-foot">
+                  {activeCount > 0 && (
+                    <button type="button" className="btn" onClick={clearFilters}>
+                      {t.filtersClear}
+                    </button>
+                  )}
+                  <button
+                    type="button"
+                    className="btn btn-primary"
+                    onClick={() => setDrawer(false)}
                   >
-                    <option value="">{t.filterAll}</option>
-                    {genders.map((g) => (
-                      <option key={g} value={g}>
-                        {GENDER_TR[g][locale]}
-                      </option>
-                    ))}
-                  </select>
-                </label>
-              )}
+                    {t.filtersApply(filtered.length)}
+                  </button>
+                </div>
+              </div>
+              </>,
+              document.body
+            )}
 
-              {hasPriceRange && (
-                <label className="tool price-tool">
-                  <span>
-                    {t.filterPriceMax}: {priceCap(cap, branch, locale)}
-                  </span>
-                  <input
-                    type="range"
-                    min={minPrice}
-                    max={maxPrice}
-                    step={priceStep(minPrice, maxPrice)}
-                    value={cap}
-                    onChange={(e) => setCap(Number(e.target.value))}
-                  />
-                </label>
-              )}
-            </div>
+          {/* رقائقُ ما هو مفعَّلٌ الآن — تُرفع الواحدةُ بضغطةٍ على ×  */}
+          {chips.length > 0 && (
+            <ul className="filter-chips">
+              {chips.map((c) => (
+                <li key={c.key}>
+                  <button type="button" onClick={c.clear}>
+                    <span>{c.label}</span>
+                    <span aria-hidden="true">×</span>
+                    <span className="vh">{t.filtersRemove}</span>
+                  </button>
+                </li>
+              ))}
+            </ul>
           )}
 
           {/* عددُ النتائج يُعلَن آليًّا: من صفّى بلوحة المفاتيح يسمع كم بقي */}

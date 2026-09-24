@@ -77,6 +77,11 @@ export function LocalBusinessJsonLd() {
       // وهو مُمثَّلٌ أصلًا بـ addressLocality وaddressCountry.
       if (b.phone) data.telephone = b.phone.replace(/\s/g, "");
       if (b.mapUrl) data.hasMap = b.mapUrl;
+      // عملةُ الفرع برمزها الدوليّ (XAF لنجامينا) — من الجدول نفسِه الذي
+      // تُقرأ منه عملةُ العروض، فلا يفترق المحلُّ عن أسعار عطوره.
+      if (CURRENCY_ISO[b.currency]) {
+        data.currenciesAccepted = CURRENCY_ISO[b.currency];
+      }
       if (geo) {
         data.geo = {
           "@type": "GeoCoordinates",

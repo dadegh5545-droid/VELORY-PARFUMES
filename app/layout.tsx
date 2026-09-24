@@ -9,11 +9,13 @@ import { Analytics } from "./analytics";
 import { ToastProvider } from "./toast";
 import { QuickViewProvider } from "./quick-view";
 import { MobileCartBar } from "./mobile-cart-bar";
+import { WhatsAppFab } from "./whatsapp-fab";
 import {
   LocalBusinessJsonLd,
   OrganizationJsonLd,
 } from "./structured-data";
-import { SITE_NAME, SITE_URL } from "./site-config";
+import { SITE_NAME, SITE_NAME_AR, SITE_TITLE, SITE_URL } from "./site-config";
+import { homeMetadata } from "./page-meta";
 import "./app.css";
 
 // أميري: خط نسخي كلاسيكي للعناوين — يقابل رونق Cormorant في اللاتينية.
@@ -34,33 +36,24 @@ const sans = Tajawal({
   display: "swap",
 });
 
-const description =
-  "دار فالوري للعطور الفاخرة، بفرعَي الدوحة ونجامينا. خلاصات نادرة تُمزج يدويًا في دفعات صغيرة.";
-
+// وسومُ التخطيط: ما يشترك فيه الموقعُ كلُّه (الأصلُ والقالبُ والاسم)، ثم
+// وسومُ الصفحة الأولى إذ هي صاحبةُ هذا التخطيط مباشرةً.
+//
+// أمّا canonical وog:url وog:title فتملكها كلُّ صفحةٍ لنفسها عبر
+// `pageMetadata` — وكانت هنا وحدها فورثتها الصفحاتُ الثابتةُ كلُّها،
+// فأشار og:url في /about و/faq و/terms إلى الجذر.
 export const metadata: Metadata = {
   // metadataBase أصلُ الروابط المطلقة في canonical وOpen Graph: بدونه
   // تبقى الصورُ والروابطُ نسبيةً فلا تُقرأ في معاينات المشاركة.
   metadataBase: new URL(SITE_URL),
-  title: {
-    default: "فالوري | VALORY PARFUMES — فنُّ العِطر",
-    // يُدمج مع عنوان كلِّ صفحةٍ فرعية: «اسمُ العطر | فالوري».
-    template: "%s | فالوري",
-  },
-  description,
   applicationName: SITE_NAME,
-  alternates: { canonical: "/" },
-  openGraph: {
-    type: "website",
-    siteName: SITE_NAME,
-    title: "فالوري | VALORY PARFUMES — فنُّ العِطر",
-    description,
-    url: "/",
-    locale: "ar_AR",
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "فالوري | VALORY PARFUMES — فنُّ العِطر",
-    description,
+  ...homeMetadata(),
+  // بعدَ النشر لا قبلَه: `homeMetadata` تُرجع عنوانًا نصيًّا للصفحة الأولى،
+  // ولو بقي لضاع `template` فلم ترث الصفحاتُ الفرعيةُ ذيلَ «| فالوري».
+  title: {
+    default: SITE_TITLE,
+    // يُدمج مع عنوان كلِّ صفحةٍ فرعية: «اسمُ العطر | فالوري».
+    template: `%s | ${SITE_NAME_AR}`,
   },
 };
 
@@ -91,8 +84,10 @@ export default function RootLayout({
                 <SiteFooter />
                 {/* اللوحةُ آخرَ الشجرة كي تعلو كلَّ شيءٍ بلا مزايدةٍ في z-index */}
                 <CartPanel />
-                {/* شريطُ السلة الثابت — للجوال وحده (CSS)، وفيه أيقونةُ واتساب */}
+                {/* شريطُ السلة الثابت — للجوال وحده (CSS) */}
                 <MobileCartBar />
+                {/* واتساب الفرع على كلِّ صفحة — لا في شريط السلة وحده */}
+                <WhatsAppFab />
               </QuickViewProvider>
             </ToastProvider>
           </CartProvider>

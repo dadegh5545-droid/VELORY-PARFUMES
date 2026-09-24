@@ -12,6 +12,7 @@ import {
   T,
   formatNumber,
   trBrand,
+  trForm,
   trLongevity,
   trSize,
 } from "./i18n";
@@ -19,6 +20,25 @@ import {
 export type Gender = "رجالي" | "نسائي" | "للجنسين";
 export type Season = "صيفي" | "شتوي" | "لكل الفصول";
 export type BranchId = "qatar" | "chad";
+
+/** وحدةُ الكيل: مليلتر للسوائل، وجرامٌ للأخشاب والبخور والمعاجين */
+export type SizeUnit = "ml" | "g";
+
+/** حجمُ العبوة رقمًا ووحدةً لا نصًّا.
+ *
+ *  كان نصًّا («100 مل»، «1 كجم»)، فكان مرشِّحُ الأحجام يرى «1 كجم»
+ *  و«1000 جم» حجمين مختلفين وهما واحد، ويرتّب خياراتِه ترتيبًا أبجديًّا
+ *  فيجيء «1000 مل» قبل «100 مل». والرقمُ يُشتقّ منه العرضُ في اللغات
+ *  الثلاث، فلا يحتاج كلُّ حجمٍ جديدٍ سطرًا في جدول ترجمة. */
+export type Size = { value: number; unit: SizeUnit };
+
+/** مفتاحُ الحجم للمقارنة والدمج — «1 كجم» و«1000 جم» يعطيان المفتاح نفسه */
+export const sizeKey = (s: Size) => `${s.unit}:${s.value}`;
+
+/** ترتيبُ حجمين: الوحدةُ أوّلًا (المليلتر قبل الجرام) ثم الرقمُ تصاعديًّا.
+ *  عدديٌّ لا أبجديّ، فلا يسبق «1000 مل» «100 مل» في القائمة. */
+export const compareSize = (a: Size, b: Size) =>
+  a.unit === b.unit ? a.value - b.value : a.unit === "ml" ? -1 : 1;
 
 /** مشهدٌ من بلد الفرع، يقع خلف المحتوى.
  *  ليس زخرفةً: العطرُ يُشترى من مكانٍ له وجه، والمشهدُ يذكّر بأيّ بلدٍ
@@ -275,8 +295,12 @@ export type Perfume = {
   latin?: string;
   /** الدار المصنّعة، كما تظهر على الملصق */
   brand?: string;
-  /** الحجم نصًّا لا رقمًا: المنتجات تُباع بالمليلتر وبالجرام معًا */
-  size?: string;
+  /** حجمُ العبوة رقمًا ووحدةً — يُعرض مشتقًّا منه بلغة الزائر.
+   *  ما لا حجمَ له يبقى فارغًا فتتجاوزه الواجهةُ بلا «·» معلّقة. */
+  size?: Size;
+  /** هيئةُ العبوة حين تكون جزءًا من وصفها، مثل «رول أون».
+   *  كانت ملحقةً بنصّ الحجم («٢٥ جم · رول أون») فتمنع تحويلَه إلى رقم. */
+  form?: string;
   /** مدة الثبات على البشرة، مثل: "6 – 8 ساعات" */
   longevity?: string;
   gender?: Gender;
@@ -320,7 +344,7 @@ export const CATALOG: Perfume[] = [
     name: "ثلجي",
     latin: "Thaljee 53",
     brand: "نسيم",
-    size: "100 مل",
+    size: { value: 100, unit: "ml" },
     tint: "rgba(190, 155, 60, 0.28)",
     image: "/products/thaljee.jpg",
     branches: { chad: { price: 1200 } },
@@ -330,7 +354,7 @@ export const CATALOG: Perfume[] = [
     name: "بشرى",
     latin: "Bushra 53",
     brand: "نسيم",
-    size: "100 مل",
+    size: { value: 100, unit: "ml" },
     tint: "rgba(160, 190, 110, 0.24)",
     image: "/products/bushra.jpg",
     branches: { chad: { price: 1200 } },
@@ -340,14 +364,14 @@ export const CATALOG: Perfume[] = [
     name: "بي شوقر",
     latin: "Be Sugar",
     brand: "نسيم",
-    size: "100 مل",
+    size: { value: 100, unit: "ml" },
     tint: "rgba(215, 140, 80, 0.24)",
     image: "/products/be-sugar.jpg",
     branches: { chad: { price: 1200 } },
   },
   {
     id: "baccarat-rouge",
-    name: "بكارات روج ٥٤٠",
+    name: "بكارات روج 540",
     latin: "Baccarat Rouge 540",
     brand: "الماس",
     tint: "rgba(200, 55, 60, 0.28)",
@@ -359,7 +383,7 @@ export const CATALOG: Perfume[] = [
     name: "بلاك أوبيوم",
     latin: "Black Opum",
     brand: "الماس",
-    size: "100 جم",
+    size: { value: 100, unit: "g" },
     tint: "rgba(160, 110, 95, 0.26)",
     image: "/products/black-opum.jpg",
     branches: { chad: { price: 1200 } },
@@ -367,7 +391,7 @@ export const CATALOG: Perfume[] = [
   {
     id: "pares",
     name: "باريس",
-    latin: "Pares",
+    latin: "Paris",
     brand: "الماس",
     tint: "rgba(150, 90, 160, 0.24)",
     image: "/products/pares.jpg",
@@ -378,7 +402,7 @@ export const CATALOG: Perfume[] = [
     name: "مون باريس",
     latin: "Moon Paris",
     brand: "الشندغة",
-    size: "100 مل",
+    size: { value: 100, unit: "ml" },
     tint: "rgba(215, 175, 80, 0.28)",
     image: "/products/moon-paris.jpg",
     branches: { chad: { price: 1600 } },
@@ -387,7 +411,7 @@ export const CATALOG: Perfume[] = [
     id: "sahrawi",
     name: "سحراوي",
     latin: "Sahrawi",
-    size: "100 مل",
+    size: { value: 100, unit: "ml" },
     tint: "rgba(190, 150, 110, 0.24)",
     image: "/products/sahrawi.jpg",
     branches: { chad: { price: 1200 } },
@@ -397,7 +421,7 @@ export const CATALOG: Perfume[] = [
     name: "حواس",
     latin: "Hawaas",
     brand: "الكوثر",
-    size: "100 جم",
+    size: { value: 100, unit: "g" },
     tint: "rgba(170, 175, 180, 0.22)",
     image: "/products/hawaas.jpg",
     branches: { chad: { price: 1200 } },
@@ -433,7 +457,7 @@ export const CATALOG: Perfume[] = [
     id: "jawhara",
     name: "جواهر",
     latin: "Jawhara",
-    size: "100 مل",
+    size: { value: 100, unit: "ml" },
     tint: "rgba(220, 110, 90, 0.26)",
     image: "/products/jawhara.jpg",
     branches: { chad: { price: 1200 } },
@@ -442,8 +466,8 @@ export const CATALOG: Perfume[] = [
     id: "chamar",
     name: "شمار",
     latin: "Chamar",
-    brand: "هريرة ٧",
-    size: "100 جم",
+    brand: "هريرة 7",
+    size: { value: 100, unit: "g" },
     tint: "rgba(190, 150, 70, 0.28)",
     image: "/products/chamar.jpg",
     branches: { chad: { price: 1200 } },
@@ -452,8 +476,10 @@ export const CATALOG: Perfume[] = [
     id: "jagvar-gold",
     name: "جاكوار ذهب",
     latin: "Jagvar Gold",
-    brand: "هريرة ٧",
-    size: "٢٥ جم · رول أون",
+    brand: "هريرة 7",
+    size: { value: 25, unit: "g" },
+
+    form: "رول أون",
     tint: "rgba(205, 165, 60, 0.30)",
     image: "/products/jagvar-gold.jpg",
     branches: { chad: { price: 3000 } },
@@ -463,7 +489,7 @@ export const CATALOG: Perfume[] = [
     name: "جيدار",
     latin: "Jedare",
     brand: "بيرفكت تريدنغ",
-    size: "100 جم",
+    size: { value: 100, unit: "g" },
     tint: "rgba(200, 80, 60, 0.24)",
     image: "/products/jedare.jpg",
     branches: { chad: { price: 800 } },
@@ -472,8 +498,8 @@ export const CATALOG: Perfume[] = [
     id: "yaqoot-sandal",
     name: "ياقوت صندل",
     latin: "Yaqoot Sandal",
-    brand: "زارا ٧",
-    size: "100 جم",
+    brand: "زارا 7",
+    size: { value: 100, unit: "g" },
     tint: "rgba(205, 65, 55, 0.26)",
     image: "/products/yaqoot-sandal.jpg",
     branches: { chad: { price: 800 } },
@@ -483,7 +509,7 @@ export const CATALOG: Perfume[] = [
     name: "منجارو",
     latin: "Munjaro",
     brand: "أستانا ميلانو",
-    size: "15 مل",
+    size: { value: 15, unit: "ml" },
     tint: "rgba(200, 60, 50, 0.28)",
     image: "/products/munjaro.jpg",
     branches: { chad: { price: 800 } },
@@ -492,7 +518,7 @@ export const CATALOG: Perfume[] = [
     id: "sandaliyah",
     name: "صندلية",
     latin: "Sandaliyah",
-    size: "100 مل",
+    size: { value: 100, unit: "ml" },
     tint: "rgba(160, 45, 90, 0.28)",
     image: "/products/sandaliyah.jpg",
     branches: { chad: { price: 1500 } },
@@ -502,7 +528,7 @@ export const CATALOG: Perfume[] = [
     name: "صندلية زمزم",
     latin: "Zam Sandaliyah",
     brand: "زمزم للعطور",
-    size: "500 مل",
+    size: { value: 500, unit: "ml" },
     tint: "rgba(70, 150, 80, 0.26)",
     image: "/products/zam-sandaliyah.jpg",
     branches: { chad: { price: 1500 } },
@@ -548,7 +574,7 @@ export const CATALOG: Perfume[] = [
     latin: "Sandal Wood Chips",
     brand: "هيماني",
     tr: { fr: { name: "Copeaux de bois de santal" } },
-    size: "500 جم",
+    size: { value: 500, unit: "g" },
     tint: "rgba(80, 160, 90, 0.24)",
     image: "/products/hemani-sandal.jpg",
     branches: { chad: { price: 600 } },
@@ -561,7 +587,7 @@ export const CATALOG: Perfume[] = [
     id: "barakat",
     name: "بركات",
     latin: "Barakat",
-    size: "1100 مل",
+    size: { value: 1100, unit: "ml" },
     tint: "rgba(210, 172, 35, 0.26)",
     image: "/products/barakat.jpg",
     branches: { chad: { price: 400 } },
@@ -571,7 +597,7 @@ export const CATALOG: Perfume[] = [
     name: "زهرة الأقصى",
     latin: "Al Zuhur",
     brand: "شركة زهرة الأقصى للعطور",
-    size: "1000 مل",
+    size: { value: 1000, unit: "ml" },
     tint: "rgba(55, 105, 195, 0.26)",
     image: "/products/al-zuhur.jpg",
     branches: { chad: { price: 1000 } },
@@ -580,7 +606,7 @@ export const CATALOG: Perfume[] = [
     id: "de-amour",
     name: "دأمور",
     latin: "De Amour",
-    size: "1000 مل",
+    size: { value: 1000, unit: "ml" },
     tint: "rgba(210, 179, 140, 0.26)",
     image: "/products/de-amour.jpg",
     branches: { chad: { price: 1000 } },
@@ -589,7 +615,7 @@ export const CATALOG: Perfume[] = [
     id: "noor-iman",
     name: "نور إيمان",
     latin: "Noor Iman",
-    size: "500 مل",
+    size: { value: 500, unit: "ml" },
     tint: "rgba(210, 109, 48, 0.26)",
     image: "/products/noor-iman.jpg",
     branches: { chad: { price: 400 } },
@@ -598,7 +624,7 @@ export const CATALOG: Perfume[] = [
     id: "soir-de-paris",
     name: "سوار دو باري",
     latin: "Soir de Paris",
-    size: "100 مل",
+    size: { value: 100, unit: "ml" },
     tint: "rgba(50, 80, 190, 0.26)",
     image: "/products/soir-de-paris.jpg",
     branches: { chad: { price: 1000 } },
@@ -613,10 +639,10 @@ export const CATALOG: Perfume[] = [
   },
   {
     id: "reva-dor-70",
-    name: "ريفا دور ٧٠",
+    name: "ريفا دور 70",
     latin: "Rêva d'or 70",
     brand: "L.T. Piver",
-    size: "423 مل",
+    size: { value: 423, unit: "ml" },
     tint: "rgba(45, 75, 185, 0.26)",
     image: "/products/reva-dor-70.jpg",
     branches: { chad: { price: 1000 } },
@@ -672,7 +698,7 @@ export const CATALOG: Perfume[] = [
     name: "ريحان — بخور صندل",
     latin: "Rayhan Sandal Bakhour Powder",
     brand: "شركة ناصر علي للتجارة العامة",
-    size: "200 جم",
+    size: { value: 200, unit: "g" },
     tint: "rgba(210, 166, 102, 0.26)",
     image: "/products/rayhan-sandal-bakhour.jpg",
     branches: { chad: { price: 200 } },
@@ -681,7 +707,7 @@ export const CATALOG: Perfume[] = [
     id: "mysoor-sandalwood",
     name: "صندل ميسور",
     latin: "Mysoor Sandalwood",
-    size: "1 كجم",
+    size: { value: 1000, unit: "g" },
     tint: "rgba(214, 171, 137, 0.26)",
     image: "/products/mysoor-sandalwood.jpg",
     branches: { chad: { price: 1400 } },
@@ -690,7 +716,7 @@ export const CATALOG: Perfume[] = [
     id: "sandal-red-wood",
     name: "صندل أحمر",
     latin: "Sandal Red Wood",
-    brand: "Krishna Perfume Roll's",
+    brand: "Krishna Perfume Rolls",
     tr: { fr: { name: "Bois de santal rouge" } },
     tint: "rgba(190, 85, 80, 0.26)",
     image: "/products/sandal-red-wood.jpg",
@@ -734,7 +760,7 @@ export const CATALOG: Perfume[] = [
     name: "جوهرة صندل",
     latin: "Jawharat Sandal",
     brand: "أستانا ميلانو",
-    size: "200 مل",
+    size: { value: 200, unit: "ml" },
     tint: "rgba(195, 75, 60, 0.26)",
     image: "/products/jawharat-sandal.jpg",
     branches: { chad: { price: 600 } },
@@ -761,7 +787,7 @@ export const CATALOG: Perfume[] = [
     name: "عود كشميري",
     latin: "Kashmiri Oudh",
     brand: "النعيم",
-    size: "100 جم",
+    size: { value: 100, unit: "g" },
     tint: "rgba(180, 130, 50, 0.28)",
     image: "/products/kashmiri-oudh.jpg",
     branches: { chad: { price: 1000 } },
@@ -776,7 +802,7 @@ export const CATALOG: Perfume[] = [
   },
   {
     id: "harera-7",
-    name: "هريرة ٧",
+    name: "هريرة 7",
     latin: "Harera 7",
     brand: "شمس العربية",
     tint: "rgba(60, 95, 155, 0.26)",
@@ -788,7 +814,7 @@ export const CATALOG: Perfume[] = [
     name: "جواهر محبة",
     latin: "Jawhara Mahabba",
     brand: "أستانا أريانا",
-    size: "100 مل",
+    size: { value: 100, unit: "ml" },
     tint: "rgba(120, 185, 145, 0.24)",
     image: "/products/jawhara-mahabba.jpg",
     branches: { chad: { price: 600 } },
@@ -797,7 +823,7 @@ export const CATALOG: Perfume[] = [
     id: "jawhara-harera",
     name: "جوهرة هريرة",
     latin: "Jawhara",
-    brand: "هريرة ٧",
+    brand: "هريرة 7",
     tint: "rgba(200, 180, 130, 0.24)",
     image: "/products/jawhara-harera.jpg",
     branches: { chad: { price: 1500 } },
@@ -815,7 +841,7 @@ export const CATALOG: Perfume[] = [
     id: "zafran",
     name: "زعفران",
     latin: "Zafran",
-    size: "100 مل",
+    size: { value: 100, unit: "ml" },
     tint: "rgba(198, 70, 45, 0.28)",
     image: "/products/zafran.jpg",
     branches: { chad: { price: 800 } },
@@ -834,7 +860,7 @@ export const CATALOG: Perfume[] = [
     name: "عود كولكشن",
     latin: "Oud Collection",
     brand: "الماس",
-    size: "100 جم",
+    size: { value: 100, unit: "g" },
     tint: "rgba(172, 45, 55, 0.26)",
     image: "/products/oud-collection.jpg",
     branches: { chad: { price: 1200 } },
@@ -844,7 +870,7 @@ export const CATALOG: Perfume[] = [
     name: "فرفشة",
     latin: "Farfasha",
     brand: "الرحاب",
-    size: "250 مل",
+    size: { value: 250, unit: "ml" },
     tint: "rgba(172, 182, 178, 0.22)",
     image: "/products/farfasha.jpg",
     branches: { chad: { price: 1500 } },
@@ -860,7 +886,7 @@ export const CATALOG: Perfume[] = [
   },
   {
     id: "sandaliyah-5",
-    name: "صندلية ٥",
+    name: "صندلية 5",
     latin: "Sandaliyah 5",
     brand: "عطورات العنود",
     tint: "rgba(222, 130, 175, 0.26)",
@@ -872,7 +898,7 @@ export const CATALOG: Perfume[] = [
     name: "صندل روز",
     latin: "Sandal Rose",
     brand: "سيفكو",
-    size: "1000 جم",
+    size: { value: 1000, unit: "g" },
     tint: "rgba(215, 140, 150, 0.24)",
     image: "/products/sandal-rose.jpg",
     branches: { chad: { price: 1500 } },
@@ -882,7 +908,7 @@ export const CATALOG: Perfume[] = [
     name: "معراج",
     latin: "Meraj",
     brand: "أستانا لاكجري",
-    size: "100 مل",
+    size: { value: 100, unit: "ml" },
     tint: "rgba(165, 40, 60, 0.24)",
     image: "/products/meraj.jpg",
     branches: { chad: { price: 1200 } },
@@ -909,7 +935,7 @@ export const CATALOG: Perfume[] = [
     id: "najdiya",
     name: "نجدية",
     latin: "Najdiya",
-    size: "100 مل",
+    size: { value: 100, unit: "ml" },
     tint: "rgba(168, 155, 140, 0.26)",
     image: "/products/najdiya.jpg",
     branches: { chad: { price: 1500 } },
@@ -1073,13 +1099,22 @@ export const priceIn = (p: Perfume, branch: Branch, locale: Locale) => {
   return price ? formatPrice(price, branch, locale) : T[locale].priceOnRequest;
 };
 
-/** سطر "نسيم · 100 مل" تحت اسم العطر — يتجاوز ما لم يُملأ بعد */
+/** نصُّ الحجم كاملًا بلغة الزائر: «25 جم · رول أون» — والهيئةُ إن وُجدت */
+export const sizeLabel = (p: Perfume, locale: Locale) => {
+  if (!p.size) return undefined;
+  const base = trSize(p.size, locale);
+  return p.form ? `${base} · ${trForm(p.form, locale)}` : base;
+};
+
+/** سطر "نسيم · 100 مل" تحت اسم العطر.
+ *  `filter(Boolean)` قبل `join` لا بعده: الحقلُ الفارغ يسقط بجملته فلا
+ *  يبقى فاصلٌ معلَّقٌ («نسيم · · 100 مل») ولا يبدأ السطرُ بنقطةٍ وسطى. */
 export const metaLine = (p: Perfume, locale: Locale) =>
   [
     p.brand && trBrand(p.brand, locale),
     p.gender && GENDER_TR[p.gender][locale],
     p.season && SEASON_TR[p.season][locale],
-    p.size && trSize(p.size, locale),
+    sizeLabel(p, locale),
   ]
     .filter(Boolean)
     .join(" · ");
@@ -1088,11 +1123,12 @@ export const metaLine = (p: Perfume, locale: Locale) =>
 export const specsOf = (p: Perfume, locale: Locale) => {
   const t = T[locale];
   const longevity = perfumeLongevity(p, locale);
+  const size = sizeLabel(p, locale);
 
   return (
     [
       p.brand ? { k: t.house, v: trBrand(p.brand, locale) } : null,
-      p.size ? { k: t.size, v: trSize(p.size, locale) } : null,
+      size ? { k: t.size, v: size } : null,
       longevity ? { k: t.longevity, v: longevity } : null,
       p.gender ? { k: t.gender, v: GENDER_TR[p.gender][locale] } : null,
       p.season ? { k: t.season, v: SEASON_TR[p.season][locale] } : null,

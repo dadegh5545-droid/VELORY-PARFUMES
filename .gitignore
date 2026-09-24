@@ -42,3 +42,9 @@ next-env.d.ts
 .amplify
 amplify_outputs*
 amplifyconfiguration*
+
+# لقطاتُ المقارنة ونصوصُ الفحص — تُولَّد محليًّا ولا تُرفع
+shots-before/
+shots-after/
+# نصوصُ الفحص المؤقّتة في الجذر — أمّا qa/ فجزءٌ من المشروع
+/*.mjs

@@ -4,7 +4,7 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { BRANCHES, CATALOG } from "../../catalog";
-import { LONGEVITY_OPTIONS, SIZE_OPTIONS } from "../../i18n";
+import { LONGEVITY_OPTIONS, SIZE_OPTIONS, trSize } from "../../i18n";
 import { PricesForm } from "./prices-form";
 import "../admin.css";
 
@@ -34,7 +34,9 @@ export default function PricesPage() {
     // الدارُ وحدها في السطر الصغير: الحجم صار حقلًا يُحرَّر فلا يُكرَّر تحت الاسم.
     meta: p.brand ?? "",
     image: p.image ?? "",
-    size: p.size ?? "",
+    // اللوحةُ تعرض الحجمَ نصًّا عربيًّا («100 مل») كما اعتاد محرّرُها،
+    // وواجهةُ الكتابة تعيده إلى `{ value, unit }` في المصدر.
+    size: p.size ? trSize(p.size, "ar") : "",
     gender: p.gender ?? "",
     longevity: p.longevity ?? "",
     prices: Object.fromEntries(
@@ -46,7 +48,7 @@ export default function PricesPage() {
     <PricesForm
       branches={branches}
       rows={rows}
-      sizes={SIZE_OPTIONS}
+      sizes={SIZE_OPTIONS.map((s) => trSize(s, "ar"))}
       longevities={LONGEVITY_OPTIONS}
     />
   );

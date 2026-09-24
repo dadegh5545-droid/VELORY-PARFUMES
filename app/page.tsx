@@ -7,6 +7,7 @@ import { T } from "./i18n";
 import { useActive } from "./prefs";
 import { BranchSection } from "./branch";
 import { ChadHero } from "./hero-chad";
+import { HomeHreflang } from "./home-hreflang";
 
 // الاتصال بـ AWS يبقى مهيّأً — جاهز لربط الكتالوج بموديل Perfume لاحقًا.
 Amplify.configure(outputs);
@@ -19,6 +20,7 @@ export default function Home() {
 
   return (
     <main id="main">
+      <HomeHreflang />
       {/* لتشادَ واجهتُها ولقطرَ الواجهةُ العامّة — والفرعُ الواحد لا يرث
           وعودَ الآخر. ما بعد الواجهة مشتركٌ كما كان: قسمُ الفرع بمشهده
           وبطاقةِ محلِّه، ثم المقولة. */}

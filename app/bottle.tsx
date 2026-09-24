@@ -1,7 +1,9 @@
 "use client";
 
 import { useCallback, useState } from "react";
-import type { Perfume } from "./catalog";
+import { perfumeName, type Perfume } from "./catalog";
+import { T } from "./i18n";
+import { useActive } from "./prefs";
 
 /**
  * القارورة في البطاقة وفي صفحة التفاصيل.
@@ -21,6 +23,7 @@ export function Bottle({
   perfume: Perfume;
   className?: string;
 }) {
+  const { locale } = useActive();
   const classes = ["bottle", className].filter(Boolean).join(" ");
   const [loaded, setLoaded] = useState(false);
 
@@ -44,22 +47,14 @@ export function Bottle({
             ref={imgRef}
             className="bottle-photo"
             src={perfume.image}
-            alt={`قارورة عطر ${perfume.name}`}
+            // بلغة الزائر لا بالعربية وحدها: كان «قارورة عطر …» يُقرأ
+            // عربيًّا على زبونٍ فرنسيِّ اللسان في صفحةٍ فرنسية.
+            alt={T[locale].bottleAlt(perfumeName(perfume, locale))}
             loading="lazy"
             decoding="async"
             data-loaded={loaded ? "true" : "false"}
             onLoad={() => setLoaded(true)}
             onError={() => setLoaded(true)}
-          />
-          {/* الانعكاس نسخةٌ مقلوبةٌ تتلاشى سريعًا — أثرُ سطحٍ صقيل،
-              لا صورةٌ ثانية. مخفيٌّ عن القارئ الآلي لأنه لا يضيف خبرًا. */}
-          <img
-            className="bottle-reflection"
-            src={perfume.image}
-            alt=""
-            aria-hidden="true"
-            loading="lazy"
-            decoding="async"
           />
         </div>
       </div>

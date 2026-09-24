@@ -14,6 +14,7 @@ import { useCart } from "./cart";
 import { useActive, usePrefs } from "./prefs";
 import { useToast } from "./toast";
 import { INFO, INFO_LINKS } from "./info-content";
+import { BRAND_MARK, SITE_NAME } from "./site-config";
 
 /** هل نزل الزائر عن أعلى الصفحة؟ — عليه يتوقّف ظهور ستار الترويسة */
 function useScrolled() {
@@ -30,6 +31,9 @@ function useScrolled() {
 }
 
 export function SiteHeader() {
+  // القائمةُ مفتوحةٌ أو مطويّة — على الجوال وحده يظهر زرُّها
+  const [menu, setMenu] = useState(false);
+  const close = () => setMenu(false);
   const { countOf, setOpen } = useCart();
   const { reopen } = usePrefs();
   const { branch, locale } = useActive();
@@ -41,38 +45,98 @@ export function SiteHeader() {
     <header className={solid ? "header header-solid" : "header"}>
       {/* اسم الدار يبقى باللاتينية — وهو العرف في العلامات الفاخرة.
           وسطران كما هو في شعارها المرسوم: الاسمُ فوق والصفةُ تحته. */}
-      <Link href="/" className="wordmark">
-        VALORY<span>Parfumes</span>
+      <Link href="/" className="wordmark" aria-label={SITE_NAME}>
+        {BRAND_MARK.lead}
+        <span>{BRAND_MARK.tail}</span>
       </Link>
 
-      <nav className="nav">
-        <Link href={`/#${branch}`}>
-          {active ? branchName(active, locale) : t.navHouse}
-        </Link>
-        <Link href="/#maison">{t.navHouse}</Link>
-        <Link href="/#contact">{t.navContact}</Link>
+      {/* أدواتُ الترويسة في غلافٍ واحد. السلةُ أختُ الـnav لا ابنتُه، فتبقى
+          ظاهرةً في الترويسة على الجوال بلا إخراجها من لوحٍ مطويّ بالإزاحة. */}
+      <div className="header-tools">
+        <nav className={menu ? "nav nav-open" : "nav"} id="site-nav">
+          <Link href={`/#${branch}`} onClick={close}>
+            {active ? branchName(active, locale) : t.navHouse}
+          </Link>
+          <Link href="/#maison" onClick={close}>
+            {t.navHouse}
+          </Link>
+          <Link href="/#contact" onClick={close}>
+            {t.navContact}
+          </Link>
 
-        {/* زرٌّ لا رابط: السلةُ لوحةٌ تُفتح فوق الصفحة، ولا صفحةَ لها */}
-        <button type="button" className="cart" onClick={() => setOpen(true)}>
-          {/* aria-live كي يُعلَن العدد الجديد لمن لا يرى الترويسة عند الإضافة */}
-          {/* عدّادُ الفرع الذي يقف فيه الزائر وحده — لكلِّ فرعٍ سلّتُه */}
-          {t.navCart} <span aria-live="polite">({countOf(branch)})</span>
-        </button>
+          {/* مفتاحٌ واحد يعيد فتح الترحيب: الفرع واللغة اختيارٌ واحدٌ مترابط.
+              الزرّ ينطق "نجامينا عربي" — اسمان بلا فعل — وtitle لا يدخل في
+              حساب الاسم المتاح، فيُدَسّ الفعلُ نصًّا مخفيًّا عن البصر لا السمع. */}
+          <button
+            type="button"
+            className="switcher"
+            onClick={() => {
+              close();
+              reopen();
+            }}
+            aria-haspopup="dialog"
+          >
+            <span className="vh">{t.navChange}</span>
+            <span>{active ? branchCity(active, locale) : ""}</span>
+            <span className="switcher-lang">{LOCALE_SHORT[locale]}</span>
+          </button>
+        </nav>
 
-        {/* مفتاحٌ واحد يعيد فتح الترحيب: الفرع واللغة اختيارٌ واحدٌ مترابط.
-            الزرّ ينطق "نجامينا عربي" — اسمان بلا فعل — وtitle لا يدخل في حساب
-            الاسم المتاح، فيُدَسّ الفعلُ نصًّا مخفيًّا عن البصر لا عن السمع. */}
+        {/* زرٌّ لا رابط: السلةُ لوحةٌ تُفتح فوق الصفحة، ولا صفحةَ لها.
+            على الجوال أيقونةٌ بشارةِ عددٍ، وعلى الحاسوب نصٌّ معها. */}
         <button
           type="button"
-          className="switcher"
-          onClick={reopen}
-          aria-haspopup="dialog"
+          className="cart"
+          onClick={() => {
+            close();
+            setOpen(true);
+          }}
+          aria-label={`${t.navCart} (${countOf(branch)})`}
         >
-          <span className="vh">{t.navChange}</span>
-          <span>{active ? branchCity(active, locale) : ""}</span>
-          <span className="switcher-lang">{LOCALE_SHORT[locale]}</span>
+          <svg
+            className="cart-icon"
+            viewBox="0 0 24 24"
+            width="19"
+            height="19"
+            aria-hidden="true"
+            focusable="false"
+          >
+            <path
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M6 8h12l-1 11H7L6 8Zm3 0V6a3 3 0 0 1 6 0v2"
+            />
+          </svg>
+          <span className="cart-text" aria-hidden="true">
+            {t.navCart}
+          </span>
+          {/* aria-live كي يُعلَن العدد الجديد لمن لا يرى الترويسة عند الإضافة.
+              وعدّادُ الفرع الذي يقف فيه الزائر وحده — لكلِّ فرعٍ سلّتُه. */}
+          <span className="cart-count" aria-live="polite">
+            {countOf(branch)}
+          </span>
         </button>
-      </nav>
+
+        {/* زرُّ القائمة — للجوال وحده (CSS). يفتح روابطَ التنقّل التي كانت
+            تُخفى على الجوال بلا بديلٍ يبلغها. */}
+        <button
+          type="button"
+          className="nav-toggle"
+          onClick={() => setMenu((v) => !v)}
+          aria-expanded={menu}
+          aria-controls="site-nav"
+        >
+          <span className="vh">{t.navMenu}</span>
+          <span className="nav-toggle-bars" aria-hidden="true">
+            <i />
+            <i />
+            <i />
+          </span>
+        </button>
+      </div>
     </header>
   );
 }
@@ -93,7 +157,10 @@ export function SiteFooter() {
       </nav>
 
       <div className="footer-line">
-        <span>© 2026 {t.rights}</span>
+        {/* اسمُ الدار من ثابتٍ واحد (SITE_NAME) لا من جدول اللغات: كان
+            التذييلُ ينطق «فالوري بارفوم» بالعربية و«VALORY PARFUMES»
+            باللاتينية، فيختلف عن الترويسة ذاتِها في الصفحة الواحدة. */}
+        <span>© 2026 {SITE_NAME}</span>
         <span>{BRANCHES.map((b) => branchCity(b, locale)).join(" · ")}</span>
       </div>
 

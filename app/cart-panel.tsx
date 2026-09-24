@@ -7,6 +7,7 @@ import {
   getBranch,
   getPerfume,
   perfumeName,
+  sizeLabel,
   priceIn,
   type Branch,
 } from "./catalog";
@@ -63,7 +64,12 @@ function orderBlock(branch: Branch, rows: CartItem[], locale: Locale) {
           )} × ${r.qty})`
         : priceIn(p, branch, locale);
 
-    return `• ${perfumeName(p, locale)}${qty} — ${money}`;
+    // الحجمُ في السطر: «ثلجي (100 مل) — 1,200 FCFA». من يستلم الطلبَ قد
+    // يجد صنفين باسمٍ واحدٍ وحجمين، فالاسمُ وحده لا يكفي لسحبه من الرفّ.
+    const size = sizeLabel(p, locale);
+    const which = size ? ` (${size})` : "";
+
+    return `• ${perfumeName(p, locale)}${which}${qty} — ${money}`;
   });
 
   const { sum, priced, unpriced } = orderTotals(branch, rows);

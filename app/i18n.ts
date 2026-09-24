@@ -4,12 +4,16 @@
 // العربية أصلُ المحتوى: ما لم يُترجم في الكتالوج يعود إليها بدل أن يظهر فارغًا،
 // فلا تنكسر البطاقة لأن حقلًا لم يُملأ بعد.
 
-import type { Gender, Season } from "./catalog";
+import type { Gender, Season, Size, SizeUnit } from "./catalog";
 
 export type Locale = "ar" | "en" | "fr";
 
 /** اللغة الثانية لكل فرع — العربية مشتركة بين الفرعين */
 export type SecondLocale = Exclude<Locale, "ar">;
+
+/** لغاتُ الموقع كلُّها — العربيةُ أوّلًا لأنها لغةُ المحتوى الأصل.
+ *  منها تُبنى وسومُ hreflang وخريطةُ الموقع، فلا تُعدّ اللغاتُ يدًا مرّتين. */
+export const LOCALES: Locale[] = ["ar", "fr", "en"];
 
 export const isLocale = (v: unknown): v is Locale =>
   v === "ar" || v === "en" || v === "fr";
@@ -18,6 +22,14 @@ export const DIR: Record<Locale, "rtl" | "ltr"> = {
   ar: "rtl",
   en: "ltr",
   fr: "ltr",
+};
+
+/** رمزُ اللغة في Open Graph (لغة_بلد) — غيرُ رمز hreflang المجرّد.
+ *  كان الموقعُ ينطق `ar_AR` في اللغات الثلاث، فتُقرأ الصفحةُ الفرنسيةُ عربيةً. */
+export const OG_LOCALE: Record<Locale, string> = {
+  ar: "ar_AR",
+  fr: "fr_FR",
+  en: "en_US",
 };
 
 /** الاسم الكامل للغة — بلغتها هي، كما هو العرف في مبدّلات اللغة */
@@ -80,6 +92,11 @@ export type Dict = {
   filterHouseAll: string;
   filterSizeAll: string;
   filterPriceMax: string;
+  /* لوحُ التصفية: زرُّه وأفعالُه */
+  filtersOpen: string;
+  filtersClear: string;
+  filtersApply: (n: number) => string;
+  filtersRemove: string;
   showMore: string;
 
   head: string;
@@ -111,6 +128,8 @@ export type Dict = {
   navCart: string;
   /** يفتح الترحيب من جديد لتغيير الفرع أو اللغة */
   navChange: string;
+  /** زرُّ القائمة على الجوال */
+  navMenu: string;
 
   /* لوحة السلة */
   cartEmpty: string;
@@ -183,13 +202,23 @@ export type Dict = {
     featured: string;
     /** ثلاثُ وعودٍ قصيرة أسفل الواجهة — لا رابعَ لها في التخطيط */
     strip: [string, string, string];
+    /** سهما سلايدر الواجهة */
+    prev: string;
+    next: string;
   };
 
   quote: [string, string];
   quoteCite: string;
-  rights: string;
   /** صدرُ سطر إسناد صور المشاهد في التذييل */
   photosBy: string;
+
+  /* صفحةُ 404 — رابطٌ مكسورٌ يُردّ بلغة الزائر لا بالعربية وحدها */
+  /** وصفُ صورة العبوة لقارئ الشاشة، بلغة الزائر */
+  bottleAlt: (name: string) => string;
+  notFoundTitle: string;
+  notFoundText: string;
+  notFoundCta: string;
+  notFoundHome: string;
 
   /* شاشة الترحيب */
   welcomeGreeting: string;
@@ -230,6 +259,10 @@ export const T: Record<Locale, Dict> = {
     filterHouseAll: "كل الدور",
     filterSizeAll: "كل الأحجام",
     filterPriceMax: "السعر حتى",
+    filtersOpen: "تصفية",
+    filtersClear: "مسح الكل",
+    filtersApply: (n) => `عرض ${n} عطرًا`,
+    filtersRemove: "أزِل هذا المرشِّح",
     showMore: "عرض المزيد",
 
     head: "المقدّمة",
@@ -292,11 +325,12 @@ export const T: Record<Locale, Dict> = {
     skipToWhatsapp: "الذهاب إلى واتساب مباشرة",
     checkoutBack: "رجوع إلى السلة",
     navChange: "تغيير الفرع واللغة",
+    navMenu: "القائمة",
 
     heroEyebrow: "دار عطور",
     heroTitle: { lead: "فنُّ", em: "العِطر" },
     heroText:
-      "خلاصاتٌ نادرة، تُمزج يدويًا في دفعاتٍ صغيرة. لكلِّ فرعٍ مجموعتُه وأسعارُه بعملة بلده.",
+      "متجرُ عطورٍ مختارة في نجامينا — نجمع لك أفضلَ العطور الشرقية والعالمية بأسعار الفرع.",
     heroCta: "تصفّح المجموعة",
 
     heroChad: {
@@ -305,12 +339,20 @@ export const T: Record<Locale, Dict> = {
       shop: "تسوّق المجموعة",
       featured: "اكتشف العطر المميّز",
       strip: ["عطورٌ أصلية", "توصيل داخل تشاد", "طلبٌ سريع عبر واتساب"],
+      prev: "العطر السابق",
+      next: "العطر التالي",
     },
 
     quote: ["العِطرُ ليس زينة.", "إنه ذاكرةٌ تُلبَس."],
     quoteCite: "فالوري — دار عطور",
-    rights: "فالوري بارفوم",
     photosBy: "صور المشاهد من ويكيميديا كومنز:",
+
+    bottleAlt: (n) => `قارورة عطر ${n}`,
+    notFoundTitle: "هذه الصفحة غير موجودة",
+    notFoundText:
+      "الرابطُ الذي فتحتَه لا يقابله شيءٌ عندنا — لعلّ العطرَ غُيِّر اسمُه أو الصفحةَ نُقلت.",
+    notFoundCta: "تصفّح المجموعة",
+    notFoundHome: "الصفحة الأولى",
 
     welcomeGreeting: "أهلًا بك",
     welcomeTagline: "دارُ عطورٍ بفرعَين — اختر فرعك لنعرض لك مجموعته وأسعاره.",
@@ -348,6 +390,10 @@ export const T: Record<Locale, Dict> = {
     filterHouseAll: "All houses",
     filterSizeAll: "All sizes",
     filterPriceMax: "Price up to",
+    filtersOpen: "Filter",
+    filtersClear: "Clear all",
+    filtersApply: (n) => `Show ${n} perfumes`,
+    filtersRemove: "Remove this filter",
     showMore: "Show more",
 
     head: "Top",
@@ -410,11 +456,12 @@ export const T: Record<Locale, Dict> = {
     skipToWhatsapp: "Go to WhatsApp directly",
     checkoutBack: "Back to cart",
     navChange: "Change branch and language",
+    navMenu: "Menu",
 
     heroEyebrow: "Perfume house",
     heroTitle: { lead: "The Art of", em: "Perfume" },
     heroText:
-      "Rare extracts, blended by hand in small batches. Each branch has its own collection and its own prices.",
+      "A curated perfume store in N’Djamena — we bring together the finest Oriental and international fragrances at branch prices.",
     heroCta: "Browse the collection",
 
     heroChad: {
@@ -427,12 +474,20 @@ export const T: Record<Locale, Dict> = {
         "Delivery within Chad",
         "Fast ordering on WhatsApp",
       ],
+      prev: "Previous perfume",
+      next: "Next perfume",
     },
 
     quote: ["Perfume is no ornament.", "It is a memory you wear."],
     quoteCite: "VALORY — Perfume house",
-    rights: "VALORY PARFUMES",
     photosBy: "Scene photography from Wikimedia Commons:",
+
+    bottleAlt: (n) => `Bottle of ${n} perfume`,
+    notFoundTitle: "This page doesn't exist",
+    notFoundText:
+      "The link you opened matches nothing here — the perfume may have been renamed, or the page moved.",
+    notFoundCta: "Browse the collection",
+    notFoundHome: "Home",
 
     welcomeGreeting: "Welcome",
     welcomeTagline:
@@ -473,6 +528,10 @@ export const T: Record<Locale, Dict> = {
     filterHouseAll: "Toutes les maisons",
     filterSizeAll: "Toutes les tailles",
     filterPriceMax: "Prix jusqu'à",
+    filtersOpen: "Filtrer",
+    filtersClear: "Tout effacer",
+    filtersApply: (n) => `Voir ${n} parfums`,
+    filtersRemove: "Retirer ce filtre",
     showMore: "Voir plus",
 
     head: "Tête",
@@ -537,11 +596,12 @@ export const T: Record<Locale, Dict> = {
     skipToWhatsapp: "Aller directement à WhatsApp",
     checkoutBack: "Retour au panier",
     navChange: "Changer de succursale et de langue",
+    navMenu: "Menu",
 
     heroEyebrow: "Maison de parfums",
     heroTitle: { lead: "L'Art du", em: "Parfum" },
     heroText:
-      "Des extraits rares, assemblés à la main en petits lots. Chaque succursale a sa collection et ses prix.",
+      "Une parfumerie sélective à N’Djamena — nous réunissons pour vous les meilleurs parfums orientaux et internationaux aux prix de la succursale.",
     heroCta: "Parcourir la collection",
 
     heroChad: {
@@ -554,12 +614,20 @@ export const T: Record<Locale, Dict> = {
         "Livraison au Tchad",
         "Commande rapide sur WhatsApp",
       ],
+      prev: "Parfum précédent",
+      next: "Parfum suivant",
     },
 
     quote: ["Le parfum n'est pas un ornement.", "C'est une mémoire que l'on porte."],
     quoteCite: "VALORY — Maison de parfums",
-    rights: "VALORY PARFUMES",
     photosBy: "Photographies des paysages via Wikimedia Commons :",
+
+    bottleAlt: (n) => `Flacon du parfum ${n}`,
+    notFoundTitle: "Cette page n'existe pas",
+    notFoundText:
+      "Le lien que vous avez ouvert ne correspond à rien chez nous — le parfum a peut-être été renommé, ou la page déplacée.",
+    notFoundCta: "Parcourir la collection",
+    notFoundHome: "Accueil",
 
     welcomeGreeting: "Bienvenue",
     welcomeTagline:
@@ -585,25 +653,16 @@ export const SEASON_TR: Record<Season, Record<Locale, string>> = {
   "لكل الفصول": { ar: "لكل الفصول", en: "All seasons", fr: "Toutes saisons" },
 };
 
-// الحجم يُكتب في الكتالوج بالعربية، وهذه مقابلاته اللاتينية.
-// ما ليس في الجدول يُعرض كما هو — أفضل من إخفائه أو تشويهه.
-const SIZE_TR: Record<string, Record<SecondLocale, string>> = {
-  "12 مل": { en: "12 ml", fr: "12 ml" },
-  "15 مل": { en: "15 ml", fr: "15 ml" },
-  "25 مل": { en: "25 ml", fr: "25 ml" },
-  "50 مل": { en: "50 ml", fr: "50 ml" },
-  "100 مل": { en: "100 ml", fr: "100 ml" },
-  "200 مل": { en: "200 ml", fr: "200 ml" },
-  "250 مل": { en: "250 ml", fr: "250 ml" },
-  "500 مل": { en: "500 ml", fr: "500 ml" },
-  "1000 مل": { en: "1000 ml", fr: "1000 ml" },
-  "25 جم": { en: "25 g", fr: "25 g" },
-  "50 جم": { en: "50 g", fr: "50 g" },
-  "100 جم": { en: "100 g", fr: "100 g" },
-  "200 جم": { en: "200 g", fr: "200 g" },
-  "500 جم": { en: "500 g", fr: "500 g" },
-  "1000 جم": { en: "1000 g", fr: "1000 g" },
-  "٢٥ جم · رول أون": { en: "25 g · roll-on", fr: "25 g · roll-on" },
+// وحدةُ الكيل بلغة الزائر. الحجمُ صار رقمًا ووحدةً في الكتالوج، فيُشتقّ
+// عرضُه من الرقم ولا يحتاج كلُّ حجمٍ جديدٍ سطرًا في جدول ترجمة كما كان.
+const UNIT_TR: Record<SizeUnit, Record<Locale, string>> = {
+  ml: { ar: "مل", en: "ml", fr: "ml" },
+  g: { ar: "جم", en: "g", fr: "g" },
+};
+
+// هيئةُ العبوة — قائمةٌ قصيرةٌ تُترجَم، وما ليس فيها يُعرض كما كُتب.
+const FORM_TR: Record<string, Record<SecondLocale, string>> = {
+  "رول أون": { en: "roll-on", fr: "roll-on" },
 };
 
 // مددُ الثبات المعروضة في لوحة الإدخال — تُترجَم تلقائيًا فلا يكتبها
@@ -624,9 +683,9 @@ const BRAND_TR: Record<string, string> = {
   الشندغة: "Al Shindagha",
   الكوثر: "Al Kausar",
   "كندل للعطور": "Kindal Perfume",
-  "هريرة ٧": "Harera 7",
+  "هريرة 7": "Harera 7",
   "بيرفكت تريدنغ": "Perfect Trading",
-  "زارا ٧": "Zara 7",
+  "زارا 7": "Zara 7",
   "أستانا ميلانو": "Astana Milano",
   "زمزم للعطور": "Zamzam Perfumes",
   "عطورات العنود": "Al Anoud Perfumes",
@@ -643,15 +702,30 @@ const BRAND_TR: Record<string, string> = {
   فايزة: "Faiza",
 };
 
-export const trSize = (size: string, locale: Locale) =>
-  locale === "ar" ? size : SIZE_TR[size]?.[locale] ?? size;
+/** عرضُ الحجم بلغة الزائر: «100 مل» / «100 ml».
+ *  الأرقامُ غربيةٌ في اللغات الثلاث — كالأسعار والهواتف في الصفحة نفسها،
+ *  فلا يقرأ الزبونُ سعرًا بـ«1,200» وحجمًا بـ«١٠٠» في سطرٍ واحد.
+ *  وبلا فاصلِ آلافٍ: «1000 مل» لا «1,000 مل». */
+export const trSize = (size: Size, locale: Locale) =>
+  `${size.value} ${UNIT_TR[size.unit][locale]}`;
+
+/** هيئةُ العبوة بلغة الزائر — «رول أون» / «roll-on» */
+export const trForm = (form: string, locale: Locale) =>
+  locale === "ar" ? form : FORM_TR[form]?.[locale as SecondLocale] ?? form;
 
 export const trLongevity = (longevity: string, locale: Locale) =>
   locale === "ar" ? longevity : LONGEVITY_TR[longevity]?.[locale] ?? longevity;
 
 /** خياراتُ لوحة الإدخال — مصدرُها الجدولُ نفسه فلا يفترقان */
 export const LONGEVITY_OPTIONS = Object.keys(LONGEVITY_TR);
-export const SIZE_OPTIONS = Object.keys(SIZE_TR);
+
+/** أحجامُ لوحة الإدخال — تُكتب رقمًا ووحدةً كما في نموذج البيانات */
+export const SIZE_OPTIONS: Size[] = [
+  ...[12, 15, 25, 50, 100, 200, 250, 500, 1000].map(
+    (value): Size => ({ value, unit: "ml" })
+  ),
+  ...[25, 50, 100, 200, 500, 1000].map((value): Size => ({ value, unit: "g" })),
+];
 
 export const trBrand = (brand: string, locale: Locale) =>
   locale === "ar" ? brand : BRAND_TR[brand] ?? brand;

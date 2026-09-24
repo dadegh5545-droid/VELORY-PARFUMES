@@ -14,6 +14,12 @@
   --noir-card: #14120f;
   --ivory: #f2ede4;
   --ivory-dim: #a49c8f;
+  /* إزاحةُ المرساة تحت الترويسة الثابتة (ارتفاعُها 108px) — بهامشٍ يسير */
+  /* ارتفاعُ الترويسة الثابتة: عاديًّا وعند النزول، وعليه تُحسب إزاحةُ
+     المراسي فلا يقع أحدُهما دون الآخر. */
+  --header-h: 4.5rem; /* 72px */
+  --header-h-sm: 3.75rem; /* 60px */
+  --anchor-offset: 6rem;
   --gold: #c6a664;
   --gold-dim: #8c7440;
   --line: rgba(198, 166, 100, 0.18);
@@ -73,11 +79,21 @@ a {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 2rem;
+  gap: 1.25rem;
   width: var(--shell);
   margin-inline: auto;
-  padding: 2rem 0;
+  /* 72px: كانت 108px فتأكل سُبعَ الشاشة على 1366×768 قبل أن يبدأ المحتوى.
+     الحشوُ وحده يُنقَص — لا حجمُ الاسم — فتبقى العلامةُ كما هي. */
+  min-height: var(--header-h);
+  padding: 0.5rem 0;
   animation: fade-down 1.2s var(--ease) both;
+  transition: min-height 0.35s var(--ease), padding 0.35s var(--ease);
+}
+
+/* عند النزول تنكمش أكثر: المحتوى هو المقصود، والترويسةُ دليلٌ لا واجهة */
+.header-solid {
+  min-height: var(--header-h-sm);
+  padding: 0.25rem 0;
 }
 
 /* ستارٌ خلف الترويسة الثابتة، يظهر عند النزول وحده.
@@ -221,11 +237,10 @@ a {
   place-items: center;
   /* الحدّان معًا: النسبةُ تتبع الشاشةَ القصيرة، والسقفُ يمنع الواجهةَ
      من التمدّد بلا داعٍ على شاشةٍ طويلة. */
-  min-height: min(78svh, 680px);
-  /* قيست الواجهةُ على شاشة 800px فبلغت 834 — أطولَ من الشاشة، فلا يظهر
-     تحتها شيءٌ وهو نقضُ الغرض. الحشوُ والهوامشُ وقدُّ العبوة خُفضت حتى
-     استقرّت دون الشاشة بفرجةٍ تُري صدرَ القسم التالي. */
-  padding: 6.75rem 0 2.25rem;
+  /* الشاشةُ الأولى كاملةً ناقصًا الترويسةَ الثابتة: كلُّ ما في الواجهة
+     — العنوانُ والنصُّ والسلايدرُ والزرّان والشارات — يقع داخلها. */
+  min-height: calc(100svh - var(--header-h));
+  padding: calc(var(--header-h) + 0.75rem) 0 1.5rem;
   text-align: center;
   overflow: hidden;
 }
@@ -314,15 +329,20 @@ a {
 /* صورةُ المنتج بخلفيّتها كما صُوِّرت — لا تُقصّ ولا تُنزع خلفيّتُها.
    ولأن حافّتها مستقيمةٌ فتقرأ مربّعًا طافيًا على السواد، يُحاط بخيطٍ
    ذهبيٍّ رفيعٍ كخيط بطاقات المجموعة: تصير الحافّةُ مقصودةً لا عرضية. */
+/* بطلُ الواجهة: كان 24vh فيبدو تصغيرةً لا بطلًا. صار 44vh بحدٍّ أدنى
+   240px وأقصى 420px — يملأ الصدرَ ويبقى مع العنوان والزرّين والسلايدر
+   داخل الشاشة الأولى على 1366×768. */
 .hero-chad-photo {
   position: relative;
   z-index: 1;
-  height: clamp(180px, 24vh, 260px);
+  height: clamp(240px, 44svh, 420px);
   width: auto;
-  max-width: min(100%, 22rem);
+  max-width: min(100%, 30rem);
   object-fit: contain;
   border: 1px solid var(--line);
-  filter: drop-shadow(0 22px 38px rgba(10, 9, 8, 0.8));
+  /* هالةٌ ذهبيةٌ ناعمةٌ حول العبوة فوق ظلِّها */
+  filter: drop-shadow(0 22px 38px rgba(10, 9, 8, 0.8))
+    drop-shadow(0 0 34px rgba(198, 166, 100, 0.22));
   animation: hero-rise 1.05s var(--ease) 0.22s both;
 }
 
@@ -353,25 +373,36 @@ a {
 }
 
 /* شريطُ الوعود: ثلاثةٌ في سطر، يفصل بينها معيّنٌ ذهبيّ صغير */
+/* شاراتُ الثقة: كانت 0.76rem بلون خافت — أصغرَ من أن تُقرأ وأضعفَ من
+   أن تُصدَّق. كبُرت إلى 0.95rem (≈15px) بلونٍ كاملٍ وأيقونةٍ ذهبيةٍ لكلٍّ. */
 .hero-chad-strip {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
   align-items: center;
-  gap: 0.5rem 1.4rem;
+  gap: 0.6rem 1.6rem;
   margin: clamp(1.4rem, 2.8vw, 2rem) 0 0;
   padding: 0;
   list-style: none;
-  color: var(--ivory-dim);
-  font-size: 0.76rem;
-  letter-spacing: 0.1em;
+  color: var(--ivory);
+  font-size: 0.95rem;
+  letter-spacing: 0.04em;
   animation: fade-up 0.9s var(--ease) 0.62s both;
 }
 
-.hero-chad-strip li + li::before {
+/* أيقونةٌ ذهبيةٌ قبل كلِّ شارة لا فاصلٌ بينها: الفاصلُ يربط، والأيقونةُ
+   تُفرد كلَّ وعدٍ وعدًا قائمًا بذاته. */
+.hero-chad-strip li {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.hero-chad-strip li::before {
   content: "◈";
-  margin-inline-end: 1.4rem;
-  color: var(--gold-dim);
+  color: var(--gold);
+  font-size: 0.8em;
+  line-height: 1;
 }
 
 @keyframes hero-rise {
@@ -418,16 +449,12 @@ a {
   }
 
   .hero-chad-photo {
-    height: clamp(160px, 36vw, 230px);
+    height: clamp(210px, 38svh, 330px);
   }
 
   .hero-chad-strip {
-    font-size: 0.72rem;
-    gap: 0.45rem 1rem;
-  }
-
-  .hero-chad-strip li + li::before {
-    margin-inline-end: 1rem;
+    font-size: 0.9rem;
+    gap: 0.4rem 1.1rem;
   }
 }
 
@@ -505,7 +532,7 @@ a {
 .branch {
   position: relative;
   isolation: isolate;
-  scroll-margin-top: 6rem;
+  scroll-margin-top: var(--anchor-offset);
 }
 
 /* القسمان متتاليان، فيلزم ما يفصل فرعًا عن فرع */
@@ -582,8 +609,22 @@ a {
    الفارغة بلون الخط الذهبي. 20rem ⇒ ٣ أعمدة تملأ العطور الستة صفّين تامّين. */
 .grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(20rem, 1fr));
+  /* عمودان على الجوال لا عمودٌ واحد: البطاقةُ الواحدةُ العريضة تُظهر
+     عطرًا واحدًا في الشاشة، والعمودان يُظهران أربعةً فتُقارَن. */
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   border: 1px solid var(--line);
+}
+
+@media (min-width: 900px) {
+  .grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1280px) {
+  .grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
 }
 
 /* ── الشريط الأفقي المنزلق ────────────────────────────────────────────── */
@@ -640,8 +681,10 @@ a {
   position: relative;
   display: flex;
   flex-direction: column;
+  /* حشوٌ ضيّق: كان 2.5rem فيرتفع بالبطاقة إلى 774px، فلا يرى الزائرُ
+     الصورةَ والسعرَ وزرَّ الإضافة في شاشةٍ واحدة. */
+  padding: 0.7rem 0.7rem 0.85rem;
   background: var(--noir);
-  padding: 2.5rem 2rem 2.25rem;
   box-shadow: 1px 0 0 var(--line), 0 1px 0 var(--line);
   transition: background 0.6s var(--ease);
 }
@@ -656,39 +699,9 @@ a {
   --naqsh-corner: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='26' height='26' viewBox='0 0 26 26'%3E%3Cpath d='M0 12V0h12' fill='none' stroke='%238c7440' stroke-width='1.1'/%3E%3Cpath d='M3 15 15 3' fill='none' stroke='%238c7440' stroke-width='0.6'/%3E%3Cpath d='M7 7 11 11' fill='none' stroke='%238c7440' stroke-width='0.6'/%3E%3C/svg%3E");
 }
 
-/* زوايا البطاقة: علامتان متقابلتان لا إطارٌ كامل — الإطارُ يسجن،
-   والزاويتان تُلمّحان. `pointer-events: none` كي لا تعترضا الضغط. */
-.card::before,
-.card::after {
-  content: "";
-  position: absolute;
-  z-index: 3;
-  width: 26px;
-  height: 26px;
-  pointer-events: none;
-  background: var(--naqsh-corner) no-repeat;
-  opacity: 0.55;
-  transition: opacity 0.6s var(--ease);
-}
-
-.card::before {
-  top: 10px;
-  inset-inline-start: 10px;
-}
-
-/* الزاوية المقابلة: تُقلب أفقيًّا وعموديًّا فتشير إلى داخل البطاقة */
-.card::after {
-  bottom: 10px;
-  inset-inline-end: 10px;
-  scale: -1 -1;
-}
-
-@media (hover: hover) {
-  .card:hover::before,
-  .card:hover::after {
-    opacity: 0.9;
-  }
-}
+/* لا زوايا نقشٍ على البطاقة: المعيَّنُ الصغير في الركن كان يُقرأ
+   أيقونةَ صورةٍ مكسورة لا زخرفة. خيطُ البطاقة وحده يكفي حدًّا.
+   (المتغيّر --naqsh-corner باقٍ لأقسامٍ أخرى تستعمله.) */
 
 
 
@@ -767,92 +780,75 @@ a {
    خافتٌ تحته. لا صورةَ منظرٍ هنا: البطاقةُ مسرحٌ للعبوة وحدها، ومنظرُ
    البلد يبقى في صدر القسم وفي صفحة العطر. */
 .bottle.has-photo {
+  /* كتلةٌ لا شبكةٌ موسَّطة: الإطارُ يُملأ بالصورة فلا حاجةَ إلى توسيطٍ
+     يترك الحلبةَ بمقاس محتواها فتتجاوز حدَّ النسبة. */
+  display: block;
   overflow: hidden;
-  border-radius: 4px;
-  border: 1px solid var(--line);
-  /* تدرّجٌ خفيف من سوادٍ أدفأ في الأعلى إلى أعمقَ في القاع — عمقٌ
-     بلا لون، فلا ينازع الذهبَ ولا العبوة. */
-  background: linear-gradient(
-    to bottom,
-    #131110 0%,
-    var(--noir-soft) 46%,
-    #070605 100%
-  );
+  border-radius: 3px;
+  /* لا إطارَ هنا: خيطُ البطاقة يحيط بها أصلًا، وإطارٌ ثانٍ يصنع
+     إطارًا داخل إطار. */
+  border: 0;
+  background: var(--noir-soft);
 }
 
 /* الحلبةُ التي تقف فيها العبوة: تحجز مساحةَ الانعكاس تحتها فلا يزحف
    على النصّ، وتوسّط العبوةَ أفقيًّا في كل المقاسات. */
+/* الحلبةُ صارت مجرّدَ إطارٍ للصورة: لا حشوَ في القاع (كان يحجز مكانَ
+   الانعكاس المحذوف) ولا محاذاةَ إلى الأسفل. */
 .bottle-stage {
   position: relative;
   z-index: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-end;
+  display: block;
   width: 100%;
   height: 100%;
-  padding-bottom: 12%;
+  padding: 0;
 }
 
 /* الإضاءة الذهبية: هالةٌ شعاعيةٌ خلف العبوة بلونها هي — `--tint` مأخوذٌ
    من بكسلات صورتها، فيبدو الضوءُ صادرًا عن العبوة لا مسلَّطًا عليها. */
+/* بعضُ صور المنتجات خلفيّتُها بيضاءُ أو صفراءُ ساطعة، فتصرخ في شبكةٍ
+   سوداء. ستارٌ داخليٌّ من الحواف — لا تعديلَ على الصورة نفسِها — يردّها
+   إلى لون الصفحة ويُثبّت النصَّ فوقها. */
 .bottle.has-photo::before {
   content: "";
   position: absolute;
-  z-index: 0;
-  left: 50%;
-  top: 44%;
-  translate: -50% -50%;
-  width: 96%;
-  height: 78%;
+  inset: 0;
+  z-index: 3;
   pointer-events: none;
-  background: radial-gradient(
-    ellipse at center,
-    var(--tint, rgba(198, 166, 100, 0.2)) 0%,
-    rgba(198, 166, 100, 0.1) 38%,
-    transparent 70%
-  );
-  filter: blur(6px);
+  box-shadow:
+    inset 0 0 0 1px rgba(198, 166, 100, 0.09),
+    inset 0 -54px 46px -28px rgba(7, 6, 5, 0.92),
+    inset 0 34px 34px -26px rgba(7, 6, 5, 0.7),
+    inset 42px 0 40px -34px rgba(7, 6, 5, 0.6),
+    inset -42px 0 40px -34px rgba(7, 6, 5, 0.6);
   transition: opacity 0.8s var(--ease);
 }
 
-/* العبوةُ كبيرةٌ في القلب: `contain` كي لا يُقصّ منها شيء، والظلُّ
-   تحتها لا حولها فتبدو واقفةً على سطح. */
+/* الصورةُ تملأ الإطارَ وتُقصّ عند حوافّه: صورُ المنتجات تختلف نسبُها
+   اختلافًا كبيرًا، فـ contain كان يتركها بأحجامٍ متفاوتةٍ في شبكةٍ
+   واحدة. cover يوحّد المقاسَ ويُبقي مركزَ الصورة. */
 .bottle-photo {
   position: relative;
   z-index: 2;
   display: block;
-  width: 86%;
-  max-height: 74%;
-  object-fit: contain;
-  filter: drop-shadow(0 16px 22px rgba(0, 0, 0, 0.72))
-    drop-shadow(0 3px 6px rgba(0, 0, 0, 0.55));
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
   transition: transform 0.9s var(--ease);
 }
 
-/* الانعكاس: نسخةٌ مقلوبةٌ تتلاشى في أوّل ثلثها. مطلقةُ الوضع كي لا
-   تزيد ارتفاعَ الحلبة، ومقصوصةٌ عند حدّها فلا تلامس النصّ. */
+/* الانعكاسُ كان أثرَ عبوةٍ واقفةٍ على سطح — ولا سطحَ بعد أن ملأت
+   الصورةُ إطارَها، فيُخفى. */
 .bottle-reflection {
-  position: absolute;
-  z-index: 1;
-  bottom: 0;
-  left: 50%;
-  translate: -50%;
-  width: 86%;
-  max-height: 12%;
-  object-fit: contain;
-  object-position: top center;
-  opacity: 0.16;
-  scale: 1 -1;
-  pointer-events: none;
-  -webkit-mask-image: linear-gradient(to top, rgba(0, 0, 0, 0.9), transparent 82%);
-  mask-image: linear-gradient(to top, rgba(0, 0, 0, 0.9), transparent 82%);
+  display: none;
 }
 
 /* القارورةُ المرسومة تقف على المسرح نفسِه حين لا صورة */
 .bottle:not(.has-photo) .bottle-stage {
+  display: flex;
+  align-items: center;
   justify-content: center;
-  padding-bottom: 0;
 }
 
 /* حركةٌ ناعمةٌ واحدة عند المرور: العبوةُ ترتفع والهالةُ تشتدّ.
@@ -878,23 +874,14 @@ a {
   }
 }
 
-/* على الهاتف تضيق البطاقة، فتكبر العبوةُ نسبيًّا كي تبقى مقروءة */
-@media (max-width: 720px) {
-  .bottle-photo {
-    width: 90%;
-    max-height: 78%;
-  }
-
-  .bottle-stage {
-    padding-bottom: 10%;
-  }
-}
+/* على الهاتف لا فرقَ: الإطارُ نفسُه بنسبة 4/5 والصورةُ تملؤه. */
 
 /* تقريبٌ خفيف عند المرور — لا إزاحة، كي لا ينكشف طرفُ الإطار */
 
 .card h3 {
-  font-size: 1.65rem;
-  margin-bottom: 0.35rem;
+  font-size: 1.05rem;
+  line-height: 1.35;
+  margin-bottom: 0.15rem;
 }
 
 .card-family {
@@ -905,13 +892,20 @@ a {
 /* الاسم اللاتيني تحت الاسم العربي — هنا وحده يليق التباعد بين الحروف.
    direction: ltr كي لا تنقلب الأرقام في أسماء مثل "Baccarat Rouge 540". */
 .latin {
-  margin: 0 0 0.5rem;
+  margin: 0 0 0.3rem;
   font-family: var(--font-display), Georgia, serif;
   font-size: 0.95rem;
   color: var(--gold-dim);
   letter-spacing: 0.09em;
   direction: ltr;
   text-align: right;
+}
+
+/* في البطاقة وحدها: اللاتينيُّ تابعٌ للعربيّ لا نِدٌّ له */
+.card .latin {
+  font-size: 0.78rem;
+  opacity: 0.75;
+  letter-spacing: 0.05em;
 }
 
 .detail-latin {
@@ -925,6 +919,15 @@ a {
   font-size: 0.88rem;
 }
 
+/* سطرُ «الدار · الحجم» في البطاقة: قريبٌ من الاسم، ويُدفع السعرُ أسفلَ
+   البطاقة كي تستوي أسافلُ الصفِّ الواحد. */
+.card .notes {
+  flex: 1;
+  margin: 0 0 0.5rem;
+  font-size: 0.76rem;
+  line-height: 1.5;
+}
+
 /* هرم الروائح — الطريقة المعتمدة في دور العطور: يُقرأ من الأعلى للأسفل */
 .pyramid {
   flex: 1;
@@ -932,6 +935,12 @@ a {
   align-content: start;
   gap: 0.6rem;
   margin: 0 0 1.75rem;
+}
+
+/* لا هرمَ في بطاقة الشبكة: هو وحده كان يرفعها إلى 774px فيدفع السعرَ
+   وزرَّ الإضافة خارج الشاشة. موضعُه صفحةُ العطر والعرضُ السريع. */
+.card .pyramid {
+  display: none;
 }
 
 .pyramid > div {
@@ -1585,14 +1594,9 @@ a {
   content: "";
   position: absolute;
   z-index: 2;
-  top: -1.4rem;
-  inset-inline-start: -1.2rem;
-  width: 40px;
-  height: 40px;
-  pointer-events: none;
-  background: var(--naqsh-corner) no-repeat;
-  background-size: contain;
-  opacity: 0.42;
+  /* لا نقشَ هنا: المعيَّنُ المشطوب كان يُقرأ أيقونةَ صورةٍ مكسورة فوق
+     لافتة الفرع، لا زخرفة. */
+  display: none;
 }
 
 .section-head {
@@ -1689,19 +1693,22 @@ a {
 .scene::after {
   background-image: linear-gradient(
     to left,
-    rgba(10, 9, 8, 0.6) 0%,
-    rgba(10, 9, 8, 0.26) 28%,
-    transparent 54%
+    rgba(10, 9, 8, 0.78) 0%,
+    rgba(10, 9, 8, 0.5) 34%,
+    rgba(10, 9, 8, 0.24) 62%
   );
-  background-color: rgba(10, 9, 8, 0.12);
+  /* أرضيةٌ دنيا 0.52 بدل 0.12: صخرُ قلة أرشي فاتحٌ مضيء، فكان النصُّ
+     العاجيُّ فوقه دون عتبة WCAG AA. هذه تضمن التباينَ مهما أشرقت
+     البقعةُ التي يقع عليها الحرف. */
+  background-color: rgba(10, 9, 8, 0.52);
 }
 
 [dir="ltr"] .scene::after {
   background-image: linear-gradient(
     to right,
-    rgba(10, 9, 8, 0.6) 0%,
-    rgba(10, 9, 8, 0.26) 28%,
-    transparent 54%
+    rgba(10, 9, 8, 0.78) 0%,
+    rgba(10, 9, 8, 0.5) 34%,
+    rgba(10, 9, 8, 0.24) 62%
   );
 }
 
@@ -1711,7 +1718,7 @@ a {
   .scene::after,
   [dir="ltr"] .scene::after {
     background-image: none;
-    background-color: rgba(10, 9, 8, 0.2);
+    background-color: rgba(10, 9, 8, 0.58);
   }
 }
 
@@ -2275,8 +2282,9 @@ a {
   display: flex;
   flex-direction: column;
   align-items: stretch;
-  gap: 0.9rem;
-  padding-top: 1.4rem;
+  gap: 0.5rem;
+  padding-top: 0.6rem;
+  margin-top: 0.15rem;
   border-top: 1px solid var(--line);
   text-align: center;
 }
@@ -2284,13 +2292,16 @@ a {
 /* خيطٌ ذهبيٌّ قصيرٌ فوق السعر — فاصلٌ أنيقٌ بلا كلمات */
 .card-foot .price {
   position: relative;
-  padding-top: 0.15rem;
+  padding-top: 0;
+  font-size: 0.95rem;
   letter-spacing: 0.02em;
 }
 
 .card-foot .add {
   justify-content: center;
+  padding: 0.5rem 0.6rem;
   border: 1px solid var(--line);
+  font-size: 0.82rem;
   letter-spacing: 0.06em;
   transition: border-color 0.5s var(--ease), color 0.5s var(--ease),
     background-color 0.5s var(--ease);
@@ -2334,8 +2345,16 @@ a {
   background-color: var(--wash-hot);
 }
 
+/* قرصٌ خفيف: كان صندوقًا بخيطٍ ذهبيٍّ كاملٍ يسحب العينَ إليه قبل
+   اسم الدار وقبل السلة، وهو أداةٌ لا إعلان. */
 .switcher {
-  gap: 0.6rem;
+  gap: 0.5rem;
+  min-height: 2.25rem;
+  padding: 0.3rem 0.8rem;
+  border: 1px solid rgba(198, 166, 100, 0.22);
+  border-radius: 2rem;
+  background-color: rgba(198, 166, 100, 0.05);
+  font-size: 0.8rem;
 }
 
 .switcher:hover,
@@ -2659,9 +2678,15 @@ a {
   font-variant-numeric: tabular-nums;
 }
 
+/* شارةُ العدد: رقمٌ داكنٌ على ذهب. لولا هذا التخصيصُ لورث الذهبَ من
+   `.cart span` فصار ذهبًا على ذهبٍ لا يُقرأ. */
+.cart .cart-count {
+  color: #16120a;
+}
+
 /* السلّةُ صارت زرًّا لا رابطًا — لأنها تفتح لوحةً لا تنقل إلى صفحة —
    فتأخذ هيئةَ روابط الترويسة نفسَها: اللونُ والخطُّ والحدُّ النامي أسفلها. */
-.nav .cart {
+.header-tools .cart {
   position: relative;
   padding: 0 0 0.35rem;
   color: inherit;
@@ -2671,13 +2696,13 @@ a {
   line-height: inherit;
 }
 
-.nav .cart::before {
+.header-tools .cart::before {
   content: "";
   position: absolute;
   inset: -0.7rem -0.5rem;
 }
 
-.nav .cart::after {
+.header-tools .cart::after {
   content: "";
   position: absolute;
   inset-inline: 0;
@@ -2689,17 +2714,17 @@ a {
   transition: transform var(--t-state) var(--ease);
 }
 
-[dir="ltr"] .nav .cart::after {
+[dir="ltr"] .header-tools .cart::after {
   transform-origin: left;
 }
 
-.nav .cart:hover,
-.nav .cart:focus-visible {
+.header-tools .cart:hover,
+.header-tools .cart:focus-visible {
   color: var(--ivory);
 }
 
-.nav .cart:hover::after,
-.nav .cart:focus-visible::after {
+.header-tools .cart:hover::after,
+.header-tools .cart:focus-visible::after {
   transform: scaleX(1);
 }
 
@@ -3512,7 +3537,9 @@ body {
     min-height: 48px;
   }
   .header {
-    padding: 1.25rem 0;
+    /* الحشوُ من .header نفسِها (0.5rem): كان 1.25rem هنا فيرفع الترويسةَ
+       على الجوال إلى 80px رغم min-height الجديد. */
+    padding: 0.5rem 0;
   }
   .nav {
     gap: 1.1rem;
@@ -3603,22 +3630,20 @@ body:has(.mobile-cart-bar) .floating-wa {
   outline-offset: 2px;
 }
 
-/* صورةُ عطر السلايدر أكبرُ حضورًا — contain يبقى (بلا قص)، وكلُّ الشرائح
-   متساويةُ الارتفاع فلا قفزة في أبعاد السلايدر. */
+/* صورةُ عطر السلايدر بطلةُ الواجهة: كانت 27vh فتبدو تصغيرةً في صدر
+   الصفحة. صارت 44svh — نحوَ نصف الشاشة — وcontain يبقى (بلا قصّ)، وكلُّ
+   الشرائح متساويةُ الارتفاع فلا قفزةَ في أبعاد السلايدر. */
 .hero-chad-photo {
-  height: clamp(210px, 27vh, 300px);
+  height: clamp(250px, 44svh, 420px);
 }
 @media (max-width: 720px) {
   .hero-chad-photo {
-    height: clamp(185px, 40vw, 260px);
+    height: clamp(230px, 40svh, 340px);
   }
 }
 
-/* صورُ عطور البطاقات أكبرُ ~10% مع بقاء object-fit: contain (بلا قص). */
-.bottle-photo {
-  width: 94%;
-  max-height: 82%;
-}
+/* الصورةُ تملأ إطارَها كاملًا (cover) — فلا نسبةَ عرضٍ ولا سقفَ ارتفاع
+   يصغّرانها داخله كما كان يقتضي تخطيطُ contain السابق. */
 
 @media (prefers-reduced-motion: reduce) {
   .mcb-wa {
@@ -3631,31 +3656,45 @@ body:has(.mobile-cart-bar) .floating-wa {
    ══════════════════════════════════════════════════════════════════════════ */
 
 /* ── زرُّ العرض السريع على البطاقة ─────────────────────────────────────── */
+/* العرضُ السريع: أيقونةٌ صغيرةٌ في ركن الصورة. كان قرصًا بنصٍّ يعتلي
+   صدرَ الصورة فيحجب العبوةَ ويزاحم الاسم. تظهر عند المرور على الحاسوب،
+   ودائمةٌ على اللمس حيث لا مرور. */
 .quick-view {
   position: absolute;
-  top: 0.8rem;
-  left: 50%;
-  translate: -50%;
+  top: 0.55rem;
+  inset-inline-end: 0.55rem;
+  translate: none;
   z-index: 4;
   display: inline-flex;
   align-items: center;
-  gap: 0.4rem;
-  padding: 0.45rem 0.85rem;
-  background: rgba(10, 9, 8, 0.82);
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  background: rgba(10, 9, 8, 0.66);
   -webkit-backdrop-filter: blur(6px);
   backdrop-filter: blur(6px);
-  border: 1px solid var(--gold-dim);
-  border-radius: 2rem;
+  border: 1px solid rgba(198, 166, 100, 0.35);
+  border-radius: 50%;
   color: var(--ivory);
   font-family: inherit;
-  font-size: 0.78rem;
-  letter-spacing: 0.02em;
   cursor: pointer;
   opacity: 0;
-  transform: translateY(-6px);
+  transform: scale(0.9);
   pointer-events: none;
   transition: opacity 0.3s var(--ease), transform 0.3s var(--ease),
     border-color 0.3s var(--ease), color 0.3s var(--ease);
+}
+
+/* النصُّ للقارئ الآلي وحده — الأيقونةُ تكفي البصر */
+.quick-view span {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
 }
 @media (hover: hover) {
   .card:hover .quick-view {
@@ -3676,31 +3715,12 @@ body:has(.mobile-cart-bar) .floating-wa {
   outline: var(--ring);
   outline-offset: 2px;
 }
-/* على اللمس (بلا مرور): أيقونةٌ دائمةٌ صغيرة في ركن الصورة، بلا نص */
-@media (max-width: 720px) {
+/* على اللمس (بلا مرور) تبقى الأيقونةُ ظاهرةً — وإلا تعذّر بلوغُها */
+@media (hover: none) {
   .quick-view {
     opacity: 1;
     transform: none;
     pointer-events: auto;
-    left: auto;
-    translate: none;
-    inset-inline-end: 0.7rem;
-    top: 0.7rem;
-    width: 2.15rem;
-    height: 2.15rem;
-    padding: 0;
-    justify-content: center;
-    border-radius: 50%;
-    background: rgba(10, 9, 8, 0.72);
-  }
-  .quick-view span {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    padding: 0;
-    overflow: hidden;
-    clip-path: inset(50%);
-    white-space: nowrap;
   }
 }
 
@@ -3952,5 +3972,788 @@ body:has(.mobile-cart-bar) .floating-wa {
   .cart-skip,
   .map-locate {
     transition: none;
+  }
+}
+
+/* مراسي التنقّل تحت ترويسةٍ ثابتة ــــــــــــــــــــــــــــــــــــــــ
+   الترويسة `position: fixed`، فالقفزُ إلى مرساةٍ يضع صدرَها تحتها فيُقرأ
+   العنوانُ مقصوصًا. `.branch` كان له هذا الهامشُ وحدَه، فلحق به القسمان
+   الآخران اللذان تقصدهما الترويسة: #maison و#contact. */
+.quote,
+.footer {
+  scroll-margin-top: var(--anchor-offset);
+}
+
+/* ── الترويسةُ على الجوال: زرُّ قائمةٍ وسلّةٌ بشارةِ عدد ───────────────────
+   كانت روابطُ التنقّل تُخفى على الجوال (`display:none`) بلا بديلٍ يبلغها،
+   فيبقى الزائرُ بلا طريقٍ إلى «الدار» و«تواصل» إلا التذييل. */
+
+.nav-toggle {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  padding: 0;
+  background: none;
+  border: 1px solid rgba(198, 166, 100, 0.22);
+  border-radius: 0.5rem;
+  color: var(--ivory);
+  cursor: pointer;
+}
+
+.nav-toggle-bars {
+  display: grid;
+  gap: 4px;
+  width: 17px;
+}
+
+.nav-toggle-bars i {
+  display: block;
+  height: 1.4px;
+  background: currentColor;
+  transition: opacity 0.3s var(--ease);
+}
+
+/* السلة: أيقونةٌ وشارةُ عددٍ ذهبية. النصُّ يبقى على الحاسوب وحده. */
+.cart {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.cart-count {
+  display: inline-grid;
+  place-items: center;
+  min-width: 1.25rem;
+  height: 1.25rem;
+  padding: 0 0.35rem;
+  background: var(--gold);
+  color: #16120a;
+  border-radius: 1rem;
+  font-size: 0.72rem;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+
+@media (max-width: 720px) {
+  .nav-toggle {
+    display: inline-flex;
+  }
+
+  /* القائمةُ تنزلق من تحت الترويسة لوحًا واحدًا — لا تُخفى بلا بديل */
+  .nav {
+    position: absolute;
+    inset-inline: 0;
+    top: 100%;
+    z-index: 60;
+    display: grid;
+    gap: 0.25rem;
+    padding: 0.75rem 1rem 1rem;
+    background: rgba(10, 9, 8, 0.97);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+    /* مطويّةٌ ما لم تُفتح — لا `display:none` كي يعمل انتقالُها */
+    visibility: hidden;
+    opacity: 0;
+    transform: translateY(-0.5rem);
+    pointer-events: none;
+    transition: opacity 0.28s var(--ease), transform 0.28s var(--ease),
+      visibility 0.28s var(--ease);
+  }
+
+  .nav-open {
+    visibility: visible;
+    opacity: 1;
+    transform: none;
+    pointer-events: auto;
+  }
+
+  /* الروابطُ تعود ظاهرةً داخل اللوح — كانت مخفيّةً في كل حال */
+  .nav a:not(.cart) {
+    display: block;
+    padding: 0.6rem 0.2rem;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .nav .switcher {
+    justify-content: center;
+    margin-top: 0.5rem;
+  }
+
+
+  .cart-text {
+    display: none;
+  }
+}
+
+/* الترويسةُ على الجوال: 60px. اسمُ الدار بسطرين يفرض ارتفاعَه، فيصغُر
+   قليلًا هنا — ويبقى هو هو شكلًا ولونًا. */
+@media (max-width: 720px) {
+  :root {
+    --header-h: 3.75rem; /* 60px */
+    --header-h-sm: 3.25rem; /* 52px */
+    --anchor-offset: 5rem;
+  }
+
+  .header {
+    gap: 0.6rem;
+  }
+
+  .wordmark {
+    min-height: 0;
+    font-size: 1.05rem;
+  }
+}
+
+/* غلافُ أدوات الترويسة: القائمةُ والسلةُ وزرُّ القائمة في صفٍّ واحد */
+.header-tools {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 1.1rem;
+}
+
+@media (max-width: 720px) {
+  .header-tools {
+    gap: 0.6rem;
+  }
+
+  /* لوحُ القائمة معتمٌ تمامًا: نصفُ الشفافية كان يُظهر الواجهةَ خلف
+     الروابط فتُقرأ فوق صورة. */
+  .nav {
+    inset-inline: auto;
+    inset-inline-end: 0;
+    min-width: min(17rem, 78vw);
+    background: #0a0908;
+    border: 1px solid var(--line);
+    border-radius: 0.6rem;
+    box-shadow: 0 18px 40px rgba(0, 0, 0, 0.6);
+  }
+}
+
+/* ── شريطُ الفرع: سطرٌ واحدٌ فوق الشبكة ────────────────────────────────
+   بدل كتلةِ العنوان والدوام والهاتف التي كانت تفصل صدرَ القسم عن
+   العطور فتدفعها تحت الطيّة. الكتلةُ كاملةً صارت أسفلَ الشبكة. */
+.branch-strip {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem 0.9rem;
+  margin: 0 0 1.6rem;
+  color: var(--ivory-dim);
+  font-size: 0.9rem;
+}
+
+.branch-strip > * + *::before {
+  content: "·";
+  margin-inline-end: 0.9rem;
+  color: var(--gold-dim);
+}
+
+.branch-strip a {
+  color: var(--gold);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: border-color var(--t-state) var(--ease);
+}
+
+.branch-strip a:hover,
+.branch-strip a:focus-visible {
+  border-bottom-color: var(--gold);
+}
+
+/* كتلةُ بيانات المحلّ بعد العطور — تُفصل بخيطٍ فلا تلتصق بآخر صفّ */
+.branch .branch-info {
+  margin-top: 2.5rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--line);
+}
+
+/* ── سهما سلايدر الواجهة ──────────────────────────────────────────────
+   النقاطُ وحدها كانت تنقل، وإصابةُ نقطةٍ قطرُها ٦px مطلبٌ ثقيل. */
+.hero-arrow {
+  position: absolute;
+  top: 50%;
+  translate: 0 -50%;
+  z-index: 3;
+  display: grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  padding: 0;
+  background: rgba(10, 9, 8, 0.55);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  border: 1px solid rgba(198, 166, 100, 0.3);
+  border-radius: 50%;
+  color: var(--ivory);
+  cursor: pointer;
+  transition: border-color var(--t-state) var(--ease),
+    color var(--t-state) var(--ease), background-color var(--t-state) var(--ease);
+}
+
+.hero-arrow:hover,
+.hero-arrow:focus-visible {
+  border-color: var(--gold);
+  color: var(--gold);
+  background: rgba(10, 9, 8, 0.78);
+}
+
+/* السهمُ يشير إلى جهته لا إلى يمينٍ ويسارٍ ثابتين: في العربية يقلب
+   الاتجاهُ معناهما، فيُقلب الرسمُ تبعًا للاتجاه. */
+.hero-arrow-prev {
+  inset-inline-start: 0;
+}
+
+.hero-arrow-next {
+  inset-inline-end: 0;
+}
+
+[dir="rtl"] .hero-arrow svg {
+  scale: -1 1;
+}
+
+@media (max-width: 720px) {
+  .hero-arrow {
+    width: 2.4rem;
+    height: 2.4rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-arrow {
+    transition: none;
+  }
+}
+
+/* ── الواجهةُ تسع الشاشةَ الأولى دائمًا ────────────────────────────────
+   الارتفاعاتُ الثابتة (صورةٌ بـclamp وهوامشُ ثابتة) كانت تجمع 862px على
+   شاشة 768، فيسقط شريطُ الوعود تحت الطيّة. هنا يصير الغلافُ عمودًا مرنًا:
+   العنوانُ والنصُّ والزرّان والشاراتُ تأخذ مقاسَها، والصورةُ تأخذ ما بقي.
+   فتكبُر الصورةُ إلى أقصى ما تسمح به الشاشة ولا تتجاوزه أبدًا. */
+.hero-chad-inner {
+  /* ارتفاعٌ محدَّد لا أدنى: المرونةُ لا تقلّص شيئًا ما لم يكن للغلاف
+     ارتفاعٌ يُقسَم — وبـmin-height يتجاوزه المحتوى فيسقط الشريط. */
+  height: calc(100svh - var(--header-h) - 2.25rem);
+  justify-content: center;
+}
+
+.hero-chad-stage {
+  /* تأخذ ما فضل عن بقيّة العناصر، ولا تفرض ارتفاعًا من عندها */
+  flex: 1 1 auto;
+  min-height: 0;
+  justify-content: center;
+  margin-bottom: clamp(0.9rem, 1.8vh, 1.6rem);
+}
+
+.hero-carousel {
+  min-height: 0;
+}
+
+.hero-slide {
+  min-height: 0;
+}
+
+/* الصورةُ تملأ ما أُتيح لها صعودًا، بسقفٍ يمنعها من ابتلاع الواجهة
+   على شاشةٍ طويلة، وأرضيةٍ تُبقيها بطلةً على القصيرة. */
+.hero-chad-photo {
+  height: auto;
+  max-height: min(46svh, 420px);
+  min-height: 0;
+}
+
+/* الهوامشُ تتبع ارتفاعَ الشاشة لا عرضَها: على 768 تضيق فتفسح للصورة */
+.hero-chad-title {
+  margin-bottom: clamp(0.4rem, 1.2vh, 0.85rem);
+}
+
+.hero-chad-text {
+  margin-top: clamp(0.5rem, 1.4vh, 1.1rem);
+  margin-bottom: clamp(0.9rem, 2.1vh, 1.6rem);
+}
+
+.hero-chad-strip {
+  margin-top: clamp(0.7rem, 1.8vh, 2rem);
+}
+
+
+/* ── زرُّ واتساب العائم ────────────────────────────────────────────────
+   في جهة البداية (يسارًا في العربية) كي لا يزاحم شريطَ السلة في جهة
+   النهاية، وفوق شريط الإيماءات في أجهزة آبل عبر safe-area. */
+.wa-fab {
+  position: fixed;
+  z-index: 45;
+  /* يسارٌ ماديّ لا منطقيّ: inset-inline-start في العربية هو اليمين،
+     وهناك يقف شريطُ السلة — فيُثبَّت الزرُّ يسارًا في اللغتين. */
+  left: 1rem;
+  inset-block-end: calc(1rem + env(safe-area-inset-bottom, 0px));
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 3.25rem;
+  height: 3.25rem;
+  border-radius: 50%;
+  background: var(--noir-card, #14110f);
+  border: 1px solid var(--gold-dim);
+  color: var(--gold);
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.5);
+  transition: border-color 0.3s var(--ease), color 0.3s var(--ease),
+    transform 0.3s var(--ease);
+}
+
+.wa-fab:hover,
+.wa-fab:focus-visible {
+  border-color: var(--gold);
+  transform: translateY(-2px);
+}
+
+.wa-fab:focus-visible {
+  outline: var(--ring);
+  outline-offset: 3px;
+}
+
+/* على الجوال يرتفع فوق شريط السلة الثابت فلا يختفي تحته */
+@media (max-width: 720px) {
+  .wa-fab {
+    inset-block-end: calc(4.9rem + env(safe-area-inset-bottom, 0px));
+    width: 3rem;
+    height: 3rem;
+  }
+}
+
+/* أيقونةُ واتساب في شريط السلة تُحذف: صار الزرُّ العائم يغني عنها،
+   ووجودُهما معًا بابان إلى محادثةٍ واحدة في شاشةٍ واحدة. */
+.mcb-wa {
+  display: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wa-fab {
+    transition: none;
+  }
+  .wa-fab:hover {
+    transform: none;
+  }
+}
+
+
+/* ── لوحُ التصفية ──────────────────────────────────────────────────────
+   كان صفٌّ ثانٍ من القوائم دائمَ الحضور فوق الشبكة يدفع العطورَ لأسفل.
+   صار زرًّا واحدًا في صفّ البحث يفتح صفحةً جانبيةً على الحاسوب وسفليةً
+   على الجوال، وما هو مفعَّلٌ يظهر رقائقَ تُرفع الواحدةُ منها بضغطة. */
+
+.filter-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.filter-btn.has-active {
+  border-color: var(--gold);
+  color: var(--gold);
+}
+
+.filter-badge {
+  display: inline-grid;
+  place-items: center;
+  min-width: 1.15rem;
+  height: 1.15rem;
+  padding: 0 0.3rem;
+  background: var(--gold);
+  color: #16120a;
+  border-radius: 1rem;
+  font-size: 0.7rem;
+  line-height: 1;
+}
+
+.filter-veil {
+  position: fixed;
+  inset: 0;
+  z-index: 70;
+  background: rgba(5, 4, 4, 0.6);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s var(--ease), visibility 0.3s var(--ease);
+}
+
+.filter-veil.is-open {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* الحاسوب: صفحةٌ جانبيةٌ تنزلق من جهة البداية */
+.filter-sheet {
+  position: fixed;
+  z-index: 71;
+  inset-block: 0;
+  inset-inline-start: 0;
+  width: min(23rem, 92vw);
+  display: flex;
+  flex-direction: column;
+  background: var(--noir);
+  border-inline-end: 1px solid var(--line);
+  transform: translateX(-100%);
+  visibility: hidden;
+  transition: transform 0.34s var(--ease), visibility 0.34s var(--ease);
+}
+
+[dir="rtl"] .filter-sheet {
+  transform: translateX(100%);
+}
+
+.filter-sheet.is-open {
+  transform: none;
+  visibility: visible;
+}
+
+.filter-sheet-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.15rem 1.25rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.filter-sheet-head h3 {
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+.filter-close {
+  width: 2.25rem;
+  height: 2.25rem;
+  background: none;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  color: var(--ivory);
+  font-size: 1.3rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.filter-close:hover,
+.filter-close:focus-visible {
+  border-color: var(--gold);
+  color: var(--gold);
+}
+
+/* المرشِّحاتُ عمودًا واحدًا داخل اللوح — كانت صفًّا أفقيًّا مزدحمًا */
+.filter-sheet-body {
+  flex: 1;
+  overflow-y: auto;
+  display: grid;
+  align-content: start;
+  gap: 1.1rem;
+  padding: 1.25rem;
+}
+
+.filter-sheet-body .tool,
+.filter-sheet-body .tool select,
+.filter-sheet-body .tool input {
+  width: 100%;
+}
+
+/* التسمياتُ المخفيّةُ بصريًّا تعود ظاهرةً هنا: القائمةُ وحدها في عمودٍ
+   لا يُعرف ما تصفّيه بلا عنوان. */
+.filter-sheet-body .tool > .vh {
+  position: static;
+  width: auto;
+  height: auto;
+  margin-bottom: 0.35rem;
+  clip-path: none;
+  color: var(--gold-dim);
+  font-size: 0.78rem;
+  letter-spacing: 0.06em;
+}
+
+.filter-sheet-foot {
+  display: flex;
+  gap: 0.75rem;
+  padding: 1rem 1.25rem calc(1rem + env(safe-area-inset-bottom, 0px));
+  border-top: 1px solid var(--line);
+}
+
+.filter-sheet-foot .btn {
+  flex: 1;
+  justify-content: center;
+}
+
+/* الجوال: صفحةٌ سفليةٌ تنزلق من القاع */
+@media (max-width: 720px) {
+  .filter-sheet,
+  [dir="rtl"] .filter-sheet {
+    inset: auto 0 0 0;
+    width: auto;
+    max-height: 82vh;
+    border-inline-end: 0;
+    border-top: 1px solid var(--line);
+    border-radius: 1rem 1rem 0 0;
+    transform: translateY(100%);
+  }
+
+  .filter-sheet.is-open {
+    transform: none;
+  }
+}
+
+/* الرقائق: ما هو مفعَّلٌ الآن، ظاهرًا فوق الشبكة بلا فتح اللوح */
+.filter-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0.9rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.filter-chips button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.3rem 0.7rem;
+  background: rgba(198, 166, 100, 0.08);
+  border: 1px solid rgba(198, 166, 100, 0.3);
+  border-radius: 2rem;
+  color: var(--ivory);
+  font-family: inherit;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: border-color var(--t-state) var(--ease);
+}
+
+.filter-chips button:hover,
+.filter-chips button:focus-visible {
+  border-color: var(--gold);
+  color: var(--gold);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .filter-sheet,
+  .filter-veil {
+    transition: none;
+  }
+}
+
+
+/* ══ المرحلة ١ · إصلاحاتُ الجوال ══════════════════════════════════════ */
+
+/* ── الواجهة على الجوال: تدفّقٌ عموديٌّ عاديّ ─────────────────────────────
+   على الحاسوب يوزّع الغلافُ ارتفاعًا محدَّدًا بين عناصره فتأخذ الصورةُ ما
+   فضل — وهو ما يُجلسها في الشاشة الأولى. وعلى الجوال لا يسع ذلك الارتفاعُ
+   محتواه، والمسرحُ موسَّطٌ (justify-content: center) فيفيض من طرفيه معًا:
+   فتركب الصورةُ على سطر «اكتشف مجموعةً مختارة…» فوقها، ويركب اسمُ العطر
+   على النقاط، وتختفي «نسيم» تحت «تسوّق المجموعة».
+
+   فيُلغى التقسيمُ هنا: لا ارتفاعَ محدَّدًا ولا مرونةَ تقاسم، ويأخذ كلُّ
+   عنصرٍ مقاسَه بالترتيب — عنوانٌ، فنصٌّ، فصورةٌ، فاسمٌ ودار، فنقاطٌ، فأزرار.
+   الحاسوبُ واللوحيُّ لا يُمسّان. */
+@media (max-width: 720px) {
+  .hero-chad {
+    min-height: 0;
+    padding-block: calc(var(--header-h) + 1rem) 2rem;
+  }
+
+  .hero-chad-inner {
+    height: auto;
+    min-height: 0;
+    justify-content: flex-start;
+  }
+
+  .hero-chad-stage {
+    flex: 0 0 auto;
+    min-height: 0;
+    margin-bottom: 1rem;
+  }
+
+  /* سقفٌ يُبقي الصورةَ بطلةً دون أن تبتلع الشاشة */
+  .hero-chad-photo {
+    height: auto;
+    max-height: 38svh;
+    width: auto;
+    max-width: 100%;
+  }
+
+  /* الزرّان في سطرٍ واحد: سطران كانا يأخذان 125px من ارتفاعٍ ضيّق */
+  .hero-chad-actions {
+    flex-wrap: nowrap;
+    width: 100%;
+    gap: 0.6rem;
+  }
+
+  .hero-chad-actions .btn {
+    flex: 1 1 0;
+    min-width: 0;
+    padding-inline: 0.6rem;
+    font-size: 0.82rem;
+    white-space: nowrap;
+  }
+
+  .hero-chad-strip {
+    gap: 0.35rem 1.1rem;
+    font-size: 0.86rem;
+  }
+}
+
+/* ── زرُّ واتساب العائم: لا يغطّي محتوًى ولا ينازع لوحًا مفتوحًا ─────────── */
+
+/* 48px على الجوال — أرضيةُ اللمس، وأصغرُ من 52px فلا يزاحم البطاقات */
+@media (max-width: 720px) {
+  .wa-fab {
+    width: 3rem;
+    height: 3rem;
+  }
+
+  .wa-fab svg {
+    width: 22px;
+    height: 22px;
+  }
+}
+
+/* يُخفى وقتَ فتح قائمة الجوال أو لوح التصفية: زرٌّ عائمٌ فوق لوحٍ مفتوح
+   يسرق اللمسةَ ويشوّش التركيز. `:has` يقرأ الحالةَ من DOM بلا جافاسكربت. */
+body:has(.nav-open) .wa-fab,
+body:has(.filter-sheet.is-open) .wa-fab {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+/* الشبكةُ والتذييلُ يتركان تحتهما فرجةً بقدر الزرّ: بدونها يقع فوق آخر
+   بطاقةٍ في الصفّ الأخير ويغطّي زرَّ «أضف» فيها. */
+@media (max-width: 720px) {
+  .branch .grid {
+    margin-bottom: 4.5rem;
+  }
+}
+
+/* ── بطاقة الجوال: السعرُ وزرُّ الإضافة في سطرٍ واحد ────────────────────
+   عمودًا كانا يأخذان سطرين من بطاقةٍ عرضُها 148px، فيطول ذيلُها بلا داعٍ. */
+@media (max-width: 720px) {
+  .card-foot {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+  }
+
+  .card-foot .price {
+    font-size: 0.86rem;
+    white-space: nowrap;
+  }
+
+  .card-foot .add {
+    flex: 0 0 auto;
+    padding-inline: 0.7rem;
+    font-size: 0.78rem;
+  }
+}
+
+/* ── التذييل: عمودان، وفرجةٌ فوق شريط السلة اللاصق ─────────────────────
+   كان سطرًا واحدًا بـflex، وكان قاعُه يختفي تحت شريط السلة على الجوال. */
+.footer {
+  padding-block: 5rem 3rem;
+  padding-inline: 0;
+}
+
+.footer-line {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: center;
+  gap: 0.5rem 2rem;
+}
+
+/* العمودُ الثاني يحاذي جهةَ النهاية فيتقابل الطرفان */
+.footer-line > :last-child {
+  justify-self: end;
+  text-align: end;
+}
+
+@media (max-width: 720px) {
+  .footer {
+    /* ارتفاعُ شريط السلة + الزرُّ العائم + فرجةُ الجهاز السفلية */
+    padding-block-end: calc(7.5rem + env(safe-area-inset-bottom, 0px));
+  }
+
+  .footer-line {
+    grid-template-columns: 1fr;
+    justify-items: center;
+    text-align: center;
+  }
+
+  .footer-line > :last-child {
+    justify-self: center;
+    text-align: center;
+  }
+}
+
+/* ── رابطُ التخطّي: للوحة المفاتيح وحدها ───────────────────────────────
+   كان `:focus` يكشفه للفأرة أيضًا — نقرةٌ على موضعه تُظهره لمن لا يحتاجه. */
+.skip-link:focus {
+  transform: translateY(-180%);
+}
+
+.skip-link:focus-visible {
+  transform: translateY(0);
+  outline: 2px solid var(--noir);
+  outline-offset: -4px;
+}
+
+/* ── السلايدر: الصورةُ تتقلّص، لا الصندوقُ يفيض ─────────────────────────
+   كان المسرحُ يوزّع ارتفاعًا محدَّدًا ويوسّط محتواه، والسلايدرُ فيه عنصرُ
+   مرونةٍ يقبل الانكماشَ دون مقاس محتواه — فيفيض من طرفيه. وباسمٍ من سطرين
+   (كما في الفرنسية والإنجليزية) يركب الاسمُ على النقاط تحته.
+
+   الحلُّ أن يكون القابلُ للتقلّص هو الصورةَ نفسَها: السلايدرُ يأخذ ما فضل،
+   وشرائحُه تملأ ارتفاعَه، والصورةُ عنصرُ مرونةٍ داخلها بـobject-fit تحفظ
+   نسبتَها. فينزل الاسمُ دائمًا أسفلَ الصورة، والنقاطُ أسفلَه. */
+.hero-chad-stage {
+  justify-content: flex-start;
+}
+
+.hero-carousel {
+  flex: 1 1 auto;
+  min-height: 0;
+  /* الشرائحُ تملأ ارتفاعَ السلايدر بدل أن تتوسّطه بمقاس محتواها */
+  place-items: stretch;
+}
+
+.hero-slide {
+  min-height: 0;
+  /* الصورةُ أعلى والاسمُ تحتها، والفراغُ فوقهما لا بينهما */
+  justify-content: flex-end;
+}
+
+.hero-chad-photo {
+  flex: 0 1 auto;
+  height: auto;
+  min-height: 0;
+  max-height: 100%;
+}
+
+/* الاسمُ لا يتقلّص: نصٌّ يُقرأ، وانكماشُه يقصّ الحروف */
+.hero-chad-name {
+  flex: 0 0 auto;
+}
+
+/* ── الجوال: تدفّقٌ عاديّ، فلا تقاسمَ ولا تقلّص ───────────────────────── */
+@media (max-width: 720px) {
+  .hero-carousel {
+    flex: 0 0 auto;
+    place-items: center;
+  }
+
+  .hero-slide {
+    height: auto;
+  }
+
+  .hero-chad-photo {
+    max-height: 38svh;
   }
 }
